@@ -1,4 +1,4 @@
-package com.example.sas.ui.theme
+package com.example.sas.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

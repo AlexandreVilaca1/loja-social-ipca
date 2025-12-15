@@ -1,6 +1,5 @@
-package com.example.sas
+package com.example.sas.presentation
 
-import LoginListView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,9 +14,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.sas.Login.LoginListViewModel
-import com.example.sas.Login.LoginView
-import com.example.sas.ui.theme.SASTheme
+import com.example.sas.presentation.ui.Home.HomeView
+import com.example.sas.presentation.ui.Login.LoginView
+import com.example.sas.presentation.ui.theme.SASTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,24 +24,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SASTheme {
-                val LoginListViewModel: LoginListViewModel = viewModel()
                 val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "login_user_list",
+                        startDestination = "login",
                         modifier = Modifier.padding(innerPadding)
-                    ){
-                        composable("login_user_list") {
-                            LoginListView(navController, LoginListViewModel)
-                        }
-                        composable("login/{username}",
-                            arguments = listOf(navArgument("username") { type = NavType.StringType }))
-                        { backStackEntry ->
-                            val username = backStackEntry.arguments?.getString("username")
-                            LoginView(username = username ?: "") {
-                                navController.navigate("home")
-                            }
+                    ) {
+                        composable(route = "login"){
+                            LoginView()
                         }
                         composable("home") {
                             HomeView()
