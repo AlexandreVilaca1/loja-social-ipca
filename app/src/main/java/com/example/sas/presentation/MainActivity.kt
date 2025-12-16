@@ -17,7 +17,9 @@ import androidx.navigation.navArgument
 import com.example.sas.presentation.ui.Home.HomeView
 import com.example.sas.presentation.ui.Login.LoginView
 import com.example.sas.presentation.ui.theme.SASTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +34,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable(route = "login"){
-                            LoginView()
+                            LoginView(navController)
                         }
                         composable("home") {
                             HomeView()
