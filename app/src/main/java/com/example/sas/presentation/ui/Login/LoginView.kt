@@ -80,7 +80,7 @@ fun LoginView(
 
                     // 🧾 FORMULÁRIO
                     Text(
-                        text = "Bem-vindo de volta",
+                        text = "Bem-vindo",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -180,19 +180,6 @@ fun LoginView(
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    Row {
-                        Text(
-                            text = "Não tens conta? ",
-                            color = Color.Gray
-                        )
-                        Text(
-                            text = "Regista-te",
-                            color = green,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable {}
-                        )
-                    }
 
                     // pequeno respiro inferior
                     Spacer(modifier = Modifier.weight(0.3f))

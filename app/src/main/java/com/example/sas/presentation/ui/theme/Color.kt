@@ -10,7 +10,10 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-val GreenPrimary = Color(0xFF006D3C) // Verde institucional IPCA
+val GreenPrimary = Color(0xFF2FBF71)
 val GreenLight = Color(0xFFB8E994)   // Verde claro para destaques
 val BackgroundLight = Color(0xFFF5F5F5)
 val TextDark = Color(0xFF1C1C1C)
+val GrayInactive = Color(0xFF9E9E9E)
+val BackgroundGreen = Color(0xFFEFFCF4)
+val CardBorder = Color(0xFFD6F5E3)
