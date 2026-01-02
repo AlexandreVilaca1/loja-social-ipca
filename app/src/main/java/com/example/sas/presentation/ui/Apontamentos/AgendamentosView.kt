@@ -1,4 +1,4 @@
-package com.example.sas.presentation.ui.Agendamentos
+package com.example.sas.presentation.ui.Apontamentos
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.sas.domain.common.dummyAgendamentos
-import com.example.sas.domain.models.Agendamento
 import com.example.sas.presentation.ui.theme.BackgroundGreen
 import com.example.sas.presentation.ui.theme.TextDark
 

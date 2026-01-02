@@ -1,0 +1,79 @@
+# ============================
+# PRODUCT QUERIES
+# ============================
+
+# List all products with pagination
+query ListProducts($limit: Int = 8, $offset: Int = 0) @auth(level: PUBLIC, insecureReason: "Anyone can list products.") {
+  products(limit: $limit, offset: $offset, orderBy: [{ createdAt: DESC }]) {
+    id
+    name
+    unitOfMeasure
+    isActive
+    description
+    category {
+      id
+      name
+    }
+    createdAt
+    updateAt
+  }
+}
+
+# Get product by id
+query GetProductById($id: UUID!) @auth(level: PUBLIC, insecureReason: "Anyone can get a product by id.") {
+  product(id: $id) {
+    id
+    name
+    unitOfMeasure
+    isActive
+    description
+    category {
+      id
+      name
+      description
+    }
+    createdAt
+    updateAt
+  }
+}
+
+# Search products by name
+query SearchProducts($searchTerm: String, $limit: Int = 8, $offset: Int = 0) @auth(level: PUBLIC, insecureReason: "Anyone can search products.") {
+  products(
+    where: { name: { contains: $searchTerm } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ name: ASC }]
+  ) {
+    id
+    name
+    unitOfMeasure
+    isActive
+    description
+    category {
+      id
+      name
+    }
+    createdAt
+    updateAt
+  }
+}
+
+# List products by category
+query ListProductsByCategory($categoryId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: PUBLIC, insecureReason: "Anyone can list products by category.") {
+  products(
+    where: { category: { id: { eq: $categoryId } } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ name: ASC }]
+  ) {
+    id
+    name
+    unitOfMeasure
+    isActive
+    description
+    createdAt
+    updateAt
+  }
+}
+

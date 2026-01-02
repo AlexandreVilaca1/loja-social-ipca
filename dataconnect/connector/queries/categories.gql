@@ -1,0 +1,45 @@
+# ============================
+# CATEGORY QUERIES
+# ============================
+
+# List all categories with pagination
+query ListCategories($limit: Int = 8, $offset: Int = 0) @auth(level: PUBLIC, insecureReason: "Anyone can list categories.") {
+  categories(limit: $limit, offset: $offset, orderBy: [{ name: ASC }]) {
+    id
+    name
+    description
+    active
+    createdAt
+    updatedAt
+  }
+}
+
+# Get category by id
+query GetCategoryById($id: UUID!) @auth(level: PUBLIC, insecureReason: "Anyone can get a category by id.") {
+  category(id: $id) {
+    id
+    name
+    description
+    active
+    createdAt
+    updatedAt
+  }
+}
+
+# List active categories
+query ListActiveCategories($limit: Int = 8, $offset: Int = 0) @auth(level: PUBLIC, insecureReason: "Anyone can list active categories.") {
+  categories(
+    where: { active: { eq: true } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ name: ASC }]
+  ) {
+    id
+    name
+    description
+    active
+    createdAt
+    updatedAt
+  }
+}
+

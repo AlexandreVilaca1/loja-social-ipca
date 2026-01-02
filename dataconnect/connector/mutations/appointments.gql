@@ -1,0 +1,67 @@
+# ============================
+# APPOINTMENT MUTATIONS
+# ============================
+
+# Create a new appointment
+mutation CreateAppointment(
+  $appointmentDate: Date!,
+  $appointmentTime: String!,
+  $type: String!,
+  $observations: String,
+  $userId: User_Key,
+  $beneficiaryId: Beneficiary_Key,
+  $statusId: StatusType_Key
+) @auth(level: USER) {
+  appointment_insert(
+    data: {
+      appointmentDate: $appointmentDate,
+      appointmentTime: $appointmentTime,
+      type: $type,
+      observations: $observations,
+      user: $userId,
+      beneficiary: $beneficiaryId,
+      status: $statusId
+    }
+  )
+}
+
+# Update appointment
+mutation UpdateAppointment(
+  $id: UUID!,
+  $appointmentDate: Date,
+  $appointmentTime: String,
+  $type: String,
+  $observations: String,
+  $userId: User_Key,
+  $beneficiaryId: Beneficiary_Key,
+  $statusId: StatusType_Key
+) @auth(level: USER) {
+  appointment_update(
+    id: $id,
+    data: {
+      appointmentDate: $appointmentDate,
+      appointmentTime: $appointmentTime,
+      type: $type,
+      observations: $observations,
+      user: $userId,
+      beneficiary: $beneficiaryId,
+      status: $statusId
+    }
+  )
+}
+
+# Delete appointment
+mutation DeleteAppointment($id: UUID!) @auth(level: USER) {
+  appointment_delete(id: $id)
+}
+
+# Update appointment status
+mutation UpdateAppointmentStatus($id: UUID!, $statusId: StatusType_Key!) @auth(level: USER) {
+  appointment_update(
+    id: $id,
+    data: {
+      status: $statusId
+    }
+  )
+}
+

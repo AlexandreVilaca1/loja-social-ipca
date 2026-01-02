@@ -1,0 +1,55 @@
+# ============================
+# DISTRIBUTION ITEM QUERIES
+# ============================
+
+# List distribution items by distribution
+query ListDistributionItemsByDistribution($distributionId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  distributionItems(
+    where: { distribution: { id: { eq: $distributionId } } }
+    limit: $limit
+    offset: $offset
+  ) {
+    distribution {
+      id
+      distributionDate
+    }
+    lot {
+      id
+      lotCode
+      product {
+        id
+        name
+        unitOfMeasure
+      }
+    }
+    quantity
+    observations
+    createdAt
+  }
+}
+
+# List distribution items by lot
+query ListDistributionItemsByLot($lotId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  distributionItems(
+    where: { lot: { id: { eq: $lotId } } }
+    limit: $limit
+    offset: $offset
+  ) {
+    distribution {
+      id
+      distributionDate
+      beneficiary {
+        id
+        fullName
+      }
+    }
+    lot {
+      id
+      lotCode
+    }
+    quantity
+    observations
+    createdAt
+  }
+}
+

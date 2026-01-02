@@ -1,0 +1,71 @@
+# ============================
+# BENEFICIARY MUTATIONS
+# ============================
+
+# Create a new beneficiary
+mutation CreateBeneficiary(
+  $fullName: String!,
+  $studentNumer: Int!,
+  $nif: String!,
+  $course: String!,
+  $isActive: Boolean!,
+  $contactNumber: String!,
+  $address: String,
+  $observations: String
+) @auth(level: USER) {
+  beneficiary_insert(
+    data: {
+      fullName: $fullName,
+      studentNumer: $studentNumer,
+      nif: $nif,
+      course: $course,
+      isActive: $isActive,
+      contactNumber: $contactNumber,
+      address: $address,
+      observations: $observations
+    }
+  )
+}
+
+# Update beneficiary
+mutation UpdateBeneficiary(
+  $id: UUID!,
+  $fullName: String,
+  $studentNumer: Int,
+  $nif: String,
+  $course: String,
+  $isActive: Boolean,
+  $contactNumber: String,
+  $address: String,
+  $observations: String
+) @auth(level: USER) {
+  beneficiary_update(
+    id: $id,
+    data: {
+      fullName: $fullName,
+      studentNumer: $studentNumer,
+      nif: $nif,
+      course: $course,
+      isActive: $isActive,
+      contactNumber: $contactNumber,
+      address: $address,
+      observations: $observations
+    }
+  )
+}
+
+# Delete beneficiary
+mutation DeleteBeneficiary($id: UUID!) @auth(level: USER) {
+  beneficiary_delete(id: $id)
+}
+
+# Deactivate beneficiary
+mutation DeactivateBeneficiary($id: UUID!) @auth(level: USER) {
+  beneficiary_update(
+    id: $id,
+    data: {
+      isActive: false
+    }
+  )
+}
+

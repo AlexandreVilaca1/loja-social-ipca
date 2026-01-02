@@ -1,0 +1,49 @@
+# ============================
+# PRODUCT MUTATIONS
+# ============================
+
+# Create a new product
+mutation CreateProduct(
+  $name: String!,
+  $unitOfMeasure: String!,
+  $isActive: Boolean!,
+  $description: String,
+  $categoryId: Category_Key
+) @auth(level: USER) {
+  product_insert(
+    data: {
+      name: $name,
+      unitOfMeasure: $unitOfMeasure,
+      isActive: $isActive,
+      description: $description,
+      category: $categoryId
+    }
+  )
+}
+
+# Update product
+mutation UpdateProduct(
+  $id: UUID!,
+  $name: String,
+  $unitOfMeasure: String,
+  $isActive: Boolean,
+  $description: String,
+  $categoryId: Category_Key
+) @auth(level: USER) {
+  product_update(
+    id: $id,
+    data: {
+      name: $name,
+      unitOfMeasure: $unitOfMeasure,
+      isActive: $isActive,
+      description: $description,
+      category: $categoryId
+    }
+  )
+}
+
+# Delete product
+mutation DeleteProduct($id: UUID!) @auth(level: USER) {
+  product_delete(id: $id)
+}
+

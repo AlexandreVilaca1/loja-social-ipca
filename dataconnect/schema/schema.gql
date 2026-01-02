@@ -1,0 +1,110 @@
+type User @table {
+  name: String!
+  email: String!
+  passwordHash: String!
+  role: String!
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+type Category @table {
+  name: String!
+  description: String
+  active: Boolean
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+type Product @table {
+  name: String!
+  unitOfMeasure: String!
+  isActive: Boolean!
+  description: String
+  category: Category
+  createdAt: Timestamp
+  updateAt: Timestamp
+}
+
+type Lot @table {
+  initialQuantity: Int!
+  currentQuantity: Int!
+  entryDate: Date!
+  lotCode: String!
+  expirationDate: Date!
+  observations: String
+  product: Product
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+type StatusType @table {
+  code: String!
+  description: String!
+  sortOrder: Int!
+  color: String
+  active: Boolean
+  createdAt: Timestamp
+}
+
+type Donation @table {
+  donationDate: Date!
+  donorName: String!
+  estimatedValue: Float!
+  donorContact: String
+  observations: String
+  appointment: Appointment
+  status: StatusType
+  createdAt: Timestamp
+  updatedAt:Timestamp
+}
+
+type Distribution @table {
+  distributionDate: Date!
+  observations: String
+  responsibleStaff: User
+  beneficiary: Beneficiary
+  status: StatusType
+  createdAt: Timestamp
+}
+
+type Beneficiary @table {
+  fullName: String!
+  studentNumer: Int!
+  nif: String!
+  course: String!
+  isActive: Boolean!
+  contactNumber: String!
+  address: String
+  observations: String
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+type Appointment @table {
+  appointmentDate: Date!
+  appointmentTime: String!
+  type: String!
+  observations: String
+  user: User
+  beneficiary: Beneficiary
+  status: StatusType
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+type DonationItem @table(key: ["donation", "lot"]) {
+  donation: Donation!
+  lot: Lot!
+  quantity: Int!
+  state: StatusType
+  observations: String
+  createdAt: Timestamp
+}
+
+type DistributionItem @table(key: ["distribution", "lot"]) {
+  distribution: Distribution!
+  lot: Lot!
+  quantity: Int!
+  observations: String
+  createdAt: Timestamp
+}

@@ -1,0 +1,48 @@
+# ============================
+# STATUS TYPE QUERIES
+# ============================
+
+# List all status types with pagination
+query ListStatusTypes($limit: Int = 8, $offset: Int = 0) @auth(level: PUBLIC, insecureReason: "Anyone can list status types.") {
+  statusTypes(limit: $limit, offset: $offset, orderBy: [{ sortOrder: ASC }]) {
+    id
+    code
+    description
+    sortOrder
+    color
+    active
+    createdAt
+  }
+}
+
+# Get status type by id
+query GetStatusTypeById($id: UUID!) @auth(level: PUBLIC, insecureReason: "Anyone can get a status type by id.") {
+  statusType(id: $id) {
+    id
+    code
+    description
+    sortOrder
+    color
+    active
+    createdAt
+  }
+}
+
+# List active status types
+query ListActiveStatusTypes($limit: Int = 8, $offset: Int = 0) @auth(level: PUBLIC, insecureReason: "Anyone can list active status types.") {
+  statusTypes(
+    where: { active: { eq: true } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ sortOrder: ASC }]
+  ) {
+    id
+    code
+    description
+    sortOrder
+    color
+    active
+    createdAt
+  }
+}
+

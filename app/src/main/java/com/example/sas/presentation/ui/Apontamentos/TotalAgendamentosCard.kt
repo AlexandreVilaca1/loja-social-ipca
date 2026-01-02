@@ -1,4 +1,4 @@
-package com.example.sas.presentation.ui.Agendamentos
+package com.example.sas.presentation.ui.Apontamentos
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.sas.presentation.ui.theme.CardBorder
 import com.example.sas.presentation.ui.theme.GreenPrimary
 import com.example.sas.presentation.ui.theme.TextDark

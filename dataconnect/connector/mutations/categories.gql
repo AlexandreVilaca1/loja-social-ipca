@@ -1,0 +1,41 @@
+# ============================
+# CATEGORY MUTATIONS
+# ============================
+
+# Create a new category
+mutation CreateCategory(
+  $name: String!,
+  $description: String,
+  $active: Boolean
+) @auth(level: USER) {
+  category_insert(
+    data: {
+      name: $name,
+      description: $description,
+      active: $active
+    }
+  )
+}
+
+# Update category
+mutation UpdateCategory(
+  $id: UUID!,
+  $name: String,
+  $description: String,
+  $active: Boolean
+) @auth(level: USER) {
+  category_update(
+    id: $id,
+    data: {
+      name: $name,
+      description: $description,
+      active: $active
+    }
+  )
+}
+
+# Delete category
+mutation DeleteCategory($id: UUID!) @auth(level: USER) {
+  category_delete(id: $id)
+}
+

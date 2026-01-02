@@ -1,0 +1,59 @@
+# ============================
+# DISTRIBUTION MUTATIONS
+# ============================
+
+# Create a new distribution
+mutation CreateDistribution(
+  $distributionDate: Date!,
+  $observations: String,
+  $responsibleStaffId: User_Key,
+  $beneficiaryId: Beneficiary_Key,
+  $statusId: StatusType_Key
+) @auth(level: USER) {
+  distribution_insert(
+    data: {
+      distributionDate: $distributionDate,
+      observations: $observations,
+      responsibleStaff: $responsibleStaffId,
+      beneficiary: $beneficiaryId,
+      status: $statusId
+    }
+  )
+}
+
+# Update distribution
+mutation UpdateDistribution(
+  $id: UUID!,
+  $distributionDate: Date,
+  $observations: String,
+  $responsibleStaffId: User_Key,
+  $beneficiaryId: Beneficiary_Key,
+  $statusId: StatusType_Key
+) @auth(level: USER) {
+  distribution_update(
+    id: $id,
+    data: {
+      distributionDate: $distributionDate,
+      observations: $observations,
+      responsibleStaff: $responsibleStaffId,
+      beneficiary: $beneficiaryId,
+      status: $statusId
+    }
+  )
+}
+
+# Delete distribution
+mutation DeleteDistribution($id: UUID!) @auth(level: USER) {
+  distribution_delete(id: $id)
+}
+
+# Update distribution status
+mutation UpdateDistributionStatus($id: UUID!, $statusId: StatusType_Key!) @auth(level: USER) {
+  distribution_update(
+    id: $id,
+    data: {
+      status: $statusId
+    }
+  )
+}
+

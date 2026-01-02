@@ -1,0 +1,79 @@
+# ============================
+# DISTRIBUTION QUERIES
+# ============================
+
+# List all distributions with pagination
+query ListDistributions($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  distributions(limit: $limit, offset: $offset, orderBy: [{ distributionDate: DESC }]) {
+    id
+    distributionDate
+    observations
+    responsibleStaff {
+      id
+      name
+    }
+    beneficiary {
+      id
+      fullName
+      studentNumer
+    }
+    status {
+      id
+      code
+      description
+    }
+    createdAt
+  }
+}
+
+# Get distribution by id
+query GetDistributionById($id: UUID!) @auth(level: USER) {
+  distribution(id: $id) {
+    id
+    distributionDate
+    observations
+    responsibleStaff {
+      id
+      name
+      email
+    }
+    beneficiary {
+      id
+      fullName
+      studentNumer
+      contactNumber
+    }
+    status {
+      id
+      code
+      description
+      color
+    }
+    createdAt
+  }
+}
+
+# List distributions by beneficiary
+query ListDistributionsByBeneficiary($beneficiaryId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  distributions(
+    where: { beneficiary: { id: { eq: $beneficiaryId } } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ distributionDate: DESC }]
+  ) {
+    id
+    distributionDate
+    observations
+    responsibleStaff {
+      id
+      name
+    }
+    status {
+      id
+      code
+      description
+    }
+    createdAt
+  }
+}
+

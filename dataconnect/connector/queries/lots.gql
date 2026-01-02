@@ -1,0 +1,89 @@
+# ============================
+# LOT QUERIES
+# ============================
+
+# List all lots with pagination
+query ListLots($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  lots(limit: $limit, offset: $offset, orderBy: [{ entryDate: DESC }]) {
+    id
+    initialQuantity
+    currentQuantity
+    entryDate
+    lotCode
+    expirationDate
+    observations
+    product {
+      id
+      name
+      unitOfMeasure
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Get lot by id
+query GetLotById($id: UUID!) @auth(level: USER) {
+  lot(id: $id) {
+    id
+    initialQuantity
+    currentQuantity
+    entryDate
+    lotCode
+    expirationDate
+    observations
+    product {
+      id
+      name
+      unitOfMeasure
+      description
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Search lots by code
+query SearchLots($lotCode: String, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  lots(
+    where: { lotCode: { contains: $lotCode } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ entryDate: DESC }]
+  ) {
+    id
+    initialQuantity
+    currentQuantity
+    entryDate
+    lotCode
+    expirationDate
+    observations
+    product {
+      id
+      name
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# List lots by product
+query ListLotsByProduct($productId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  lots(
+    where: { product: { id: { eq: $productId } } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ entryDate: DESC }]
+  ) {
+    id
+    initialQuantity
+    currentQuantity
+    entryDate
+    lotCode
+    expirationDate
+    observations
+    createdAt
+    updatedAt
+  }
+}
+
