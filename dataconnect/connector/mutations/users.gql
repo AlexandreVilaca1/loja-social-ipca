@@ -1,0 +1,43 @@
+# ============================
+# USER MUTATIONS
+# ============================
+
+# Create a new user
+mutation CreateUser(
+  $name: String!,
+  $email: String!,
+  $passwordHash: String!,
+  $role: String!
+) @auth(level: USER) {
+  user_insert(
+    data: {
+      name: $name,
+      email: $email,
+      passwordHash: $passwordHash,
+      role: $role
+    }
+  )
+}
+
+# Update user
+mutation UpdateUser(
+  $id: UUID!,
+  $name: String,
+  $email: String,
+  $role: String
+) @auth(level: USER) {
+  user_update(
+    id: $id,
+    data: {
+      name: $name,
+      email: $email,
+      role: $role
+    }
+  )
+}
+
+# Delete user
+mutation DeleteUser($id: UUID!) @auth(level: USER) {
+  user_delete(id: $id)
+}
+

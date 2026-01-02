@@ -4,7 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
     id("com.google.dagger.hilt.android")
-    id("org.jetbrains.kotlin.kapt") version "1.9.22"
+    id("org.jetbrains.kotlin.kapt") version "2.0.21"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -36,9 +37,20 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs += listOf(
+            "-Xjvm-default=all",
+            "-Xstring-concat=inline"
+        )
     }
     buildFeatures {
         compose = true
+    }
+
+    // Ensure UTF-8 encoding for all tasks
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = "11"
+        }
     }
 }
 
@@ -93,6 +105,15 @@ dependencies {
 
     // Add the dependencies for any other desired Firebase products
     implementation("com.google.firebase:firebase-auth")
+
+    // Firebase Data Connect + required runtime deps for generated SDK
+    implementation("com.google.firebase:firebase-dataconnect")
+
+    // Kotlin Serialization (used by generated Data Connect code)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // Coroutines (Data Connect execute() is suspend-friendly)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     // https://firebase.google.com/docs/android/setup#available-libraries
 

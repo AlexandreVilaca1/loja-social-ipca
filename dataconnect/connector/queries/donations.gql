@@ -1,0 +1,81 @@
+# ============================
+# DONATION QUERIES
+# ============================
+
+# List all donations with pagination
+query ListDonations($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  donations(limit: $limit, offset: $offset, orderBy: [{ donationDate: DESC }]) {
+    id
+    donationDate
+    donorName
+    estimatedValue
+    donorContact
+    observations
+    appointment {
+      id
+      appointmentDate
+      appointmentTime
+    }
+    status {
+      id
+      code
+      description
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Get donation by id
+query GetDonationById($id: UUID!) @auth(level: USER) {
+  donation(id: $id) {
+    id
+    donationDate
+    donorName
+    estimatedValue
+    donorContact
+    observations
+    appointment {
+      id
+      appointmentDate
+      appointmentTime
+      beneficiary {
+        id
+        fullName
+      }
+    }
+    status {
+      id
+      code
+      description
+      color
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Search donations by donor name
+query SearchDonations($donorName: String, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  donations(
+    where: { donorName: { contains: $donorName } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ donationDate: DESC }]
+  ) {
+    id
+    donationDate
+    donorName
+    estimatedValue
+    donorContact
+    observations
+    status {
+      id
+      code
+      description
+    }
+    createdAt
+    updatedAt
+  }
+}
+

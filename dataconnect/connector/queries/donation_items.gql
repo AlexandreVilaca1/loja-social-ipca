@@ -1,0 +1,62 @@
+# ============================
+# DONATION ITEM QUERIES
+# ============================
+
+# List donation items by donation
+query ListDonationItemsByDonation($donationId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  donationItems(
+    where: { donation: { id: { eq: $donationId } } }
+    limit: $limit
+    offset: $offset
+  ) {
+    donation {
+      id
+      donorName
+    }
+    lot {
+      id
+      lotCode
+      product {
+        id
+        name
+        unitOfMeasure
+      }
+    }
+    quantity
+    state {
+      id
+      code
+      description
+    }
+    observations
+    createdAt
+  }
+}
+
+# List donation items by lot
+query ListDonationItemsByLot($lotId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  donationItems(
+    where: { lot: { id: { eq: $lotId } } }
+    limit: $limit
+    offset: $offset
+  ) {
+    donation {
+      id
+      donorName
+      donationDate
+    }
+    lot {
+      id
+      lotCode
+    }
+    quantity
+    state {
+      id
+      code
+      description
+    }
+    observations
+    createdAt
+  }
+}
+

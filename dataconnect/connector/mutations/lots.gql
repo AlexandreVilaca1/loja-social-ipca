@@ -1,0 +1,67 @@
+# ============================
+# LOT MUTATIONS
+# ============================
+
+# Create a new lot
+mutation CreateLot(
+  $initialQuantity: Int!,
+  $currentQuantity: Int!,
+  $entryDate: Date!,
+  $lotCode: String!,
+  $expirationDate: Date!,
+  $observations: String,
+  $productId: Product_Key
+) @auth(level: USER) {
+  lot_insert(
+    data: {
+      initialQuantity: $initialQuantity,
+      currentQuantity: $currentQuantity,
+      entryDate: $entryDate,
+      lotCode: $lotCode,
+      expirationDate: $expirationDate,
+      observations: $observations,
+      product: $productId
+    }
+  )
+}
+
+# Update lot
+mutation UpdateLot(
+  $id: UUID!,
+  $initialQuantity: Int,
+  $currentQuantity: Int,
+  $entryDate: Date,
+  $lotCode: String,
+  $expirationDate: Date,
+  $observations: String,
+  $productId: Product_Key
+) @auth(level: USER) {
+  lot_update(
+    id: $id,
+    data: {
+      initialQuantity: $initialQuantity,
+      currentQuantity: $currentQuantity,
+      entryDate: $entryDate,
+      lotCode: $lotCode,
+      expirationDate: $expirationDate,
+      observations: $observations,
+      product: $productId
+    }
+  )
+}
+
+# Delete lot
+mutation DeleteLot($id: UUID!) @auth(level: USER) {
+  lot_delete(id: $id)
+}
+
+# Update lot quantity
+mutation UpdateLotQuantity($id: UUID!, $currentQuantity: Int!) @auth(level: USER) {
+  lot_update(
+    id: $id,
+    data: {
+      currentQuantity: $currentQuantity
+    }
+  )
+}
+

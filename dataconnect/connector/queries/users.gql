@@ -1,0 +1,50 @@
+# ============================
+# USER QUERIES
+# ============================
+
+# List all users with pagination
+query ListUsers($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  users(limit: $limit, offset: $offset, orderBy: [{ createdAt: DESC }]) {
+    id
+    name
+    email
+    role
+    createdAt
+    updatedAt
+  }
+}
+
+# Get user by id
+query GetUserById($id: UUID!) @auth(level: USER) {
+  user(id: $id) {
+    id
+    name
+    email
+    role
+    createdAt
+    updatedAt
+  }
+}
+
+# Search users by name or email
+query SearchUsers($searchTerm: String, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  users(
+    where: {
+      _or: [
+        { name: { contains: $searchTerm } },
+        { email: { contains: $searchTerm } }
+      ]
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ createdAt: DESC }]
+  ) {
+    id
+    name
+    email
+    role
+    createdAt
+    updatedAt
+  }
+}
+

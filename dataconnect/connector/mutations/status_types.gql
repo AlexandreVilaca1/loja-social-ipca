@@ -1,0 +1,49 @@
+# ============================
+# STATUS TYPE MUTATIONS
+# ============================
+
+# Create a new status type
+mutation CreateStatusType(
+  $code: String!,
+  $description: String!,
+  $sortOrder: Int!,
+  $color: String,
+  $active: Boolean
+) @auth(level: USER) {
+  statusType_insert(
+    data: {
+      code: $code,
+      description: $description,
+      sortOrder: $sortOrder,
+      color: $color,
+      active: $active
+    }
+  )
+}
+
+# Update status type
+mutation UpdateStatusType(
+  $id: UUID!,
+  $code: String,
+  $description: String,
+  $sortOrder: Int,
+  $color: String,
+  $active: Boolean
+) @auth(level: USER) {
+  statusType_update(
+    id: $id,
+    data: {
+      code: $code,
+      description: $description,
+      sortOrder: $sortOrder,
+      color: $color,
+      active: $active
+    }
+  )
+}
+
+# Delete status type
+mutation DeleteStatusType($id: UUID!) @auth(level: USER) {
+  statusType_delete(id: $id)
+}
+

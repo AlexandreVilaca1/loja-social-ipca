@@ -1,0 +1,67 @@
+# ============================
+# DONATION MUTATIONS
+# ============================
+
+# Create a new donation
+mutation CreateDonation(
+  $donationDate: Date!,
+  $donorName: String!,
+  $estimatedValue: Float!,
+  $donorContact: String,
+  $observations: String,
+  $appointmentId: Appointment_Key,
+  $statusId: StatusType_Key
+) @auth(level: USER) {
+  donation_insert(
+    data: {
+      donationDate: $donationDate,
+      donorName: $donorName,
+      estimatedValue: $estimatedValue,
+      donorContact: $donorContact,
+      observations: $observations,
+      appointment: $appointmentId,
+      status: $statusId
+    }
+  )
+}
+
+# Update donation
+mutation UpdateDonation(
+  $id: UUID!,
+  $donationDate: Date,
+  $donorName: String,
+  $estimatedValue: Float,
+  $donorContact: String,
+  $observations: String,
+  $appointmentId: Appointment_Key,
+  $statusId: StatusType_Key
+) @auth(level: USER) {
+  donation_update(
+    id: $id,
+    data: {
+      donationDate: $donationDate,
+      donorName: $donorName,
+      estimatedValue: $estimatedValue,
+      donorContact: $donorContact,
+      observations: $observations,
+      appointment: $appointmentId,
+      status: $statusId
+    }
+  )
+}
+
+# Delete donation
+mutation DeleteDonation($id: UUID!) @auth(level: USER) {
+  donation_delete(id: $id)
+}
+
+# Update donation status
+mutation UpdateDonationStatus($id: UUID!, $statusId: StatusType_Key!) @auth(level: USER) {
+  donation_update(
+    id: $id,
+    data: {
+      status: $statusId
+    }
+  )
+}
+

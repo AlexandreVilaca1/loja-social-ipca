@@ -1,0 +1,85 @@
+# ============================
+# BENEFICIARY QUERIES
+# ============================
+
+# List all beneficiaries with pagination
+query ListBeneficiaries($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  beneficiaries(limit: $limit, offset: $offset, orderBy: [{ fullName: ASC }]) {
+    id
+    fullName
+    studentNumer
+    nif
+    course
+    isActive
+    contactNumber
+    address
+    observations
+    createdAt
+    updatedAt
+  }
+}
+
+# Get beneficiary by id
+query GetBeneficiaryById($id: UUID!) @auth(level: USER) {
+  beneficiary(id: $id) {
+    id
+    fullName
+    studentNumer
+    nif
+    course
+    isActive
+    contactNumber
+    address
+    observations
+    createdAt
+    updatedAt
+  }
+}
+
+# Search beneficiaries by name or student number
+query SearchBeneficiaries($searchTerm: String, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  beneficiaries(
+    where: {
+      _or: [
+        { fullName: { contains: $searchTerm } },
+        { nif: { contains: $searchTerm } }
+      ]
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ fullName: ASC }]
+  ) {
+    id
+    fullName
+    studentNumer
+    nif
+    course
+    isActive
+    contactNumber
+    address
+    observations
+    createdAt
+    updatedAt
+  }
+}
+
+# List active beneficiaries
+query ListActiveBeneficiaries($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  beneficiaries(
+    where: { isActive: { eq: true } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ fullName: ASC }]
+  ) {
+    id
+    fullName
+    studentNumer
+    nif
+    course
+    contactNumber
+    address
+    createdAt
+    updatedAt
+  }
+}
+

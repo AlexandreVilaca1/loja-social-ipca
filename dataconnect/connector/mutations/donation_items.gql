@@ -1,0 +1,52 @@
+# ============================
+# DONATION ITEM MUTATIONS
+# ============================
+
+# Create a new donation item
+mutation CreateDonationItem(
+  $donationId: Donation_Key!,
+  $lotId: Lot_Key!,
+  $quantity: Int!,
+  $stateId: StatusType_Key,
+  $observations: String
+) @auth(level: USER) {
+  donationItem_insert(
+    data: {
+      donation: $donationId,
+      lot: $lotId,
+      quantity: $quantity,
+      state: $stateId,
+      observations: $observations
+    }
+  )
+}
+
+# Update donation item
+mutation UpdateDonationItem(
+  $donationId: UUID!,
+  $lotId: UUID!,
+  $quantity: Int,
+  $stateId: StatusType_Key,
+  $observations: String
+) @auth(level: USER) {
+  donationItem_update(
+    key: {
+      donationId: $donationId,
+      lotId: $lotId
+    },
+    data: {
+      quantity: $quantity,
+      state: $stateId,
+      observations: $observations
+    }
+  )
+}
+
+# Delete donation item
+mutation DeleteDonationItem($donationId: UUID!, $lotId: UUID!) @auth(level: USER) {
+  donationItem_delete(key: {
+    donationId: $donationId,
+    lotId: $lotId
+  })
+}
+

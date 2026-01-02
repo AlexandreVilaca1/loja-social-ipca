@@ -1,0 +1,29 @@
+connectorId: sas-connector
+queries:
+  - queries/users.gql
+  - queries/categories.gql
+  - queries/products.gql
+  - queries/lots.gql
+  - queries/status_types.gql
+  - queries/beneficiaries.gql
+  - queries/appointments.gql
+  - queries/donations.gql
+  - queries/distributions.gql
+  - queries/donation_items.gql
+  - queries/distribution_items.gql
+mutations:
+  - mutations/users.gql
+  - mutations/categories.gql
+  - mutations/products.gql
+  - mutations/lots.gql
+  - mutations/status_types.gql
+  - mutations/beneficiaries.gql
+  - mutations/appointments.gql
+  - mutations/donations.gql
+  - mutations/distributions.gql
+  - mutations/donation_items.gql
+  - mutations/distribution_items.gql
+generate:
+  kotlinSdk:
+    - outputDir: ../../app/src/main/kotlin
+      package: com.google.firebase.dataconnect.generated

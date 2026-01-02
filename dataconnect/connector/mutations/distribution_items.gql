@@ -1,0 +1,48 @@
+# ============================
+# DISTRIBUTION ITEM MUTATIONS
+# ============================
+
+# Create a new distribution item
+mutation CreateDistributionItem(
+  $distributionId: Distribution_Key!,
+  $lotId: Lot_Key!,
+  $quantity: Int!,
+  $observations: String
+) @auth(level: USER) {
+  distributionItem_insert(
+    data: {
+      distribution: $distributionId,
+      lot: $lotId,
+      quantity: $quantity,
+      observations: $observations
+    }
+  )
+}
+
+# Update distribution item
+mutation UpdateDistributionItem(
+  $distributionId: UUID!,
+  $lotId: UUID!,
+  $quantity: Int,
+  $observations: String
+) @auth(level: USER) {
+  distributionItem_update(
+    key: {
+      distributionId: $distributionId,
+      lotId: $lotId
+    },
+    data: {
+      quantity: $quantity,
+      observations: $observations
+    }
+  )
+}
+
+# Delete distribution item
+mutation DeleteDistributionItem($distributionId: UUID!, $lotId: UUID!) @auth(level: USER) {
+  distributionItem_delete(key: {
+    distributionId: $distributionId,
+    lotId: $lotId
+  })
+}
+

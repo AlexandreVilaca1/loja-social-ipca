@@ -1,4 +1,4 @@
-package com.example.sas.presentation.ui.Agendamentos
+package com.example.sas.presentation.ui.Apontamentos
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
