@@ -7,6 +7,9 @@ import com.example.sas.domain.models.Beneficiary
  * Represents both form inputs and screen data (list, loading, errors).
  */
 data class BeneficiariesUiState(
+    // Search
+    val searchQuery: String = "",
+
     // Form inputs
     val fullName: String = "",
     val studentNumber: String = "",
@@ -21,8 +24,14 @@ data class BeneficiariesUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
 
+    // Edit mode
+    val isEditMode: Boolean = false,
+    val editingBeneficiaryId: String? = null,
+
     // Results
     val createdBeneficiaryId: String? = null,
     val beneficiaries: List<Beneficiary> = emptyList()
 )
+
+
 

@@ -1,6 +1,7 @@
 package com.example.sas.data.datasource
 
 import com.google.firebase.dataconnect.generated.ListBeneficiariesQuery
+import com.google.firebase.dataconnect.generated.SearchBeneficiariesQuery
 import com.google.firebase.dataconnect.generated.SasConnectorConnector
 import com.google.firebase.dataconnect.generated.execute
 import com.google.firebase.dataconnect.generated.instance
@@ -25,6 +26,22 @@ class BeneficiariesDataSource @Inject constructor() {
         offset: Int
     ): List<ListBeneficiariesQuery.Data.BeneficiariesItem> {
         val result = connector.listBeneficiaries.execute {
+            this.limit = limit
+            this.offset = offset
+        }
+        return result.data.beneficiaries
+    }
+
+    /**
+     * Searches beneficiaries by name or NIF.
+     */
+    suspend fun searchBeneficiaries(
+        searchTerm: String,
+        limit: Int,
+        offset: Int
+    ): List<SearchBeneficiariesQuery.Data.BeneficiariesItem> {
+        val result = connector.searchBeneficiaries.execute {
+            this.searchTerm = searchTerm
             this.limit = limit
             this.offset = offset
         }
@@ -58,5 +75,34 @@ class BeneficiariesDataSource @Inject constructor() {
         }
         return result.data.beneficiary_insert.id.toString()
     }
+
+    /**
+     * Updates a beneficiary in Firebase Data Connect.
+     */
+    suspend fun updateBeneficiary(
+        id: String,
+        fullName: String,
+        studentNumber: Int,
+        nif: String,
+        course: String,
+        isActive: Boolean,
+        contactNumber: String,
+        address: String?,
+        observations: String?
+    ) {
+        connector.updateBeneficiary.execute(
+            id = java.util.UUID.fromString(id)
+        ) {
+            this.fullName = fullName
+            this.studentNumer = studentNumber
+            this.nif = nif
+            this.course = course
+            this.isActive = isActive
+            this.contactNumber = contactNumber
+            this.address = address
+            this.observations = observations
+        }
+    }
 }
+
 

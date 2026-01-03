@@ -1,11 +1,14 @@
 package com.example.sas.di
 
 import com.example.sas.data.datasource.AuthDataSource
-import com.example.sas.data.datasource.BeneficiariesDataSource
 import com.example.sas.data.repository.AuthRepositoryImpl
 import com.example.sas.data.repository.BeneficiariesRepositoryImpl
+import com.example.sas.data.repository.DistributionItemsRepositoryImpl
+import com.example.sas.data.repository.DistributionsRepositoryImpl
 import com.example.sas.domain.repositories.AuthRepository
 import com.example.sas.domain.repositories.BeneficiariesRepository
+import com.example.sas.domain.repositories.DistributionItemsRepository
+import com.example.sas.domain.repositories.DistributionsRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
 import dagger.Module
@@ -29,6 +32,18 @@ abstract class RepositoryBindsModule {
     abstract fun bindBeneficiariesRepository(
         impl: BeneficiariesRepositoryImpl
     ): BeneficiariesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDistributionsRepository(
+        impl: DistributionsRepositoryImpl
+    ): DistributionsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDistributionItemsRepository(
+        impl: DistributionItemsRepositoryImpl
+    ): DistributionItemsRepository
 }
 
 @Module
@@ -44,11 +59,5 @@ object AppProvidesModule {
     @Singleton
     fun provideAuthDataSource(auth: FirebaseAuth): AuthDataSource {
         return AuthDataSource(auth)
-    }
-
-    @Provides
-    @Singleton
-    fun provideBeneficiariesDataSource(): BeneficiariesDataSource {
-        return BeneficiariesDataSource()
     }
 }

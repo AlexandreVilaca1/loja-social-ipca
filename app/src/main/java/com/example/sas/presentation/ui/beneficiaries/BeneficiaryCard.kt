@@ -1,6 +1,7 @@
 package com.example.sas.presentation.ui.beneficiaries
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,10 +39,13 @@ import com.example.sas.presentation.ui.theme.GreenPrimary
 fun BeneficiaryCard(
     beneficiary: Beneficiary,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onClick: () -> Unit = {}
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, Color(0xFFD6F5E3)),
         colors = CardDefaults.cardColors(containerColor = Color.White)

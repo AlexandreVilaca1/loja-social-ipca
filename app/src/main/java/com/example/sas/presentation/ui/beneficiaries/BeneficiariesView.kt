@@ -1,8 +1,5 @@
 package com.example.sas.presentation.ui.beneficiaries
 
-// Teste de caracteres especiais: ação, função, informação, cedilha (ç), acentuação
-// Este arquivo deve suportar UTF-8 corretamente
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -46,24 +42,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.sas.presentation.ui.theme.BackgroundGreen
 import com.example.sas.presentation.ui.theme.GreenPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BeneficiariosView(
+fun BeneficiariesView(
     innerPadding: PaddingValues = PaddingValues(0.dp),
-    viewModel: BeneficiariosViewModel = hiltViewModel()
+    navController: NavController,
+    viewModel: BeneficiariesViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    var showCreateSheet by remember { mutableStateOf(false) }
+    var showFormSheet by remember { mutableStateOf(false) }
     val sheetState: SheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
 
     LaunchedEffect(Unit) {
         viewModel.refreshBeneficiaries()
+    }
+
+    LaunchedEffect(state.isEditMode) {
+        if (state.isEditMode) {
+            showFormSheet = true
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -74,12 +78,11 @@ fun BeneficiariosView(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            // Search bar
             OutlinedTextField(
-                value = "",
-                onValueChange = { /* TODO: implement search */ },
+                value = state.searchQuery,
+                onValueChange = { viewModel.setSearchQuery(it) },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Pesquisar...", color = Color.Gray) },
+                placeholder = { Text("Pesquisar por nome ou NIF...", color = Color.Gray) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
@@ -113,7 +116,6 @@ fun BeneficiariosView(
                     CircularProgressIndicator(color = GreenPrimary)
                 }
             } else {
-                // List with total count footer
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -121,8 +123,16 @@ fun BeneficiariosView(
                     items(state.beneficiaries) { b ->
                         BeneficiaryCard(
                             beneficiary = b,
-                            onEdit = { /* TODO */ },
-                            onDelete = { /* TODO */ }
+                            onEdit = {
+                                viewModel.startEditBeneficiary(b)
+                            },
+                            onDelete = { /* TODO */ },
+                            onClick = {
+                                // Navegar para histórico de distribuições
+                                navController.navigate(
+                                    "beneficiary/${b.id}/distributions?name=${b.fullName}"
+                                )
+                            }
                         )
                     }
 
@@ -148,7 +158,10 @@ fun BeneficiariosView(
             contentAlignment = Alignment.BottomEnd
         ) {
             FloatingActionButton(
-                onClick = { showCreateSheet = true },
+                onClick = {
+                    viewModel.cancelEdit() // Reset form
+                    showFormSheet = true
+                },
                 containerColor = GreenPrimary,
                 contentColor = Color.White
             ) {
@@ -157,9 +170,12 @@ fun BeneficiariosView(
         }
     }
 
-    if (showCreateSheet) {
+    if (showFormSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showCreateSheet = false },
+            onDismissRequest = {
+                showFormSheet = false
+                viewModel.cancelEdit()
+            },
             sheetState = sheetState
         ) {
             Column(
@@ -169,7 +185,10 @@ fun BeneficiariosView(
                     .padding(bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text("Adicionar beneficiário", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    if (state.isEditMode) "Editar beneficiário" else "Adicionar beneficiário",
+                    style = MaterialTheme.typography.titleLarge
+                )
 
                 if (state.createdBeneficiaryId != null) {
                     Text("Criado: ${state.createdBeneficiaryId}")
@@ -240,20 +259,27 @@ fun BeneficiariosView(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.isLoading,
                     onClick = {
-                        viewModel.createBeneficiary()
-                        showCreateSheet = false
+                        if (state.isEditMode) {
+                            viewModel.updateBeneficiary()
+                        } else {
+                            viewModel.createBeneficiary()
+                        }
+                        showFormSheet = false
                     },
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                         containerColor = GreenPrimary,
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Guardar")
+                    Text(if (state.isEditMode) "Atualizar" else "Guardar")
                 }
 
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { showCreateSheet = false }
+                    onClick = {
+                        showFormSheet = false
+                        viewModel.cancelEdit()
+                    }
                 ) {
                     Text("Cancelar")
                 }
