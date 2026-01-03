@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.sas.presentation.ui.BottomBar.BottomBar
 import com.example.sas.presentation.ui.appointments.AppointmentsView
 import com.example.sas.presentation.ui.appointments.AgendamentosViewModel
 import com.example.sas.presentation.ui.appointments.TotalAppointmentsView
@@ -70,6 +71,9 @@ fun HomeView() {
     ) {
 
         Scaffold(
+            bottomBar = {
+                BottomBar(navController)
+            },
             topBar = {
                 CenterAlignedTopAppBar(
                     modifier = Modifier.height(56.dp),
@@ -95,8 +99,8 @@ fun HomeView() {
                     ),
                     windowInsets = WindowInsets(0,0,0,0)
                 )
-
             }
+
         ) { padding ->
 
             Box(modifier = Modifier.padding(padding)) {
