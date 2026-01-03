@@ -1,0 +1,71 @@
+# ============================
+# CAMPAIGN MUTATIONS
+# ============================
+
+# Create a new campaign
+mutation CreateCampaign(
+  $campaignName: String!,
+  $campaignStartDate: Date!,
+  $campaignEndDate: Date!,
+  $address: String!,
+  $type: String!,
+  $observations: String,
+  $userId: User_Key,
+  $statusId: StatusType_Key
+) @auth(level: USER) {
+  campaign_insert(
+    data: {
+      campaignName: $campaignName,
+      campaignStartDate: $campaignStartDate,
+      campaignEndDate: $campaignEndDate,
+      address: $address,
+      type: $type,
+      observations: $observations,
+      user: $userId,
+      status: $statusId
+    }
+  )
+}
+
+# Update campaign
+mutation UpdateCampaign(
+  $id: UUID!,
+  $campaignName: String,
+  $campaignStartDate: Date,
+  $campaignEndDate: Date,
+  $address: String,
+  $type: String,
+  $observations: String,
+  $userId: User_Key,
+  $statusId: StatusType_Key
+) @auth(level: USER) {
+  campaign_update(
+    id: $id,
+    data: {
+      campaignName: $campaignName,
+      campaignStartDate: $campaignStartDate,
+      campaignEndDate: $campaignEndDate,
+      address: $address,
+      type: $type,
+      observations: $observations,
+      user: $userId,
+      status: $statusId
+    }
+  )
+}
+
+# Delete campaign
+mutation DeleteCampaign($id: UUID!) @auth(level: USER) {
+  campaign_delete(id: $id)
+}
+
+# Update campaign status
+mutation UpdateCampaignStatus($id: UUID!, $statusId: StatusType_Key!) @auth(level: USER) {
+  campaign_update(
+    id: $id,
+    data: {
+      status: $statusId
+    }
+  )
+}
+

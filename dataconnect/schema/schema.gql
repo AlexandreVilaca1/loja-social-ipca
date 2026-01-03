@@ -52,7 +52,7 @@ type Donation @table {
   estimatedValue: Float!
   donorContact: String
   observations: String
-  appointment: Appointment
+  campaign: Campaign
   status: StatusType
   createdAt: Timestamp
   updatedAt:Timestamp
@@ -80,9 +80,11 @@ type Beneficiary @table {
   updatedAt: Timestamp
 }
 
-type Appointment @table {
-  appointmentDate: Date!
-  appointmentTime: String!
+type Campaign @table {
+  campaignName: String!
+  campaignStartDate: Date!
+  campaignEndDate: Date!
+  address: String!
   type: String!
   observations: String
   user: User

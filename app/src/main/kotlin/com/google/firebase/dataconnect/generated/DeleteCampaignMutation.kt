@@ -14,11 +14,11 @@ package com.google.firebase.dataconnect.generated
 
 
 
-public interface DeleteAppointmentMutation :
+public interface DeleteCampaignMutation :
     com.google.firebase.dataconnect.generated.GeneratedMutation<
       SasConnectorConnector,
-      DeleteAppointmentMutation.Data,
-      DeleteAppointmentMutation.Variables
+      DeleteCampaignMutation.Data,
+      DeleteCampaignMutation.Variables
     >
 {
   
@@ -36,7 +36,7 @@ public interface DeleteAppointmentMutation :
     @kotlinx.serialization.Serializable
   public data class Data(
   
-    val appointment_delete: AppointmentKey?
+    val campaign_delete: CampaignKey?
   ) {
     
     
@@ -44,7 +44,7 @@ public interface DeleteAppointmentMutation :
   
 
   public companion object {
-    public val operationName: String = "DeleteAppointment"
+    public val operationName: String = "DeleteCampaign"
 
     public val dataDeserializer: kotlinx.serialization.DeserializationStrategy<Data> =
       kotlinx.serialization.serializer()
@@ -54,32 +54,32 @@ public interface DeleteAppointmentMutation :
   }
 }
 
-public fun DeleteAppointmentMutation.ref(
+public fun DeleteCampaignMutation.ref(
   
     id: java.util.UUID,
   
   
 ): com.google.firebase.dataconnect.MutationRef<
-    DeleteAppointmentMutation.Data,
-    DeleteAppointmentMutation.Variables
+    DeleteCampaignMutation.Data,
+    DeleteCampaignMutation.Variables
   > =
   ref(
     
-      DeleteAppointmentMutation.Variables(
+      DeleteCampaignMutation.Variables(
         id=id,
   
       )
     
   )
 
-public suspend fun DeleteAppointmentMutation.execute(
+public suspend fun DeleteCampaignMutation.execute(
   
     id: java.util.UUID,
   
   
   ): com.google.firebase.dataconnect.MutationResult<
-    DeleteAppointmentMutation.Data,
-    DeleteAppointmentMutation.Variables
+    DeleteCampaignMutation.Data,
+    DeleteCampaignMutation.Variables
   > =
   ref(
     

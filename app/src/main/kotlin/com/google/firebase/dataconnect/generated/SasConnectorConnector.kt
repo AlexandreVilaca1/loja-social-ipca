@@ -18,9 +18,9 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   override val dataConnect: com.google.firebase.dataconnect.FirebaseDataConnect
 
   
-    public val createAppointment: CreateAppointmentMutation
-  
     public val createBeneficiary: CreateBeneficiaryMutation
+  
+    public val createCampaign: CreateCampaignMutation
   
     public val createCategory: CreateCategoryMutation
   
@@ -42,9 +42,9 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val deactivateBeneficiary: DeactivateBeneficiaryMutation
   
-    public val deleteAppointment: DeleteAppointmentMutation
-  
     public val deleteBeneficiary: DeleteBeneficiaryMutation
+  
+    public val deleteCampaign: DeleteCampaignMutation
   
     public val deleteCategory: DeleteCategoryMutation
   
@@ -64,9 +64,9 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val deleteUser: DeleteUserMutation
   
-    public val getAppointmentById: GetAppointmentByIdQuery
-  
     public val getBeneficiaryById: GetBeneficiaryByIdQuery
+  
+    public val getCampaignById: GetCampaignByIdQuery
   
     public val getCategoryById: GetCategoryByIdQuery
   
@@ -88,11 +88,11 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val listActiveStatusTypes: ListActiveStatusTypesQuery
   
-    public val listAppointments: ListAppointmentsQuery
-  
-    public val listAppointmentsByDateRange: ListAppointmentsByDateRangeQuery
-  
     public val listBeneficiaries: ListBeneficiariesQuery
+  
+    public val listCampaigns: ListCampaignsQuery
+  
+    public val listCampaignsByDateRange: ListCampaignsByDateRangeQuery
   
     public val listCategories: ListCategoriesQuery
   
@@ -112,6 +112,8 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val listDonations: ListDonationsQuery
   
+    public val listDonationsByCampaign: ListDonationsByCampaignQuery
+  
     public val listLots: ListLotsQuery
   
     public val listLotsByProduct: ListLotsByProductQuery
@@ -126,6 +128,8 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val searchBeneficiaries: SearchBeneficiariesQuery
   
+    public val searchCampaigns: SearchCampaignsQuery
+  
     public val searchDonations: SearchDonationsQuery
   
     public val searchLots: SearchLotsQuery
@@ -134,11 +138,11 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val searchUsers: SearchUsersQuery
   
-    public val updateAppointment: UpdateAppointmentMutation
-  
-    public val updateAppointmentStatus: UpdateAppointmentStatusMutation
-  
     public val updateBeneficiary: UpdateBeneficiaryMutation
+  
+    public val updateCampaign: UpdateCampaignMutation
+  
+    public val updateCampaignStatus: UpdateCampaignStatusMutation
   
     public val updateCategory: UpdateCategoryMutation
   
@@ -203,12 +207,12 @@ private class SasConnectorConnectorImpl(
   override val dataConnect: com.google.firebase.dataconnect.FirebaseDataConnect
 ) : SasConnectorConnector {
   
-    override val createAppointment by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      CreateAppointmentMutationImpl(this)
-    }
-  
     override val createBeneficiary by lazy(LazyThreadSafetyMode.PUBLICATION) {
       CreateBeneficiaryMutationImpl(this)
+    }
+  
+    override val createCampaign by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      CreateCampaignMutationImpl(this)
     }
   
     override val createCategory by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -251,12 +255,12 @@ private class SasConnectorConnectorImpl(
       DeactivateBeneficiaryMutationImpl(this)
     }
   
-    override val deleteAppointment by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      DeleteAppointmentMutationImpl(this)
-    }
-  
     override val deleteBeneficiary by lazy(LazyThreadSafetyMode.PUBLICATION) {
       DeleteBeneficiaryMutationImpl(this)
+    }
+  
+    override val deleteCampaign by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      DeleteCampaignMutationImpl(this)
     }
   
     override val deleteCategory by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -295,12 +299,12 @@ private class SasConnectorConnectorImpl(
       DeleteUserMutationImpl(this)
     }
   
-    override val getAppointmentById by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      GetAppointmentByIdQueryImpl(this)
-    }
-  
     override val getBeneficiaryById by lazy(LazyThreadSafetyMode.PUBLICATION) {
       GetBeneficiaryByIdQueryImpl(this)
+    }
+  
+    override val getCampaignById by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      GetCampaignByIdQueryImpl(this)
     }
   
     override val getCategoryById by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -343,16 +347,16 @@ private class SasConnectorConnectorImpl(
       ListActiveStatusTypesQueryImpl(this)
     }
   
-    override val listAppointments by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      ListAppointmentsQueryImpl(this)
-    }
-  
-    override val listAppointmentsByDateRange by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      ListAppointmentsByDateRangeQueryImpl(this)
-    }
-  
     override val listBeneficiaries by lazy(LazyThreadSafetyMode.PUBLICATION) {
       ListBeneficiariesQueryImpl(this)
+    }
+  
+    override val listCampaigns by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListCampaignsQueryImpl(this)
+    }
+  
+    override val listCampaignsByDateRange by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListCampaignsByDateRangeQueryImpl(this)
     }
   
     override val listCategories by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -391,6 +395,10 @@ private class SasConnectorConnectorImpl(
       ListDonationsQueryImpl(this)
     }
   
+    override val listDonationsByCampaign by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListDonationsByCampaignQueryImpl(this)
+    }
+  
     override val listLots by lazy(LazyThreadSafetyMode.PUBLICATION) {
       ListLotsQueryImpl(this)
     }
@@ -419,6 +427,10 @@ private class SasConnectorConnectorImpl(
       SearchBeneficiariesQueryImpl(this)
     }
   
+    override val searchCampaigns by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      SearchCampaignsQueryImpl(this)
+    }
+  
     override val searchDonations by lazy(LazyThreadSafetyMode.PUBLICATION) {
       SearchDonationsQueryImpl(this)
     }
@@ -435,16 +447,16 @@ private class SasConnectorConnectorImpl(
       SearchUsersQueryImpl(this)
     }
   
-    override val updateAppointment by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      UpdateAppointmentMutationImpl(this)
-    }
-  
-    override val updateAppointmentStatus by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      UpdateAppointmentStatusMutationImpl(this)
-    }
-  
     override val updateBeneficiary by lazy(LazyThreadSafetyMode.PUBLICATION) {
       UpdateBeneficiaryMutationImpl(this)
+    }
+  
+    override val updateCampaign by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      UpdateCampaignMutationImpl(this)
+    }
+  
+    override val updateCampaignStatus by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      UpdateCampaignStatusMutationImpl(this)
     }
   
     override val updateCategory by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -503,8 +515,8 @@ private class SasConnectorConnectorImpl(
   @com.google.firebase.dataconnect.ExperimentalFirebaseDataConnect
   override fun mutations(): List<com.google.firebase.dataconnect.generated.GeneratedMutation<SasConnectorConnector, *, *>> =
     listOf(
-      createAppointment,
-        createBeneficiary,
+      createBeneficiary,
+        createCampaign,
         createCategory,
         createDistribution,
         createDistributionItem,
@@ -515,8 +527,8 @@ private class SasConnectorConnectorImpl(
         createStatusType,
         createUser,
         deactivateBeneficiary,
-        deleteAppointment,
         deleteBeneficiary,
+        deleteCampaign,
         deleteCategory,
         deleteDistribution,
         deleteDistributionItem,
@@ -526,9 +538,9 @@ private class SasConnectorConnectorImpl(
         deleteProduct,
         deleteStatusType,
         deleteUser,
-        updateAppointment,
-        updateAppointmentStatus,
         updateBeneficiary,
+        updateCampaign,
+        updateCampaignStatus,
         updateCategory,
         updateDistribution,
         updateDistributionItem,
@@ -547,8 +559,8 @@ private class SasConnectorConnectorImpl(
   @com.google.firebase.dataconnect.ExperimentalFirebaseDataConnect
   override fun queries(): List<com.google.firebase.dataconnect.generated.GeneratedQuery<SasConnectorConnector, *, *>> =
     listOf(
-      getAppointmentById,
-        getBeneficiaryById,
+      getBeneficiaryById,
+        getCampaignById,
         getCategoryById,
         getDistributionById,
         getDonationById,
@@ -559,9 +571,9 @@ private class SasConnectorConnectorImpl(
         listActiveBeneficiaries,
         listActiveCategories,
         listActiveStatusTypes,
-        listAppointments,
-        listAppointmentsByDateRange,
         listBeneficiaries,
+        listCampaigns,
+        listCampaignsByDateRange,
         listCategories,
         listDistributionItemsByDistribution,
         listDistributionItemsByLot,
@@ -571,6 +583,7 @@ private class SasConnectorConnectorImpl(
         listDonationItemsByDonation,
         listDonationItemsByLot,
         listDonations,
+        listDonationsByCampaign,
         listLots,
         listLotsByProduct,
         listProducts,
@@ -578,6 +591,7 @@ private class SasConnectorConnectorImpl(
         listStatusTypes,
         listUsers,
         searchBeneficiaries,
+        searchCampaigns,
         searchDonations,
         searchLots,
         searchProducts,
@@ -717,21 +731,6 @@ private open class SasConnectorConnectorGeneratedMutationImpl<Data, Variables>(
 
 
 
-private class CreateAppointmentMutationImpl(
-  connector: SasConnectorConnector
-):
-  CreateAppointmentMutation,
-  SasConnectorConnectorGeneratedMutationImpl<
-      CreateAppointmentMutation.Data,
-      CreateAppointmentMutation.Variables
-  >(
-    connector,
-    CreateAppointmentMutation.Companion.operationName,
-    CreateAppointmentMutation.Companion.dataDeserializer,
-    CreateAppointmentMutation.Companion.variablesSerializer,
-  )
-
-
 private class CreateBeneficiaryMutationImpl(
   connector: SasConnectorConnector
 ):
@@ -744,6 +743,21 @@ private class CreateBeneficiaryMutationImpl(
     CreateBeneficiaryMutation.Companion.operationName,
     CreateBeneficiaryMutation.Companion.dataDeserializer,
     CreateBeneficiaryMutation.Companion.variablesSerializer,
+  )
+
+
+private class CreateCampaignMutationImpl(
+  connector: SasConnectorConnector
+):
+  CreateCampaignMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      CreateCampaignMutation.Data,
+      CreateCampaignMutation.Variables
+  >(
+    connector,
+    CreateCampaignMutation.Companion.operationName,
+    CreateCampaignMutation.Companion.dataDeserializer,
+    CreateCampaignMutation.Companion.variablesSerializer,
   )
 
 
@@ -897,21 +911,6 @@ private class DeactivateBeneficiaryMutationImpl(
   )
 
 
-private class DeleteAppointmentMutationImpl(
-  connector: SasConnectorConnector
-):
-  DeleteAppointmentMutation,
-  SasConnectorConnectorGeneratedMutationImpl<
-      DeleteAppointmentMutation.Data,
-      DeleteAppointmentMutation.Variables
-  >(
-    connector,
-    DeleteAppointmentMutation.Companion.operationName,
-    DeleteAppointmentMutation.Companion.dataDeserializer,
-    DeleteAppointmentMutation.Companion.variablesSerializer,
-  )
-
-
 private class DeleteBeneficiaryMutationImpl(
   connector: SasConnectorConnector
 ):
@@ -924,6 +923,21 @@ private class DeleteBeneficiaryMutationImpl(
     DeleteBeneficiaryMutation.Companion.operationName,
     DeleteBeneficiaryMutation.Companion.dataDeserializer,
     DeleteBeneficiaryMutation.Companion.variablesSerializer,
+  )
+
+
+private class DeleteCampaignMutationImpl(
+  connector: SasConnectorConnector
+):
+  DeleteCampaignMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      DeleteCampaignMutation.Data,
+      DeleteCampaignMutation.Variables
+  >(
+    connector,
+    DeleteCampaignMutation.Companion.operationName,
+    DeleteCampaignMutation.Companion.dataDeserializer,
+    DeleteCampaignMutation.Companion.variablesSerializer,
   )
 
 
@@ -1062,21 +1076,6 @@ private class DeleteUserMutationImpl(
   )
 
 
-private class GetAppointmentByIdQueryImpl(
-  connector: SasConnectorConnector
-):
-  GetAppointmentByIdQuery,
-  SasConnectorConnectorGeneratedQueryImpl<
-      GetAppointmentByIdQuery.Data,
-      GetAppointmentByIdQuery.Variables
-  >(
-    connector,
-    GetAppointmentByIdQuery.Companion.operationName,
-    GetAppointmentByIdQuery.Companion.dataDeserializer,
-    GetAppointmentByIdQuery.Companion.variablesSerializer,
-  )
-
-
 private class GetBeneficiaryByIdQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -1089,6 +1088,21 @@ private class GetBeneficiaryByIdQueryImpl(
     GetBeneficiaryByIdQuery.Companion.operationName,
     GetBeneficiaryByIdQuery.Companion.dataDeserializer,
     GetBeneficiaryByIdQuery.Companion.variablesSerializer,
+  )
+
+
+private class GetCampaignByIdQueryImpl(
+  connector: SasConnectorConnector
+):
+  GetCampaignByIdQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      GetCampaignByIdQuery.Data,
+      GetCampaignByIdQuery.Variables
+  >(
+    connector,
+    GetCampaignByIdQuery.Companion.operationName,
+    GetCampaignByIdQuery.Companion.dataDeserializer,
+    GetCampaignByIdQuery.Companion.variablesSerializer,
   )
 
 
@@ -1242,36 +1256,6 @@ private class ListActiveStatusTypesQueryImpl(
   )
 
 
-private class ListAppointmentsQueryImpl(
-  connector: SasConnectorConnector
-):
-  ListAppointmentsQuery,
-  SasConnectorConnectorGeneratedQueryImpl<
-      ListAppointmentsQuery.Data,
-      ListAppointmentsQuery.Variables
-  >(
-    connector,
-    ListAppointmentsQuery.Companion.operationName,
-    ListAppointmentsQuery.Companion.dataDeserializer,
-    ListAppointmentsQuery.Companion.variablesSerializer,
-  )
-
-
-private class ListAppointmentsByDateRangeQueryImpl(
-  connector: SasConnectorConnector
-):
-  ListAppointmentsByDateRangeQuery,
-  SasConnectorConnectorGeneratedQueryImpl<
-      ListAppointmentsByDateRangeQuery.Data,
-      ListAppointmentsByDateRangeQuery.Variables
-  >(
-    connector,
-    ListAppointmentsByDateRangeQuery.Companion.operationName,
-    ListAppointmentsByDateRangeQuery.Companion.dataDeserializer,
-    ListAppointmentsByDateRangeQuery.Companion.variablesSerializer,
-  )
-
-
 private class ListBeneficiariesQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -1284,6 +1268,36 @@ private class ListBeneficiariesQueryImpl(
     ListBeneficiariesQuery.Companion.operationName,
     ListBeneficiariesQuery.Companion.dataDeserializer,
     ListBeneficiariesQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListCampaignsQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListCampaignsQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListCampaignsQuery.Data,
+      ListCampaignsQuery.Variables
+  >(
+    connector,
+    ListCampaignsQuery.Companion.operationName,
+    ListCampaignsQuery.Companion.dataDeserializer,
+    ListCampaignsQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListCampaignsByDateRangeQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListCampaignsByDateRangeQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListCampaignsByDateRangeQuery.Data,
+      ListCampaignsByDateRangeQuery.Variables
+  >(
+    connector,
+    ListCampaignsByDateRangeQuery.Companion.operationName,
+    ListCampaignsByDateRangeQuery.Companion.dataDeserializer,
+    ListCampaignsByDateRangeQuery.Companion.variablesSerializer,
   )
 
 
@@ -1422,6 +1436,21 @@ private class ListDonationsQueryImpl(
   )
 
 
+private class ListDonationsByCampaignQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListDonationsByCampaignQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListDonationsByCampaignQuery.Data,
+      ListDonationsByCampaignQuery.Variables
+  >(
+    connector,
+    ListDonationsByCampaignQuery.Companion.operationName,
+    ListDonationsByCampaignQuery.Companion.dataDeserializer,
+    ListDonationsByCampaignQuery.Companion.variablesSerializer,
+  )
+
+
 private class ListLotsQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -1527,6 +1556,21 @@ private class SearchBeneficiariesQueryImpl(
   )
 
 
+private class SearchCampaignsQueryImpl(
+  connector: SasConnectorConnector
+):
+  SearchCampaignsQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      SearchCampaignsQuery.Data,
+      SearchCampaignsQuery.Variables
+  >(
+    connector,
+    SearchCampaignsQuery.Companion.operationName,
+    SearchCampaignsQuery.Companion.dataDeserializer,
+    SearchCampaignsQuery.Companion.variablesSerializer,
+  )
+
+
 private class SearchDonationsQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -1587,36 +1631,6 @@ private class SearchUsersQueryImpl(
   )
 
 
-private class UpdateAppointmentMutationImpl(
-  connector: SasConnectorConnector
-):
-  UpdateAppointmentMutation,
-  SasConnectorConnectorGeneratedMutationImpl<
-      UpdateAppointmentMutation.Data,
-      UpdateAppointmentMutation.Variables
-  >(
-    connector,
-    UpdateAppointmentMutation.Companion.operationName,
-    UpdateAppointmentMutation.Companion.dataDeserializer,
-    UpdateAppointmentMutation.Companion.variablesSerializer,
-  )
-
-
-private class UpdateAppointmentStatusMutationImpl(
-  connector: SasConnectorConnector
-):
-  UpdateAppointmentStatusMutation,
-  SasConnectorConnectorGeneratedMutationImpl<
-      UpdateAppointmentStatusMutation.Data,
-      UpdateAppointmentStatusMutation.Variables
-  >(
-    connector,
-    UpdateAppointmentStatusMutation.Companion.operationName,
-    UpdateAppointmentStatusMutation.Companion.dataDeserializer,
-    UpdateAppointmentStatusMutation.Companion.variablesSerializer,
-  )
-
-
 private class UpdateBeneficiaryMutationImpl(
   connector: SasConnectorConnector
 ):
@@ -1629,6 +1643,36 @@ private class UpdateBeneficiaryMutationImpl(
     UpdateBeneficiaryMutation.Companion.operationName,
     UpdateBeneficiaryMutation.Companion.dataDeserializer,
     UpdateBeneficiaryMutation.Companion.variablesSerializer,
+  )
+
+
+private class UpdateCampaignMutationImpl(
+  connector: SasConnectorConnector
+):
+  UpdateCampaignMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      UpdateCampaignMutation.Data,
+      UpdateCampaignMutation.Variables
+  >(
+    connector,
+    UpdateCampaignMutation.Companion.operationName,
+    UpdateCampaignMutation.Companion.dataDeserializer,
+    UpdateCampaignMutation.Companion.variablesSerializer,
+  )
+
+
+private class UpdateCampaignStatusMutationImpl(
+  connector: SasConnectorConnector
+):
+  UpdateCampaignStatusMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      UpdateCampaignStatusMutation.Data,
+      UpdateCampaignStatusMutation.Variables
+  >(
+    connector,
+    UpdateCampaignStatusMutation.Companion.operationName,
+    UpdateCampaignStatusMutation.Companion.dataDeserializer,
+    UpdateCampaignStatusMutation.Companion.variablesSerializer,
   )
 
 

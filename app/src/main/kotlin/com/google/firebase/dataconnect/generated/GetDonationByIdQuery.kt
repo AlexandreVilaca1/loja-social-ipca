@@ -52,7 +52,7 @@ public interface GetDonationByIdQuery :
     val estimatedValue: Double,
     val donorContact: String?,
     val observations: String?,
-    val appointment: Appointment?,
+    val campaign: Campaign?,
     val status: Status?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?,
     val updatedAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?
@@ -60,11 +60,12 @@ public interface GetDonationByIdQuery :
     
       
         @kotlinx.serialization.Serializable
-  public data class Appointment(
+  public data class Campaign(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val appointmentDate: com.google.firebase.dataconnect.LocalDate,
-    val appointmentTime: String
+    val campaignName: String,
+    val campaignStartDate: com.google.firebase.dataconnect.LocalDate,
+    val campaignEndDate: com.google.firebase.dataconnect.LocalDate
   ) {
     
     

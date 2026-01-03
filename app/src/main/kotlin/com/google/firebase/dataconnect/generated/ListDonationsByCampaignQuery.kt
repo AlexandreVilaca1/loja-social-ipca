@@ -17,19 +17,18 @@ import kotlinx.coroutines.flow.filterNotNull as _flow_filterNotNull
 import kotlinx.coroutines.flow.map as _flow_map
 
 
-public interface ListAppointmentsByDateRangeQuery :
+public interface ListDonationsByCampaignQuery :
     com.google.firebase.dataconnect.generated.GeneratedQuery<
       SasConnectorConnector,
-      ListAppointmentsByDateRangeQuery.Data,
-      ListAppointmentsByDateRangeQuery.Variables
+      ListDonationsByCampaignQuery.Data,
+      ListDonationsByCampaignQuery.Variables
     >
 {
   
     @kotlinx.serialization.Serializable
   public data class Variables(
   
-    val startDate: com.google.firebase.dataconnect.LocalDate,
-    val endDate: com.google.firebase.dataconnect.LocalDate,
+    val campaignId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val limit: com.google.firebase.dataconnect.OptionalVariable<Int?>,
     val offset: com.google.firebase.dataconnect.OptionalVariable<Int?>
   ) {
@@ -40,8 +39,7 @@ public interface ListAppointmentsByDateRangeQuery :
 
       @BuilderDsl
       public interface Builder {
-        public var startDate: com.google.firebase.dataconnect.LocalDate
-        public var endDate: com.google.firebase.dataconnect.LocalDate
+        public var campaignId: java.util.UUID
         public var limit: Int?
         public var offset: Int?
         
@@ -50,11 +48,10 @@ public interface ListAppointmentsByDateRangeQuery :
       public companion object {
         @Suppress("NAME_SHADOWING")
         public fun build(
-          startDate: com.google.firebase.dataconnect.LocalDate,endDate: com.google.firebase.dataconnect.LocalDate,
+          campaignId: java.util.UUID,
           block_: Builder.() -> Unit
         ): Variables {
-          var startDate= startDate
-            var endDate= endDate
+          var campaignId= campaignId
             var limit: com.google.firebase.dataconnect.OptionalVariable<Int?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var offset: com.google.firebase.dataconnect.OptionalVariable<Int?> =
@@ -62,13 +59,9 @@ public interface ListAppointmentsByDateRangeQuery :
             
 
           return object : Builder {
-            override var startDate: com.google.firebase.dataconnect.LocalDate
+            override var campaignId: java.util.UUID
               get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { startDate = value_ }
-              
-            override var endDate: com.google.firebase.dataconnect.LocalDate
-              get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { endDate = value_ }
+              set(value_) { campaignId = value_ }
               
             override var limit: Int?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
@@ -82,7 +75,7 @@ public interface ListAppointmentsByDateRangeQuery :
           }.apply(block_)
           .let {
             Variables(
-              startDate=startDate,endDate=endDate,limit=limit,offset=offset,
+              campaignId=campaignId,limit=limit,offset=offset,
             )
           }
         }
@@ -95,17 +88,18 @@ public interface ListAppointmentsByDateRangeQuery :
     @kotlinx.serialization.Serializable
   public data class Data(
   
-    val appointments: List<AppointmentsItem>
+    val donations: List<DonationsItem>
   ) {
     
       
         @kotlinx.serialization.Serializable
-  public data class AppointmentsItem(
+  public data class DonationsItem(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val appointmentDate: com.google.firebase.dataconnect.LocalDate,
-    val appointmentTime: String,
-    val type: String,
+    val donationDate: com.google.firebase.dataconnect.LocalDate,
+    val donorName: String,
+    val estimatedValue: Double,
+    val donorContact: String?,
     val observations: String?,
     val status: Status?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?,
@@ -134,7 +128,7 @@ public interface ListAppointmentsByDateRangeQuery :
   
 
   public companion object {
-    public val operationName: String = "ListAppointmentsByDateRange"
+    public val operationName: String = "ListDonationsByCampaign"
 
     public val dataDeserializer: kotlinx.serialization.DeserializationStrategy<Data> =
       kotlinx.serialization.serializer()
@@ -144,55 +138,55 @@ public interface ListAppointmentsByDateRangeQuery :
   }
 }
 
-public fun ListAppointmentsByDateRangeQuery.ref(
+public fun ListDonationsByCampaignQuery.ref(
   
-    startDate: com.google.firebase.dataconnect.LocalDate,endDate: com.google.firebase.dataconnect.LocalDate,
+    campaignId: java.util.UUID,
   
-    block_: ListAppointmentsByDateRangeQuery.Variables.Builder.() -> Unit = {}
+    block_: ListDonationsByCampaignQuery.Variables.Builder.() -> Unit = {}
   
 ): com.google.firebase.dataconnect.QueryRef<
-    ListAppointmentsByDateRangeQuery.Data,
-    ListAppointmentsByDateRangeQuery.Variables
+    ListDonationsByCampaignQuery.Data,
+    ListDonationsByCampaignQuery.Variables
   > =
   ref(
     
-      ListAppointmentsByDateRangeQuery.Variables.build(
-        startDate=startDate,endDate=endDate,
+      ListDonationsByCampaignQuery.Variables.build(
+        campaignId=campaignId,
   
     block_
       )
     
   )
 
-public suspend fun ListAppointmentsByDateRangeQuery.execute(
+public suspend fun ListDonationsByCampaignQuery.execute(
   
-    startDate: com.google.firebase.dataconnect.LocalDate,endDate: com.google.firebase.dataconnect.LocalDate,
+    campaignId: java.util.UUID,
   
-    block_: ListAppointmentsByDateRangeQuery.Variables.Builder.() -> Unit = {}
+    block_: ListDonationsByCampaignQuery.Variables.Builder.() -> Unit = {}
   
   ): com.google.firebase.dataconnect.QueryResult<
-    ListAppointmentsByDateRangeQuery.Data,
-    ListAppointmentsByDateRangeQuery.Variables
+    ListDonationsByCampaignQuery.Data,
+    ListDonationsByCampaignQuery.Variables
   > =
   ref(
     
-      startDate=startDate,endDate=endDate,
+      campaignId=campaignId,
   
     block_
     
   ).execute()
 
 
-  public fun ListAppointmentsByDateRangeQuery.flow(
+  public fun ListDonationsByCampaignQuery.flow(
     
-      startDate: com.google.firebase.dataconnect.LocalDate,endDate: com.google.firebase.dataconnect.LocalDate,
+      campaignId: java.util.UUID,
   
-    block_: ListAppointmentsByDateRangeQuery.Variables.Builder.() -> Unit = {}
+    block_: ListDonationsByCampaignQuery.Variables.Builder.() -> Unit = {}
     
-    ): kotlinx.coroutines.flow.Flow<ListAppointmentsByDateRangeQuery.Data> =
+    ): kotlinx.coroutines.flow.Flow<ListDonationsByCampaignQuery.Data> =
     ref(
         
-          startDate=startDate,endDate=endDate,
+          campaignId=campaignId,
   
     block_
         

@@ -31,7 +31,7 @@ public interface UpdateDonationMutation :
     val estimatedValue: com.google.firebase.dataconnect.OptionalVariable<Double?>,
     val donorContact: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>,
-    val appointmentId: com.google.firebase.dataconnect.OptionalVariable<AppointmentKey?>,
+    val campaignId: com.google.firebase.dataconnect.OptionalVariable<CampaignKey?>,
     val statusId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?>
   ) {
     
@@ -47,7 +47,7 @@ public interface UpdateDonationMutation :
         public var estimatedValue: Double?
         public var donorContact: String?
         public var observations: String?
-        public var appointmentId: AppointmentKey?
+        public var campaignId: CampaignKey?
         public var statusId: StatusTypeKey?
         
       }
@@ -69,7 +69,7 @@ public interface UpdateDonationMutation :
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var observations: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
-            var appointmentId: com.google.firebase.dataconnect.OptionalVariable<AppointmentKey?> =
+            var campaignId: com.google.firebase.dataconnect.OptionalVariable<CampaignKey?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var statusId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
@@ -100,9 +100,9 @@ public interface UpdateDonationMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { observations = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
               
-            override var appointmentId: AppointmentKey?
+            override var campaignId: CampaignKey?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { appointmentId = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
+              set(value_) { campaignId = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
               
             override var statusId: StatusTypeKey?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
@@ -112,7 +112,7 @@ public interface UpdateDonationMutation :
           }.apply(block_)
           .let {
             Variables(
-              id=id,donationDate=donationDate,donorName=donorName,estimatedValue=estimatedValue,donorContact=donorContact,observations=observations,appointmentId=appointmentId,statusId=statusId,
+              id=id,donationDate=donationDate,donorName=donorName,estimatedValue=estimatedValue,donorContact=donorContact,observations=observations,campaignId=campaignId,statusId=statusId,
             )
           }
         }

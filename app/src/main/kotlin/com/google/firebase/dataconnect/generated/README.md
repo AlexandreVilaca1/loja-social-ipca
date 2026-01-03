@@ -80,21 +80,21 @@ val connector: SasConnectorConnector = SasConnectorConnector.getInstance(
 ### SasConnectorConnector - Query and Mutation Properties
 
 The `sas-connector` Data Connect connector defines
-35 queries and
+37 queries and
 38 mutations,
-a total of 73 operations.
+a total of 75 operations.
 Each of these operations is exposed
 as a property of [SasConnectorConnector].
 
 
 An example of the property for a query
-is the query named "GetAppointmentById",
-which can be accessed via the [SasConnectorConnector.getAppointmentById] property.
+is the query named "GetBeneficiaryById",
+which can be accessed via the [SasConnectorConnector.getBeneficiaryById] property.
 
 
 An example of the property for a mutation
-is the mutation named "CreateAppointment",
-which can be accessed via the [SasConnectorConnector.createAppointment] property.
+is the mutation named "CreateBeneficiary",
+which can be accessed via the [SasConnectorConnector.createBeneficiary] property.
 
 
 ### SasConnectorConnector - The `dataConnect` Property
@@ -173,14 +173,14 @@ last argument of the `execute()` method.
 If a query has _required_ variables then they must be specified as
 arguments to the `execute()` method.
 
-For example, the "ListAppointmentsByDateRange" query has 2 required variables ("startDate" and "endDate")
-and can be executed via the [SasConnectorConnector.listAppointmentsByDateRange]
+For example, the "ListCampaignsByDateRange" query has 2 required variables ("startDate" and "endDate")
+and can be executed via the [SasConnectorConnector.listCampaignsByDateRange]
 property as follows:
 
 ```kotlin
 val connector = SasConnectorConnector.instance
-val queryResult = connector.listAppointmentsByDateRange.execute(startDate=LocalDate(1868, 6, 25), endDate=LocalDate(1844, 2, 7))
-println("ListAppointmentsByDateRange query returned: ${queryResult.data}")
+val queryResult = connector.listCampaignsByDateRange.execute(startDate=LocalDate(1868, 6, 25), endDate=LocalDate(1844, 2, 7))
+println("ListCampaignsByDateRange query returned: ${queryResult.data}")
 ```
 
 
