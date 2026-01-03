@@ -90,8 +90,6 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val listAppointments: ListAppointmentsQuery
   
-    public val listAppointmentsByBeneficiary: ListAppointmentsByBeneficiaryQuery
-  
     public val listAppointmentsByDateRange: ListAppointmentsByDateRangeQuery
   
     public val listBeneficiaries: ListBeneficiariesQuery
@@ -105,6 +103,8 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
     public val listDistributions: ListDistributionsQuery
   
     public val listDistributionsByBeneficiary: ListDistributionsByBeneficiaryQuery
+  
+    public val listDistributionsByStatus: ListDistributionsByStatusQuery
   
     public val listDonationItemsByDonation: ListDonationItemsByDonationQuery
   
@@ -347,10 +347,6 @@ private class SasConnectorConnectorImpl(
       ListAppointmentsQueryImpl(this)
     }
   
-    override val listAppointmentsByBeneficiary by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      ListAppointmentsByBeneficiaryQueryImpl(this)
-    }
-  
     override val listAppointmentsByDateRange by lazy(LazyThreadSafetyMode.PUBLICATION) {
       ListAppointmentsByDateRangeQueryImpl(this)
     }
@@ -377,6 +373,10 @@ private class SasConnectorConnectorImpl(
   
     override val listDistributionsByBeneficiary by lazy(LazyThreadSafetyMode.PUBLICATION) {
       ListDistributionsByBeneficiaryQueryImpl(this)
+    }
+  
+    override val listDistributionsByStatus by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListDistributionsByStatusQueryImpl(this)
     }
   
     override val listDonationItemsByDonation by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -560,7 +560,6 @@ private class SasConnectorConnectorImpl(
         listActiveCategories,
         listActiveStatusTypes,
         listAppointments,
-        listAppointmentsByBeneficiary,
         listAppointmentsByDateRange,
         listBeneficiaries,
         listCategories,
@@ -568,6 +567,7 @@ private class SasConnectorConnectorImpl(
         listDistributionItemsByLot,
         listDistributions,
         listDistributionsByBeneficiary,
+        listDistributionsByStatus,
         listDonationItemsByDonation,
         listDonationItemsByLot,
         listDonations,
@@ -1257,21 +1257,6 @@ private class ListAppointmentsQueryImpl(
   )
 
 
-private class ListAppointmentsByBeneficiaryQueryImpl(
-  connector: SasConnectorConnector
-):
-  ListAppointmentsByBeneficiaryQuery,
-  SasConnectorConnectorGeneratedQueryImpl<
-      ListAppointmentsByBeneficiaryQuery.Data,
-      ListAppointmentsByBeneficiaryQuery.Variables
-  >(
-    connector,
-    ListAppointmentsByBeneficiaryQuery.Companion.operationName,
-    ListAppointmentsByBeneficiaryQuery.Companion.dataDeserializer,
-    ListAppointmentsByBeneficiaryQuery.Companion.variablesSerializer,
-  )
-
-
 private class ListAppointmentsByDateRangeQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -1374,6 +1359,21 @@ private class ListDistributionsByBeneficiaryQueryImpl(
     ListDistributionsByBeneficiaryQuery.Companion.operationName,
     ListDistributionsByBeneficiaryQuery.Companion.dataDeserializer,
     ListDistributionsByBeneficiaryQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListDistributionsByStatusQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListDistributionsByStatusQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListDistributionsByStatusQuery.Data,
+      ListDistributionsByStatusQuery.Variables
+  >(
+    connector,
+    ListDistributionsByStatusQuery.Companion.operationName,
+    ListDistributionsByStatusQuery.Companion.dataDeserializer,
+    ListDistributionsByStatusQuery.Companion.variablesSerializer,
   )
 
 

@@ -17,18 +17,18 @@ import kotlinx.coroutines.flow.filterNotNull as _flow_filterNotNull
 import kotlinx.coroutines.flow.map as _flow_map
 
 
-public interface ListAppointmentsByBeneficiaryQuery :
+public interface ListDistributionsByStatusQuery :
     com.google.firebase.dataconnect.generated.GeneratedQuery<
       SasConnectorConnector,
-      ListAppointmentsByBeneficiaryQuery.Data,
-      ListAppointmentsByBeneficiaryQuery.Variables
+      ListDistributionsByStatusQuery.Data,
+      ListDistributionsByStatusQuery.Variables
     >
 {
   
     @kotlinx.serialization.Serializable
   public data class Variables(
   
-    val beneficiaryId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
+    val statusCode: String,
     val limit: com.google.firebase.dataconnect.OptionalVariable<Int?>,
     val offset: com.google.firebase.dataconnect.OptionalVariable<Int?>
   ) {
@@ -39,7 +39,7 @@ public interface ListAppointmentsByBeneficiaryQuery :
 
       @BuilderDsl
       public interface Builder {
-        public var beneficiaryId: java.util.UUID
+        public var statusCode: String
         public var limit: Int?
         public var offset: Int?
         
@@ -48,10 +48,10 @@ public interface ListAppointmentsByBeneficiaryQuery :
       public companion object {
         @Suppress("NAME_SHADOWING")
         public fun build(
-          beneficiaryId: java.util.UUID,
+          statusCode: String,
           block_: Builder.() -> Unit
         ): Variables {
-          var beneficiaryId= beneficiaryId
+          var statusCode= statusCode
             var limit: com.google.firebase.dataconnect.OptionalVariable<Int?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var offset: com.google.firebase.dataconnect.OptionalVariable<Int?> =
@@ -59,9 +59,9 @@ public interface ListAppointmentsByBeneficiaryQuery :
             
 
           return object : Builder {
-            override var beneficiaryId: java.util.UUID
+            override var statusCode: String
               get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { beneficiaryId = value_ }
+              set(value_) { statusCode = value_ }
               
             override var limit: Int?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
@@ -75,7 +75,7 @@ public interface ListAppointmentsByBeneficiaryQuery :
           }.apply(block_)
           .let {
             Variables(
-              beneficiaryId=beneficiaryId,limit=limit,offset=offset,
+              statusCode=statusCode,limit=limit,offset=offset,
             )
           }
         }
@@ -88,23 +88,43 @@ public interface ListAppointmentsByBeneficiaryQuery :
     @kotlinx.serialization.Serializable
   public data class Data(
   
-    val appointments: List<AppointmentsItem>
+    val distributions: List<DistributionsItem>
   ) {
     
       
         @kotlinx.serialization.Serializable
-  public data class AppointmentsItem(
+  public data class DistributionsItem(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val appointmentDate: com.google.firebase.dataconnect.LocalDate,
-    val appointmentTime: String,
-    val type: String,
+    val distributionDate: com.google.firebase.dataconnect.LocalDate,
     val observations: String?,
+    val responsibleStaff: ResponsibleStaff?,
+    val beneficiary: Beneficiary?,
     val status: Status?,
-    val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?,
-    val updatedAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?
+    val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?
   ) {
     
+      
+        @kotlinx.serialization.Serializable
+  public data class ResponsibleStaff(
+  
+    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
+    val name: String
+  ) {
+    
+    
+  }
+      
+        @kotlinx.serialization.Serializable
+  public data class Beneficiary(
+  
+    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
+    val fullName: String,
+    val studentNumer: Int
+  ) {
+    
+    
+  }
       
         @kotlinx.serialization.Serializable
   public data class Status(
@@ -127,7 +147,7 @@ public interface ListAppointmentsByBeneficiaryQuery :
   
 
   public companion object {
-    public val operationName: String = "ListAppointmentsByBeneficiary"
+    public val operationName: String = "ListDistributionsByStatus"
 
     public val dataDeserializer: kotlinx.serialization.DeserializationStrategy<Data> =
       kotlinx.serialization.serializer()
@@ -137,55 +157,55 @@ public interface ListAppointmentsByBeneficiaryQuery :
   }
 }
 
-public fun ListAppointmentsByBeneficiaryQuery.ref(
+public fun ListDistributionsByStatusQuery.ref(
   
-    beneficiaryId: java.util.UUID,
+    statusCode: String,
   
-    block_: ListAppointmentsByBeneficiaryQuery.Variables.Builder.() -> Unit = {}
+    block_: ListDistributionsByStatusQuery.Variables.Builder.() -> Unit = {}
   
 ): com.google.firebase.dataconnect.QueryRef<
-    ListAppointmentsByBeneficiaryQuery.Data,
-    ListAppointmentsByBeneficiaryQuery.Variables
+    ListDistributionsByStatusQuery.Data,
+    ListDistributionsByStatusQuery.Variables
   > =
   ref(
     
-      ListAppointmentsByBeneficiaryQuery.Variables.build(
-        beneficiaryId=beneficiaryId,
+      ListDistributionsByStatusQuery.Variables.build(
+        statusCode=statusCode,
   
     block_
       )
     
   )
 
-public suspend fun ListAppointmentsByBeneficiaryQuery.execute(
+public suspend fun ListDistributionsByStatusQuery.execute(
   
-    beneficiaryId: java.util.UUID,
+    statusCode: String,
   
-    block_: ListAppointmentsByBeneficiaryQuery.Variables.Builder.() -> Unit = {}
+    block_: ListDistributionsByStatusQuery.Variables.Builder.() -> Unit = {}
   
   ): com.google.firebase.dataconnect.QueryResult<
-    ListAppointmentsByBeneficiaryQuery.Data,
-    ListAppointmentsByBeneficiaryQuery.Variables
+    ListDistributionsByStatusQuery.Data,
+    ListDistributionsByStatusQuery.Variables
   > =
   ref(
     
-      beneficiaryId=beneficiaryId,
+      statusCode=statusCode,
   
     block_
     
   ).execute()
 
 
-  public fun ListAppointmentsByBeneficiaryQuery.flow(
+  public fun ListDistributionsByStatusQuery.flow(
     
-      beneficiaryId: java.util.UUID,
+      statusCode: String,
   
-    block_: ListAppointmentsByBeneficiaryQuery.Variables.Builder.() -> Unit = {}
+    block_: ListDistributionsByStatusQuery.Variables.Builder.() -> Unit = {}
     
-    ): kotlinx.coroutines.flow.Flow<ListAppointmentsByBeneficiaryQuery.Data> =
+    ): kotlinx.coroutines.flow.Flow<ListDistributionsByStatusQuery.Data> =
     ref(
         
-          beneficiaryId=beneficiaryId,
+          statusCode=statusCode,
   
     block_
         

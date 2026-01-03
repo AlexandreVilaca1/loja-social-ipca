@@ -39,10 +39,6 @@ query GetDonationById($id: UUID!) @auth(level: USER) {
       id
       appointmentDate
       appointmentTime
-      beneficiary {
-        id
-        fullName
-      }
     }
     status {
       id

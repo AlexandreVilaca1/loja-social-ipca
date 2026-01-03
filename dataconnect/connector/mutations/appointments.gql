@@ -19,7 +19,6 @@ mutation CreateAppointment(
       type: $type,
       observations: $observations,
       user: $userId,
-      beneficiary: $beneficiaryId,
       status: $statusId
     }
   )
@@ -44,7 +43,6 @@ mutation UpdateAppointment(
       type: $type,
       observations: $observations,
       user: $userId,
-      beneficiary: $beneficiaryId,
       status: $statusId
     }
   )
