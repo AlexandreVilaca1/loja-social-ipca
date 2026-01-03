@@ -36,14 +36,6 @@ fun TotalAppointmentsView(
 
     Scaffold(
         containerColor = BackgroundGreen,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate("agendamentos/criar") },
-                containerColor = GreenPrimary
-            ) {
-                Icon(Icons.Outlined.Add, contentDescription = "Criar novo agendamento")
-            }
-        }
     ) { padding ->
         when (val state = distributionsState) {
             is ResultWrapper.Loading -> {
