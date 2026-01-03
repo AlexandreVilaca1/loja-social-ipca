@@ -1,4 +1,4 @@
-package com.example.sas.presentation.ui.Apontamentos
+package com.example.sas.presentation.ui.appointments
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -32,7 +32,7 @@ import com.example.sas.presentation.ui.theme.GreenPrimary
 import com.example.sas.presentation.ui.theme.TextDark
 
 @Composable
-fun TotalAgendamentosCard(
+fun TotalAppointmentsCard(
     total: Int,
     onClick: () -> Unit
 ) {

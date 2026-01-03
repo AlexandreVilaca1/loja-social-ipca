@@ -2,24 +2,28 @@ package com.example.sas.presentation.ui.Home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.example.sas.presentation.ui.Apontamentos.AgendamentosView
-import com.example.sas.presentation.ui.Apontamentos.TodosAgendamentosView
-import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
-import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsView
-import com.example.sas.presentation.ui.distributionItems.DistributionItemsView
+import com.example.sas.presentation.ui.appointments.AppointmentsView
+import com.example.sas.presentation.ui.appointments.AgendamentosViewModel
+import com.example.sas.presentation.ui.appointments.TotalAppointmentsView
 import com.example.sas.presentation.ui.BottomBar.BottomBar
 import com.example.sas.presentation.ui.BottomBar.BottomRoute
+import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
+import com.example.sas.presentation.ui.distributionItems.DistributionItemsView
+import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsView
 
 @Composable
 fun HomeView() {
+    var selectedIndex by remember { mutableStateOf(0) }
     val bottomNavController = rememberNavController()
+
 
     Scaffold(
         bottomBar = {
@@ -31,8 +35,20 @@ fun HomeView() {
                 navController = bottomNavController,
                 startDestination = BottomRoute.Agendamentos.route
             ) {
-                composable(BottomRoute.Agendamentos.route) {
-                    AgendamentosView(bottomNavController)
+
+                navigation(
+                    route = "agendamentos",
+                    startDestination = "agendamentos/home"
+                ) {
+                    composable("agendamentos/home") { backStackEntry ->
+                        val viewModel = hiltViewModel<AgendamentosViewModel>(backStackEntry)
+                        AppointmentsView(bottomNavController, viewModel)
+                    }
+
+                    composable("agendamentos/todos") { backStackEntry ->
+                        val viewModel = hiltViewModel<AgendamentosViewModel>(backStackEntry)
+                        TotalAppointmentsView(bottomNavController, viewModel)
+                    }
                 }
 
                 composable(BottomRoute.Beneficiarios.route) {
@@ -62,9 +78,6 @@ fun HomeView() {
                     Text("Tela Relatórios")
                 }
 
-                composable("agendamentos/todos") {
-                    TodosAgendamentosView()
-                }
             }
         }
     }
