@@ -1,83 +1,153 @@
 package com.example.sas.presentation.ui.Home
 
+import DrawerContent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.sas.presentation.ui.appointments.AppointmentsView
 import com.example.sas.presentation.ui.appointments.AgendamentosViewModel
 import com.example.sas.presentation.ui.appointments.TotalAppointmentsView
-import com.example.sas.presentation.ui.BottomBar.BottomBar
-import com.example.sas.presentation.ui.BottomBar.BottomRoute
+import com.example.sas.presentation.ui.Drawer.DrawerRoute
 import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
 import com.example.sas.presentation.ui.distributionItems.DistributionItemsView
 import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsView
+import com.example.sas.presentation.ui.theme.GreenPrimary
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView() {
-    var selectedIndex by remember { mutableStateOf(0) }
-    val bottomNavController = rememberNavController()
+
+    val navController = rememberNavController()
+
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
+    val currentTitle = when {
+        currentRoute?.startsWith("agendamentos") == true -> "Agendamentos"
+        currentRoute == DrawerRoute.Beneficiarios.route -> "Beneficiários"
+        currentRoute == DrawerRoute.Doacoes.route -> "Doações"
+        currentRoute == DrawerRoute.Produtos.route -> "Produtos"
+        currentRoute == DrawerRoute.Relatorios.route -> "Relatórios"
+        else -> ""
+    }
 
 
-    Scaffold(
-        bottomBar = {
-            BottomBar(bottomNavController)
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            DrawerContent(
+                currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route,
+                onDestinationClick = { route ->
+                    scope.launch { drawerState.close() }
+
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
-            NavHost(
-                navController = bottomNavController,
-                startDestination = BottomRoute.Agendamentos.route
-            ) {
+    ) {
 
-                navigation(
-                    route = "agendamentos",
-                    startDestination = "agendamentos/home"
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    modifier = Modifier.height(56.dp),
+                    title = {
+                        Text(
+                            text = currentTitle,
+                            color = Color.White
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            scope.launch { drawerState.open() }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Menu",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = GreenPrimary
+                    ),
+                    windowInsets = WindowInsets(0,0,0,0)
+                )
+
+            }
+        ) { padding ->
+
+            Box(modifier = Modifier.padding(padding)) {
+
+                NavHost(
+                    navController = navController,
+                    startDestination = DrawerRoute.Agendamentos.route
                 ) {
-                    composable("agendamentos/home") { backStackEntry ->
-                        val viewModel = hiltViewModel<AgendamentosViewModel>(backStackEntry)
-                        AppointmentsView(bottomNavController, viewModel)
+
+                    navigation(
+                        route = "agendamentos",
+                        startDestination = "agendamentos/home"
+                    ) {
+                        composable("agendamentos/home") { backStackEntry ->
+                            val viewModel = hiltViewModel<AgendamentosViewModel>(backStackEntry)
+                            AppointmentsView(navController, viewModel)
+                        }
+
+                        composable("agendamentos/todos") { backStackEntry ->
+                            val viewModel = hiltViewModel<AgendamentosViewModel>(backStackEntry)
+                            TotalAppointmentsView(navController, viewModel)
+                        }
                     }
 
-                    composable("agendamentos/todos") { backStackEntry ->
-                        val viewModel = hiltViewModel<AgendamentosViewModel>(backStackEntry)
-                        TotalAppointmentsView(bottomNavController, viewModel)
+                    composable(DrawerRoute.Beneficiarios.route) {
+                        BeneficiariesView(
+                            innerPadding = padding,
+                            navController = navController
+                        )
+                    }
+
+                    composable("beneficiary/{beneficiaryId}/distributions?name={beneficiaryName}") {
+                        BeneficiaryDistributionsView(navController = navController)
+                    }
+
+                    composable("distribution/{distributionId}/items?date={distributionDate}") {
+                        DistributionItemsView(navController = navController)
+                    }
+
+                    composable(DrawerRoute.Doacoes.route) {
+                        Text("Tela Doações")
+                    }
+
+                    composable(DrawerRoute.Produtos.route) {
+                        Text("Tela Produtos")
+                    }
+
+                    composable(DrawerRoute.Relatorios.route) {
+                        Text("Tela Relatórios")
                     }
                 }
-
-                composable(BottomRoute.Beneficiarios.route) {
-                    BeneficiariesView(
-                        innerPadding = padding,
-                        navController = bottomNavController
-                    )
-                }
-
-                composable("beneficiary/{beneficiaryId}/distributions?name={beneficiaryName}") {
-                    BeneficiaryDistributionsView(navController = bottomNavController)
-                }
-
-                composable("distribution/{distributionId}/items?date={distributionDate}") {
-                    DistributionItemsView(navController = bottomNavController)
-                }
-
-                composable(BottomRoute.Doacoes.route) {
-                    Text("Tela Doações")
-                }
-
-                composable(BottomRoute.Produtos.route) {
-                    Text("Tela Produtos")
-                }
-
-                composable(BottomRoute.Relatorios.route) {
-                    Text("Tela Relatórios")
-                }
-
             }
         }
     }
