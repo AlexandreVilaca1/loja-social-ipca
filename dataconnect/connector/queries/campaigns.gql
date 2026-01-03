@@ -1,0 +1,109 @@
+# ============================
+# CAMPAIGN QUERIES
+# ============================
+
+# List all campaigns with pagination
+query ListCampaigns($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  campaigns(limit: $limit, offset: $offset, orderBy: [{ campaignStartDate: DESC }]) {
+    id
+    campaignName
+    campaignStartDate
+    campaignEndDate
+    address
+    type
+    observations
+    user {
+      id
+      name
+    }
+    status {
+      id
+      code
+      description
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Get campaign by id
+query GetCampaignById($id: UUID!) @auth(level: USER) {
+  campaign(id: $id) {
+    id
+    campaignName
+    campaignStartDate
+    campaignEndDate
+    address
+    type
+    observations
+    user {
+      id
+      name
+      email
+    }
+    status {
+      id
+      code
+      description
+      color
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# List campaigns by date range
+query ListCampaignsByDateRange($startDate: Date!, $endDate: Date!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  campaigns(
+    where: {
+      _and: [
+        { campaignStartDate: { ge: $startDate } },
+        { campaignEndDate: { le: $endDate } }
+      ]
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ campaignStartDate: ASC }]
+  ) {
+    id
+    campaignName
+    campaignStartDate
+    campaignEndDate
+    address
+    type
+    observations
+    status {
+      id
+      code
+      description
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Search campaigns by name
+query SearchCampaigns($campaignName: String, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  campaigns(
+    where: { campaignName: { contains: $campaignName } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ campaignStartDate: DESC }]
+  ) {
+    id
+    campaignName
+    campaignStartDate
+    campaignEndDate
+    address
+    type
+    observations
+    status {
+      id
+      code
+      description
+    }
+    createdAt
+    updatedAt
+  }
+}
+

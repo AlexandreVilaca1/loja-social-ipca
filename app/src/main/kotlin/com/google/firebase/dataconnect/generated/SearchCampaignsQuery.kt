@@ -17,17 +17,18 @@ import kotlinx.coroutines.flow.filterNotNull as _flow_filterNotNull
 import kotlinx.coroutines.flow.map as _flow_map
 
 
-public interface ListAppointmentsQuery :
+public interface SearchCampaignsQuery :
     com.google.firebase.dataconnect.generated.GeneratedQuery<
       SasConnectorConnector,
-      ListAppointmentsQuery.Data,
-      ListAppointmentsQuery.Variables
+      SearchCampaignsQuery.Data,
+      SearchCampaignsQuery.Variables
     >
 {
   
     @kotlinx.serialization.Serializable
   public data class Variables(
   
+    val campaignName: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val limit: com.google.firebase.dataconnect.OptionalVariable<Int?>,
     val offset: com.google.firebase.dataconnect.OptionalVariable<Int?>
   ) {
@@ -38,6 +39,7 @@ public interface ListAppointmentsQuery :
 
       @BuilderDsl
       public interface Builder {
+        public var campaignName: String?
         public var limit: Int?
         public var offset: Int?
         
@@ -49,13 +51,19 @@ public interface ListAppointmentsQuery :
           
           block_: Builder.() -> Unit
         ): Variables {
-          var limit: com.google.firebase.dataconnect.OptionalVariable<Int?> =
+          var campaignName: com.google.firebase.dataconnect.OptionalVariable<String?> =
+                com.google.firebase.dataconnect.OptionalVariable.Undefined
+            var limit: com.google.firebase.dataconnect.OptionalVariable<Int?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var offset: com.google.firebase.dataconnect.OptionalVariable<Int?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             
 
           return object : Builder {
+            override var campaignName: String?
+              get() = throw UnsupportedOperationException("getting builder values is not supported")
+              set(value_) { campaignName = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
+              
             override var limit: Int?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { limit = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
@@ -68,7 +76,7 @@ public interface ListAppointmentsQuery :
           }.apply(block_)
           .let {
             Variables(
-              limit=limit,offset=offset,
+              campaignName=campaignName,limit=limit,offset=offset,
             )
           }
         }
@@ -81,34 +89,25 @@ public interface ListAppointmentsQuery :
     @kotlinx.serialization.Serializable
   public data class Data(
   
-    val appointments: List<AppointmentsItem>
+    val campaigns: List<CampaignsItem>
   ) {
     
       
         @kotlinx.serialization.Serializable
-  public data class AppointmentsItem(
+  public data class CampaignsItem(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val appointmentDate: com.google.firebase.dataconnect.LocalDate,
-    val appointmentTime: String,
+    val campaignName: String,
+    val campaignStartDate: com.google.firebase.dataconnect.LocalDate,
+    val campaignEndDate: com.google.firebase.dataconnect.LocalDate,
+    val address: String,
     val type: String,
     val observations: String?,
-    val user: User?,
     val status: Status?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?,
     val updatedAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?
   ) {
     
-      
-        @kotlinx.serialization.Serializable
-  public data class User(
-  
-    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val name: String
-  ) {
-    
-    
-  }
       
         @kotlinx.serialization.Serializable
   public data class Status(
@@ -131,7 +130,7 @@ public interface ListAppointmentsQuery :
   
 
   public companion object {
-    public val operationName: String = "ListAppointments"
+    public val operationName: String = "SearchCampaigns"
 
     public val dataDeserializer: kotlinx.serialization.DeserializationStrategy<Data> =
       kotlinx.serialization.serializer()
@@ -141,19 +140,19 @@ public interface ListAppointmentsQuery :
   }
 }
 
-public fun ListAppointmentsQuery.ref(
+public fun SearchCampaignsQuery.ref(
   
     
   
-    block_: ListAppointmentsQuery.Variables.Builder.() -> Unit = {}
+    block_: SearchCampaignsQuery.Variables.Builder.() -> Unit = {}
   
 ): com.google.firebase.dataconnect.QueryRef<
-    ListAppointmentsQuery.Data,
-    ListAppointmentsQuery.Variables
+    SearchCampaignsQuery.Data,
+    SearchCampaignsQuery.Variables
   > =
   ref(
     
-      ListAppointmentsQuery.Variables.build(
+      SearchCampaignsQuery.Variables.build(
         
   
     block_
@@ -161,15 +160,15 @@ public fun ListAppointmentsQuery.ref(
     
   )
 
-public suspend fun ListAppointmentsQuery.execute(
+public suspend fun SearchCampaignsQuery.execute(
   
     
   
-    block_: ListAppointmentsQuery.Variables.Builder.() -> Unit = {}
+    block_: SearchCampaignsQuery.Variables.Builder.() -> Unit = {}
   
   ): com.google.firebase.dataconnect.QueryResult<
-    ListAppointmentsQuery.Data,
-    ListAppointmentsQuery.Variables
+    SearchCampaignsQuery.Data,
+    SearchCampaignsQuery.Variables
   > =
   ref(
     
@@ -180,13 +179,13 @@ public suspend fun ListAppointmentsQuery.execute(
   ).execute()
 
 
-  public fun ListAppointmentsQuery.flow(
+  public fun SearchCampaignsQuery.flow(
     
       
   
-    block_: ListAppointmentsQuery.Variables.Builder.() -> Unit = {}
+    block_: SearchCampaignsQuery.Variables.Builder.() -> Unit = {}
     
-    ): kotlinx.coroutines.flow.Flow<ListAppointmentsQuery.Data> =
+    ): kotlinx.coroutines.flow.Flow<SearchCampaignsQuery.Data> =
     ref(
         
           

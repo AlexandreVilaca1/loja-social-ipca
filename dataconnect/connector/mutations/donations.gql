@@ -9,7 +9,7 @@ mutation CreateDonation(
   $estimatedValue: Float!,
   $donorContact: String,
   $observations: String,
-  $appointmentId: Appointment_Key,
+  $campaignId: Campaign_Key,
   $statusId: StatusType_Key
 ) @auth(level: USER) {
   donation_insert(
@@ -19,7 +19,7 @@ mutation CreateDonation(
       estimatedValue: $estimatedValue,
       donorContact: $donorContact,
       observations: $observations,
-      appointment: $appointmentId,
+      campaign: $campaignId,
       status: $statusId
     }
   )
@@ -33,7 +33,7 @@ mutation UpdateDonation(
   $estimatedValue: Float,
   $donorContact: String,
   $observations: String,
-  $appointmentId: Appointment_Key,
+  $campaignId: Campaign_Key,
   $statusId: StatusType_Key
 ) @auth(level: USER) {
   donation_update(
@@ -44,7 +44,7 @@ mutation UpdateDonation(
       estimatedValue: $estimatedValue,
       donorContact: $donorContact,
       observations: $observations,
-      appointment: $appointmentId,
+      campaign: $campaignId,
       status: $statusId
     }
   )

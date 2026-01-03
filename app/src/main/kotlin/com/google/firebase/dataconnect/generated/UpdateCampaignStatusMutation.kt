@@ -14,11 +14,11 @@ package com.google.firebase.dataconnect.generated
 
 
 
-public interface UpdateAppointmentStatusMutation :
+public interface UpdateCampaignStatusMutation :
     com.google.firebase.dataconnect.generated.GeneratedMutation<
       SasConnectorConnector,
-      UpdateAppointmentStatusMutation.Data,
-      UpdateAppointmentStatusMutation.Variables
+      UpdateCampaignStatusMutation.Data,
+      UpdateCampaignStatusMutation.Variables
     >
 {
   
@@ -37,7 +37,7 @@ public interface UpdateAppointmentStatusMutation :
     @kotlinx.serialization.Serializable
   public data class Data(
   
-    val appointment_update: AppointmentKey?
+    val campaign_update: CampaignKey?
   ) {
     
     
@@ -45,7 +45,7 @@ public interface UpdateAppointmentStatusMutation :
   
 
   public companion object {
-    public val operationName: String = "UpdateAppointmentStatus"
+    public val operationName: String = "UpdateCampaignStatus"
 
     public val dataDeserializer: kotlinx.serialization.DeserializationStrategy<Data> =
       kotlinx.serialization.serializer()
@@ -55,32 +55,32 @@ public interface UpdateAppointmentStatusMutation :
   }
 }
 
-public fun UpdateAppointmentStatusMutation.ref(
+public fun UpdateCampaignStatusMutation.ref(
   
     id: java.util.UUID,statusId: StatusTypeKey,
   
   
 ): com.google.firebase.dataconnect.MutationRef<
-    UpdateAppointmentStatusMutation.Data,
-    UpdateAppointmentStatusMutation.Variables
+    UpdateCampaignStatusMutation.Data,
+    UpdateCampaignStatusMutation.Variables
   > =
   ref(
     
-      UpdateAppointmentStatusMutation.Variables(
+      UpdateCampaignStatusMutation.Variables(
         id=id,statusId=statusId,
   
       )
     
   )
 
-public suspend fun UpdateAppointmentStatusMutation.execute(
+public suspend fun UpdateCampaignStatusMutation.execute(
   
     id: java.util.UUID,statusId: StatusTypeKey,
   
   
   ): com.google.firebase.dataconnect.MutationResult<
-    UpdateAppointmentStatusMutation.Data,
-    UpdateAppointmentStatusMutation.Variables
+    UpdateCampaignStatusMutation.Data,
+    UpdateCampaignStatusMutation.Variables
   > =
   ref(
     

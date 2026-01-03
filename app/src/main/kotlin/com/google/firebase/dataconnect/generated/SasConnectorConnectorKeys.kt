@@ -14,7 +14,7 @@ package com.google.firebase.dataconnect.generated
 
 
   @kotlinx.serialization.Serializable
-  public data class AppointmentKey(
+  public data class BeneficiaryKey(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
   ) {
@@ -23,7 +23,7 @@ package com.google.firebase.dataconnect.generated
   }
 
   @kotlinx.serialization.Serializable
-  public data class BeneficiaryKey(
+  public data class CampaignKey(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
   ) {

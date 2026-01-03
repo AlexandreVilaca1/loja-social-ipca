@@ -11,10 +11,11 @@ query ListDonations($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
     estimatedValue
     donorContact
     observations
-    appointment {
+    campaign {
       id
-      appointmentDate
-      appointmentTime
+      campaignName
+      campaignStartDate
+      campaignEndDate
     }
     status {
       id
@@ -35,10 +36,11 @@ query GetDonationById($id: UUID!) @auth(level: USER) {
     estimatedValue
     donorContact
     observations
-    appointment {
+    campaign {
       id
-      appointmentDate
-      appointmentTime
+      campaignName
+      campaignStartDate
+      campaignEndDate
     }
     status {
       id
@@ -55,6 +57,30 @@ query GetDonationById($id: UUID!) @auth(level: USER) {
 query SearchDonations($donorName: String, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   donations(
     where: { donorName: { contains: $donorName } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ donationDate: DESC }]
+  ) {
+    id
+    donationDate
+    donorName
+    estimatedValue
+    donorContact
+    observations
+    status {
+      id
+      code
+      description
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# List donations by campaign
+query ListDonationsByCampaign($campaignId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  donations(
+    where: { campaign: { id: { eq: $campaignId } } }
     limit: $limit
     offset: $offset
     orderBy: [{ donationDate: DESC }]
