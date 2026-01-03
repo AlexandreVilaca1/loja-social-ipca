@@ -3,12 +3,18 @@ package com.example.sas.di
 import com.example.sas.data.datasource.AuthDataSource
 import com.example.sas.data.repository.AuthRepositoryImpl
 import com.example.sas.data.repository.BeneficiariesRepositoryImpl
+import com.example.sas.data.repository.CategoriesRepositoryImpl
 import com.example.sas.data.repository.DistributionItemsRepositoryImpl
 import com.example.sas.data.repository.DistributionsRepositoryImpl
+import com.example.sas.data.repository.LotsRepositoryImpl
+import com.example.sas.data.repository.ProductsRepositoryImpl
 import com.example.sas.domain.repositories.AuthRepository
 import com.example.sas.domain.repositories.BeneficiariesRepository
+import com.example.sas.domain.repositories.CategoriesRepository
 import com.example.sas.domain.repositories.DistributionItemsRepository
 import com.example.sas.domain.repositories.DistributionsRepository
+import com.example.sas.domain.repositories.LotsRepository
+import com.example.sas.domain.repositories.ProductsRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
 import dagger.Module
@@ -44,6 +50,25 @@ abstract class RepositoryBindsModule {
     abstract fun bindDistributionItemsRepository(
         impl: DistributionItemsRepositoryImpl
     ): DistributionItemsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCategoriesRepository(
+        impl: CategoriesRepositoryImpl
+    ): CategoriesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindProductsRepository(
+        impl: ProductsRepositoryImpl
+    ): ProductsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLotsRepository(
+        impl: LotsRepositoryImpl
+    ): LotsRepository
+
 }
 
 @Module
