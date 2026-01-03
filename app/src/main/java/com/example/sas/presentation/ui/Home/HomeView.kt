@@ -11,7 +11,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sas.presentation.ui.Apontamentos.AgendamentosView
 import com.example.sas.presentation.ui.Apontamentos.TodosAgendamentosView
-import com.example.sas.presentation.ui.beneficiaries.BeneficiariosView
+import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
+import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsView
+import com.example.sas.presentation.ui.distributionItems.DistributionItemsView
 import com.example.sas.presentation.ui.BottomBar.BottomBar
 import com.example.sas.presentation.ui.BottomBar.BottomRoute
 
@@ -34,7 +36,18 @@ fun HomeView() {
                 }
 
                 composable(BottomRoute.Beneficiarios.route) {
-                    BeneficiariosView(innerPadding = padding)
+                    BeneficiariesView(
+                        innerPadding = padding,
+                        navController = bottomNavController
+                    )
+                }
+
+                composable("beneficiary/{beneficiaryId}/distributions?name={beneficiaryName}") {
+                    BeneficiaryDistributionsView(navController = bottomNavController)
+                }
+
+                composable("distribution/{distributionId}/items?date={distributionDate}") {
+                    DistributionItemsView(navController = bottomNavController)
                 }
 
                 composable(BottomRoute.Doacoes.route) {

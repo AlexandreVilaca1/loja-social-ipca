@@ -48,6 +48,33 @@ class BeneficiariesRepositoryImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
+    override fun searchBeneficiaries(searchTerm: String, limit: Int, offset: Int): Flow<ResultWrapper<List<Beneficiary>>> = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            val items = dataSource.searchBeneficiaries(searchTerm, limit, offset)
+
+            // Map Firebase Data Connect items to domain models
+            val beneficiaries = items.map { item ->
+                Beneficiary(
+                    id = item.id.toString(),
+                    fullName = item.fullName,
+                    studentNumber = item.studentNumer,
+                    nif = item.nif,
+                    course = item.course,
+                    isActive = item.isActive,
+                    contactNumber = item.contactNumber,
+                    address = item.address,
+                    observations = item.observations,
+                    createdAt = item.createdAt?.toString()
+                )
+            }
+
+            emit(ResultWrapper.Success(beneficiaries))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao pesquisar beneficiários"))
+        }
+    }.flowOn(Dispatchers.IO)
+
     override fun createBeneficiary(
         fullName: String,
         studentNumber: Int,
@@ -75,5 +102,36 @@ class BeneficiariesRepositoryImpl @Inject constructor(
             emit(ResultWrapper.Error(e.message ?: "Erro ao criar beneficiário"))
         }
     }.flowOn(Dispatchers.IO)
+
+    override fun updateBeneficiary(
+        id: String,
+        fullName: String,
+        studentNumber: Int,
+        nif: String,
+        course: String,
+        isActive: Boolean,
+        contactNumber: String,
+        address: String?,
+        observations: String?
+    ): Flow<ResultWrapper<Unit>> = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            dataSource.updateBeneficiary(
+                id = id,
+                fullName = fullName,
+                studentNumber = studentNumber,
+                nif = nif,
+                course = course,
+                isActive = isActive,
+                contactNumber = contactNumber,
+                address = address,
+                observations = observations
+            )
+            emit(ResultWrapper.Success(Unit))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao atualizar beneficiário"))
+        }
+    }.flowOn(Dispatchers.IO)
 }
+
 
