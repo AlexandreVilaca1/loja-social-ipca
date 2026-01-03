@@ -86,7 +86,6 @@ type Appointment @table {
   type: String!
   observations: String
   user: User
-  beneficiary: Beneficiary
   status: StatusType
   createdAt: Timestamp
   updatedAt: Timestamp

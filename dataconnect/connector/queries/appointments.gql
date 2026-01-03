@@ -14,11 +14,6 @@ query ListAppointments($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
       id
       name
     }
-    beneficiary {
-      id
-      fullName
-      studentNumer
-    }
     status {
       id
       code
@@ -42,40 +37,11 @@ query GetAppointmentById($id: UUID!) @auth(level: USER) {
       name
       email
     }
-    beneficiary {
-      id
-      fullName
-      studentNumer
-      contactNumber
-    }
     status {
       id
       code
       description
       color
-    }
-    createdAt
-    updatedAt
-  }
-}
-
-# List appointments by beneficiary
-query ListAppointmentsByBeneficiary($beneficiaryId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
-  appointments(
-    where: { beneficiary: { id: { eq: $beneficiaryId } } }
-    limit: $limit
-    offset: $offset
-    orderBy: [{ appointmentDate: DESC }]
-  ) {
-    id
-    appointmentDate
-    appointmentTime
-    type
-    observations
-    status {
-      id
-      code
-      description
     }
     createdAt
     updatedAt
@@ -100,10 +66,6 @@ query ListAppointmentsByDateRange($startDate: Date!, $endDate: Date!, $limit: In
     appointmentTime
     type
     observations
-    beneficiary {
-      id
-      fullName
-    }
     status {
       id
       code

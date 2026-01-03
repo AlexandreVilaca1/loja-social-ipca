@@ -52,7 +52,6 @@ public interface GetAppointmentByIdQuery :
     val type: String,
     val observations: String?,
     val user: User?,
-    val beneficiary: Beneficiary?,
     val status: Status?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?,
     val updatedAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?
@@ -65,18 +64,6 @@ public interface GetAppointmentByIdQuery :
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val name: String,
     val email: String
-  ) {
-    
-    
-  }
-      
-        @kotlinx.serialization.Serializable
-  public data class Beneficiary(
-  
-    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val fullName: String,
-    val studentNumer: Int,
-    val contactNumber: String
   ) {
     
     

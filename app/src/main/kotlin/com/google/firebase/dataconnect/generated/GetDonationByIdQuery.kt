@@ -64,21 +64,8 @@ public interface GetDonationByIdQuery :
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val appointmentDate: com.google.firebase.dataconnect.LocalDate,
-    val appointmentTime: String,
-    val beneficiary: Beneficiary?
+    val appointmentTime: String
   ) {
-    
-      
-        @kotlinx.serialization.Serializable
-  public data class Beneficiary(
-  
-    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val fullName: String
-  ) {
-    
-    
-  }
-      
     
     
   }
