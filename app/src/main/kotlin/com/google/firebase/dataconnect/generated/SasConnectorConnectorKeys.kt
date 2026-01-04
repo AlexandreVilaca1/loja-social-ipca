@@ -79,6 +79,24 @@ package com.google.firebase.dataconnect.generated
   }
 
   @kotlinx.serialization.Serializable
+  public data class LogKey(
+  
+    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
+  ) {
+    
+    
+  }
+
+  @kotlinx.serialization.Serializable
+  public data class LogTypeKey(
+  
+    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
+  ) {
+    
+    
+  }
+
+  @kotlinx.serialization.Serializable
   public data class LotKey(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID

@@ -32,6 +32,12 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val createDonationItem: CreateDonationItemMutation
   
+    public val createLog: CreateLogMutation
+  
+    public val createLogBatch: CreateLogBatchMutation
+  
+    public val createLogType: CreateLogTypeMutation
+  
     public val createLot: CreateLotMutation
   
     public val createProduct: CreateProductMutation
@@ -56,6 +62,10 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val deleteDonationItem: DeleteDonationItemMutation
   
+    public val deleteLog: DeleteLogMutation
+  
+    public val deleteLogType: DeleteLogTypeMutation
+  
     public val deleteLot: DeleteLotMutation
   
     public val deleteProduct: DeleteProductMutation
@@ -74,6 +84,12 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val getDonationById: GetDonationByIdQuery
   
+    public val getLogById: GetLogByIdQuery
+  
+    public val getLogTypeByCode: GetLogTypeByCodeQuery
+  
+    public val getLogTypeById: GetLogTypeByIdQuery
+  
     public val getLotById: GetLotByIdQuery
   
     public val getProductById: GetProductByIdQuery
@@ -83,6 +99,8 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
     public val getStatusTypeById: GetStatusTypeByIdQuery
   
     public val getUserById: GetUserByIdQuery
+  
+    public val getUserByUid: GetUserByUidQuery
   
     public val listActiveBeneficiaries: ListActiveBeneficiariesQuery
   
@@ -118,6 +136,20 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val listDonationsByCampaign: ListDonationsByCampaignQuery
   
+    public val listLogTypes: ListLogTypesQuery
+  
+    public val listLogs: ListLogsQuery
+  
+    public val listLogsByDateRange: ListLogsByDateRangeQuery
+  
+    public val listLogsByLogType: ListLogsByLogTypeQuery
+  
+    public val listLogsByLogTypeCode: ListLogsByLogTypeCodeQuery
+  
+    public val listLogsByUser: ListLogsByUserQuery
+  
+    public val listLogsByUserAndLogType: ListLogsByUserAndLogTypeQuery
+  
     public val listLots: ListLotsQuery
   
     public val listLotsByProduct: ListLotsByProductQuery
@@ -135,6 +167,8 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
     public val searchCampaigns: SearchCampaignsQuery
   
     public val searchDonations: SearchDonationsQuery
+  
+    public val searchLogTypesByName: SearchLogTypesByNameQuery
   
     public val searchLots: SearchLotsQuery
   
@@ -161,6 +195,10 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
     public val updateDonationItem: UpdateDonationItemMutation
   
     public val updateDonationStatus: UpdateDonationStatusMutation
+  
+    public val updateLog: UpdateLogMutation
+  
+    public val updateLogType: UpdateLogTypeMutation
   
     public val updateLot: UpdateLotMutation
   
@@ -239,6 +277,18 @@ private class SasConnectorConnectorImpl(
       CreateDonationItemMutationImpl(this)
     }
   
+    override val createLog by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      CreateLogMutationImpl(this)
+    }
+  
+    override val createLogBatch by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      CreateLogBatchMutationImpl(this)
+    }
+  
+    override val createLogType by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      CreateLogTypeMutationImpl(this)
+    }
+  
     override val createLot by lazy(LazyThreadSafetyMode.PUBLICATION) {
       CreateLotMutationImpl(this)
     }
@@ -287,6 +337,14 @@ private class SasConnectorConnectorImpl(
       DeleteDonationItemMutationImpl(this)
     }
   
+    override val deleteLog by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      DeleteLogMutationImpl(this)
+    }
+  
+    override val deleteLogType by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      DeleteLogTypeMutationImpl(this)
+    }
+  
     override val deleteLot by lazy(LazyThreadSafetyMode.PUBLICATION) {
       DeleteLotMutationImpl(this)
     }
@@ -323,6 +381,18 @@ private class SasConnectorConnectorImpl(
       GetDonationByIdQueryImpl(this)
     }
   
+    override val getLogById by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      GetLogByIdQueryImpl(this)
+    }
+  
+    override val getLogTypeByCode by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      GetLogTypeByCodeQueryImpl(this)
+    }
+  
+    override val getLogTypeById by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      GetLogTypeByIdQueryImpl(this)
+    }
+  
     override val getLotById by lazy(LazyThreadSafetyMode.PUBLICATION) {
       GetLotByIdQueryImpl(this)
     }
@@ -341,6 +411,10 @@ private class SasConnectorConnectorImpl(
   
     override val getUserById by lazy(LazyThreadSafetyMode.PUBLICATION) {
       GetUserByIdQueryImpl(this)
+    }
+  
+    override val getUserByUid by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      GetUserByUidQueryImpl(this)
     }
   
     override val listActiveBeneficiaries by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -411,6 +485,34 @@ private class SasConnectorConnectorImpl(
       ListDonationsByCampaignQueryImpl(this)
     }
   
+    override val listLogTypes by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListLogTypesQueryImpl(this)
+    }
+  
+    override val listLogs by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListLogsQueryImpl(this)
+    }
+  
+    override val listLogsByDateRange by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListLogsByDateRangeQueryImpl(this)
+    }
+  
+    override val listLogsByLogType by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListLogsByLogTypeQueryImpl(this)
+    }
+  
+    override val listLogsByLogTypeCode by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListLogsByLogTypeCodeQueryImpl(this)
+    }
+  
+    override val listLogsByUser by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListLogsByUserQueryImpl(this)
+    }
+  
+    override val listLogsByUserAndLogType by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListLogsByUserAndLogTypeQueryImpl(this)
+    }
+  
     override val listLots by lazy(LazyThreadSafetyMode.PUBLICATION) {
       ListLotsQueryImpl(this)
     }
@@ -445,6 +547,10 @@ private class SasConnectorConnectorImpl(
   
     override val searchDonations by lazy(LazyThreadSafetyMode.PUBLICATION) {
       SearchDonationsQueryImpl(this)
+    }
+  
+    override val searchLogTypesByName by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      SearchLogTypesByNameQueryImpl(this)
     }
   
     override val searchLots by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -499,6 +605,14 @@ private class SasConnectorConnectorImpl(
       UpdateDonationStatusMutationImpl(this)
     }
   
+    override val updateLog by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      UpdateLogMutationImpl(this)
+    }
+  
+    override val updateLogType by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      UpdateLogTypeMutationImpl(this)
+    }
+  
     override val updateLot by lazy(LazyThreadSafetyMode.PUBLICATION) {
       UpdateLotMutationImpl(this)
     }
@@ -534,6 +648,9 @@ private class SasConnectorConnectorImpl(
         createDistributionItem,
         createDonation,
         createDonationItem,
+        createLog,
+        createLogBatch,
+        createLogType,
         createLot,
         createProduct,
         createStatusType,
@@ -546,6 +663,8 @@ private class SasConnectorConnectorImpl(
         deleteDistributionItem,
         deleteDonation,
         deleteDonationItem,
+        deleteLog,
+        deleteLogType,
         deleteLot,
         deleteProduct,
         deleteStatusType,
@@ -560,6 +679,8 @@ private class SasConnectorConnectorImpl(
         updateDonation,
         updateDonationItem,
         updateDonationStatus,
+        updateLog,
+        updateLogType,
         updateLot,
         updateLotQuantity,
         updateProduct,
@@ -576,11 +697,15 @@ private class SasConnectorConnectorImpl(
         getCategoryById,
         getDistributionById,
         getDonationById,
+        getLogById,
+        getLogTypeByCode,
+        getLogTypeById,
         getLotById,
         getProductById,
         getStatusTypeByCode,
         getStatusTypeById,
         getUserById,
+        getUserByUid,
         listActiveBeneficiaries,
         listActiveCategories,
         listActiveStatusTypes,
@@ -598,6 +723,13 @@ private class SasConnectorConnectorImpl(
         listDonationItemsByLot,
         listDonations,
         listDonationsByCampaign,
+        listLogTypes,
+        listLogs,
+        listLogsByDateRange,
+        listLogsByLogType,
+        listLogsByLogTypeCode,
+        listLogsByUser,
+        listLogsByUserAndLogType,
         listLots,
         listLotsByProduct,
         listProducts,
@@ -607,6 +739,7 @@ private class SasConnectorConnectorImpl(
         searchBeneficiaries,
         searchCampaigns,
         searchDonations,
+        searchLogTypesByName,
         searchLots,
         searchProducts,
         searchUsers,
@@ -850,6 +983,51 @@ private class CreateDonationItemMutationImpl(
   )
 
 
+private class CreateLogMutationImpl(
+  connector: SasConnectorConnector
+):
+  CreateLogMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      CreateLogMutation.Data,
+      CreateLogMutation.Variables
+  >(
+    connector,
+    CreateLogMutation.Companion.operationName,
+    CreateLogMutation.Companion.dataDeserializer,
+    CreateLogMutation.Companion.variablesSerializer,
+  )
+
+
+private class CreateLogBatchMutationImpl(
+  connector: SasConnectorConnector
+):
+  CreateLogBatchMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      CreateLogBatchMutation.Data,
+      CreateLogBatchMutation.Variables
+  >(
+    connector,
+    CreateLogBatchMutation.Companion.operationName,
+    CreateLogBatchMutation.Companion.dataDeserializer,
+    CreateLogBatchMutation.Companion.variablesSerializer,
+  )
+
+
+private class CreateLogTypeMutationImpl(
+  connector: SasConnectorConnector
+):
+  CreateLogTypeMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      CreateLogTypeMutation.Data,
+      CreateLogTypeMutation.Variables
+  >(
+    connector,
+    CreateLogTypeMutation.Companion.operationName,
+    CreateLogTypeMutation.Companion.dataDeserializer,
+    CreateLogTypeMutation.Companion.variablesSerializer,
+  )
+
+
 private class CreateLotMutationImpl(
   connector: SasConnectorConnector
 ):
@@ -1030,6 +1208,36 @@ private class DeleteDonationItemMutationImpl(
   )
 
 
+private class DeleteLogMutationImpl(
+  connector: SasConnectorConnector
+):
+  DeleteLogMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      DeleteLogMutation.Data,
+      DeleteLogMutation.Variables
+  >(
+    connector,
+    DeleteLogMutation.Companion.operationName,
+    DeleteLogMutation.Companion.dataDeserializer,
+    DeleteLogMutation.Companion.variablesSerializer,
+  )
+
+
+private class DeleteLogTypeMutationImpl(
+  connector: SasConnectorConnector
+):
+  DeleteLogTypeMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      DeleteLogTypeMutation.Data,
+      DeleteLogTypeMutation.Variables
+  >(
+    connector,
+    DeleteLogTypeMutation.Companion.operationName,
+    DeleteLogTypeMutation.Companion.dataDeserializer,
+    DeleteLogTypeMutation.Companion.variablesSerializer,
+  )
+
+
 private class DeleteLotMutationImpl(
   connector: SasConnectorConnector
 ):
@@ -1165,6 +1373,51 @@ private class GetDonationByIdQueryImpl(
   )
 
 
+private class GetLogByIdQueryImpl(
+  connector: SasConnectorConnector
+):
+  GetLogByIdQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      GetLogByIdQuery.Data,
+      GetLogByIdQuery.Variables
+  >(
+    connector,
+    GetLogByIdQuery.Companion.operationName,
+    GetLogByIdQuery.Companion.dataDeserializer,
+    GetLogByIdQuery.Companion.variablesSerializer,
+  )
+
+
+private class GetLogTypeByCodeQueryImpl(
+  connector: SasConnectorConnector
+):
+  GetLogTypeByCodeQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      GetLogTypeByCodeQuery.Data,
+      GetLogTypeByCodeQuery.Variables
+  >(
+    connector,
+    GetLogTypeByCodeQuery.Companion.operationName,
+    GetLogTypeByCodeQuery.Companion.dataDeserializer,
+    GetLogTypeByCodeQuery.Companion.variablesSerializer,
+  )
+
+
+private class GetLogTypeByIdQueryImpl(
+  connector: SasConnectorConnector
+):
+  GetLogTypeByIdQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      GetLogTypeByIdQuery.Data,
+      GetLogTypeByIdQuery.Variables
+  >(
+    connector,
+    GetLogTypeByIdQuery.Companion.operationName,
+    GetLogTypeByIdQuery.Companion.dataDeserializer,
+    GetLogTypeByIdQuery.Companion.variablesSerializer,
+  )
+
+
 private class GetLotByIdQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -1237,6 +1490,21 @@ private class GetUserByIdQueryImpl(
     GetUserByIdQuery.Companion.operationName,
     GetUserByIdQuery.Companion.dataDeserializer,
     GetUserByIdQuery.Companion.variablesSerializer,
+  )
+
+
+private class GetUserByUidQueryImpl(
+  connector: SasConnectorConnector
+):
+  GetUserByUidQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      GetUserByUidQuery.Data,
+      GetUserByUidQuery.Variables
+  >(
+    connector,
+    GetUserByUidQuery.Companion.operationName,
+    GetUserByUidQuery.Companion.dataDeserializer,
+    GetUserByUidQuery.Companion.variablesSerializer,
   )
 
 
@@ -1495,6 +1763,111 @@ private class ListDonationsByCampaignQueryImpl(
   )
 
 
+private class ListLogTypesQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListLogTypesQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListLogTypesQuery.Data,
+      ListLogTypesQuery.Variables
+  >(
+    connector,
+    ListLogTypesQuery.Companion.operationName,
+    ListLogTypesQuery.Companion.dataDeserializer,
+    ListLogTypesQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListLogsQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListLogsQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListLogsQuery.Data,
+      ListLogsQuery.Variables
+  >(
+    connector,
+    ListLogsQuery.Companion.operationName,
+    ListLogsQuery.Companion.dataDeserializer,
+    ListLogsQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListLogsByDateRangeQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListLogsByDateRangeQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListLogsByDateRangeQuery.Data,
+      ListLogsByDateRangeQuery.Variables
+  >(
+    connector,
+    ListLogsByDateRangeQuery.Companion.operationName,
+    ListLogsByDateRangeQuery.Companion.dataDeserializer,
+    ListLogsByDateRangeQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListLogsByLogTypeQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListLogsByLogTypeQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListLogsByLogTypeQuery.Data,
+      ListLogsByLogTypeQuery.Variables
+  >(
+    connector,
+    ListLogsByLogTypeQuery.Companion.operationName,
+    ListLogsByLogTypeQuery.Companion.dataDeserializer,
+    ListLogsByLogTypeQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListLogsByLogTypeCodeQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListLogsByLogTypeCodeQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListLogsByLogTypeCodeQuery.Data,
+      ListLogsByLogTypeCodeQuery.Variables
+  >(
+    connector,
+    ListLogsByLogTypeCodeQuery.Companion.operationName,
+    ListLogsByLogTypeCodeQuery.Companion.dataDeserializer,
+    ListLogsByLogTypeCodeQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListLogsByUserQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListLogsByUserQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListLogsByUserQuery.Data,
+      ListLogsByUserQuery.Variables
+  >(
+    connector,
+    ListLogsByUserQuery.Companion.operationName,
+    ListLogsByUserQuery.Companion.dataDeserializer,
+    ListLogsByUserQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListLogsByUserAndLogTypeQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListLogsByUserAndLogTypeQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListLogsByUserAndLogTypeQuery.Data,
+      ListLogsByUserAndLogTypeQuery.Variables
+  >(
+    connector,
+    ListLogsByUserAndLogTypeQuery.Companion.operationName,
+    ListLogsByUserAndLogTypeQuery.Companion.dataDeserializer,
+    ListLogsByUserAndLogTypeQuery.Companion.variablesSerializer,
+  )
+
+
 private class ListLotsQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -1627,6 +2000,21 @@ private class SearchDonationsQueryImpl(
     SearchDonationsQuery.Companion.operationName,
     SearchDonationsQuery.Companion.dataDeserializer,
     SearchDonationsQuery.Companion.variablesSerializer,
+  )
+
+
+private class SearchLogTypesByNameQueryImpl(
+  connector: SasConnectorConnector
+):
+  SearchLogTypesByNameQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      SearchLogTypesByNameQuery.Data,
+      SearchLogTypesByNameQuery.Variables
+  >(
+    connector,
+    SearchLogTypesByNameQuery.Companion.operationName,
+    SearchLogTypesByNameQuery.Companion.dataDeserializer,
+    SearchLogTypesByNameQuery.Companion.variablesSerializer,
   )
 
 
@@ -1822,6 +2210,36 @@ private class UpdateDonationStatusMutationImpl(
     UpdateDonationStatusMutation.Companion.operationName,
     UpdateDonationStatusMutation.Companion.dataDeserializer,
     UpdateDonationStatusMutation.Companion.variablesSerializer,
+  )
+
+
+private class UpdateLogMutationImpl(
+  connector: SasConnectorConnector
+):
+  UpdateLogMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      UpdateLogMutation.Data,
+      UpdateLogMutation.Variables
+  >(
+    connector,
+    UpdateLogMutation.Companion.operationName,
+    UpdateLogMutation.Companion.dataDeserializer,
+    UpdateLogMutation.Companion.variablesSerializer,
+  )
+
+
+private class UpdateLogTypeMutationImpl(
+  connector: SasConnectorConnector
+):
+  UpdateLogTypeMutation,
+  SasConnectorConnectorGeneratedMutationImpl<
+      UpdateLogTypeMutation.Data,
+      UpdateLogTypeMutation.Variables
+  >(
+    connector,
+    UpdateLogTypeMutation.Companion.operationName,
+    UpdateLogTypeMutation.Companion.dataDeserializer,
+    UpdateLogTypeMutation.Companion.variablesSerializer,
   )
 
 

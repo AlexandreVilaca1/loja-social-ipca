@@ -1,0 +1,37 @@
+# ============================
+# LOG TYPE MUTATIONS
+# ============================
+
+# Create a new log type
+mutation CreateLogType(
+  $name: String!,
+  $code: String
+) @auth(level: USER) {
+  logType_insert(
+    data: {
+      name: $name,
+      code: $code
+    }
+  )
+}
+
+# Update log type
+mutation UpdateLogType(
+  $id: UUID!,
+  $name: String,
+  $code: String
+) @auth(level: USER) {
+  logType_update(
+    id: $id,
+    data: {
+      name: $name,
+      code: $code
+    }
+  )
+}
+
+# Delete log type
+mutation DeleteLogType($id: UUID!) @auth(level: USER) {
+  logType_delete(id: $id)
+}
+

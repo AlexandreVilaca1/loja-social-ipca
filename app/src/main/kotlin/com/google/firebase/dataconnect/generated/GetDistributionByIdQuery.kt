@@ -52,7 +52,7 @@ public interface GetDistributionByIdQuery :
     val responsibleStaff: ResponsibleStaff?,
     val beneficiary: Beneficiary?,
     val status: Status?,
-    val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?
+    val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp
   ) {
     
       

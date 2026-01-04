@@ -25,6 +25,7 @@ public interface CreateUserMutation :
     @kotlinx.serialization.Serializable
   public data class Variables(
   
+    val uid: String,
     val name: String,
     val email: String,
     val passwordHash: String,
@@ -59,7 +60,7 @@ public interface CreateUserMutation :
 
 public fun CreateUserMutation.ref(
   
-    name: String,email: String,passwordHash: String,role: String,
+    uid: String,name: String,email: String,passwordHash: String,role: String,
   
   
 ): com.google.firebase.dataconnect.MutationRef<
@@ -69,7 +70,7 @@ public fun CreateUserMutation.ref(
   ref(
     
       CreateUserMutation.Variables(
-        name=name,email=email,passwordHash=passwordHash,role=role,
+        uid=uid,name=name,email=email,passwordHash=passwordHash,role=role,
   
       )
     
@@ -77,7 +78,7 @@ public fun CreateUserMutation.ref(
 
 public suspend fun CreateUserMutation.execute(
   
-    name: String,email: String,passwordHash: String,role: String,
+    uid: String,name: String,email: String,passwordHash: String,role: String,
   
   
   ): com.google.firebase.dataconnect.MutationResult<
@@ -86,7 +87,7 @@ public suspend fun CreateUserMutation.execute(
   > =
   ref(
     
-      name=name,email=email,passwordHash=passwordHash,role=role,
+      uid=uid,name=name,email=email,passwordHash=passwordHash,role=role,
   
     
   ).execute()

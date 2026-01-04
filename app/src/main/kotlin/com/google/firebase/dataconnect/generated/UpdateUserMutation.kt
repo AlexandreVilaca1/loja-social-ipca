@@ -26,6 +26,7 @@ public interface UpdateUserMutation :
   public data class Variables(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
+    val uid: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val name: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val email: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val role: com.google.firebase.dataconnect.OptionalVariable<String?>
@@ -38,6 +39,7 @@ public interface UpdateUserMutation :
       @BuilderDsl
       public interface Builder {
         public var id: java.util.UUID
+        public var uid: String?
         public var name: String?
         public var email: String?
         public var role: String?
@@ -51,6 +53,8 @@ public interface UpdateUserMutation :
           block_: Builder.() -> Unit
         ): Variables {
           var id= id
+            var uid: com.google.firebase.dataconnect.OptionalVariable<String?> =
+                com.google.firebase.dataconnect.OptionalVariable.Undefined
             var name: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var email: com.google.firebase.dataconnect.OptionalVariable<String?> =
@@ -63,6 +67,10 @@ public interface UpdateUserMutation :
             override var id: java.util.UUID
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { id = value_ }
+              
+            override var uid: String?
+              get() = throw UnsupportedOperationException("getting builder values is not supported")
+              set(value_) { uid = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
               
             override var name: String?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
@@ -80,7 +88,7 @@ public interface UpdateUserMutation :
           }.apply(block_)
           .let {
             Variables(
-              id=id,name=name,email=email,role=role,
+              id=id,uid=uid,name=name,email=email,role=role,
             )
           }
         }

@@ -1,18 +1,19 @@
 type User @table {
   name: String!
+  uid: String
   email: String!
   passwordHash: String!
   role: String!
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type Category @table {
   name: String!
   description: String
   active: Boolean
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type Product @table {
@@ -21,8 +22,8 @@ type Product @table {
   isActive: Boolean!
   description: String
   category: Category
-  createdAt: Timestamp
-  updateAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
+  updateAt: Timestamp! @default(expr: "request.time")
 }
 
 type Lot @table {
@@ -33,8 +34,8 @@ type Lot @table {
   expirationDate: Date!
   observations: String
   product: Product
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type StatusType @table {
@@ -43,7 +44,7 @@ type StatusType @table {
   sortOrder: Int!
   color: String
   active: Boolean
-  createdAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
 }
 
 type Donation @table {
@@ -54,8 +55,8 @@ type Donation @table {
   observations: String
   campaign: Campaign
   status: StatusType
-  createdAt: Timestamp
-  updatedAt:Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type Distribution @table {
@@ -64,7 +65,7 @@ type Distribution @table {
   responsibleStaff: User
   beneficiary: Beneficiary
   status: StatusType
-  createdAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
 }
 
 type Beneficiary @table {
@@ -76,8 +77,8 @@ type Beneficiary @table {
   contactNumber: String!
   address: String
   observations: String
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type Campaign @table {
@@ -89,8 +90,8 @@ type Campaign @table {
   observations: String
   user: User
   status: StatusType
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type DonationItem @table(key: ["donation", "lot"]) {
@@ -99,7 +100,7 @@ type DonationItem @table(key: ["donation", "lot"]) {
   quantity: Int!
   state: StatusType
   observations: String
-  createdAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
 }
 
 type DistributionItem @table(key: ["distribution", "lot"]) {
@@ -107,5 +108,18 @@ type DistributionItem @table(key: ["distribution", "lot"]) {
   lot: Lot!
   quantity: Int!
   observations: String
-  createdAt: Timestamp
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type LogType @table {
+  name: String!
+  code: String
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type Log @table {
+  description: String!
+  logType: LogType!
+  user: User!
+  createdAt: Timestamp! @default(expr: "request.time")
 }
