@@ -79,6 +79,35 @@ query ListDistributionsByBeneficiary($beneficiaryId: UUID!, $limit: Int = 8, $of
   }
 }
 
+# List distributions by beneficiary and status
+query ListDistributionsByBeneficiaryAndStatus($beneficiaryId: UUID!, $statusCode: String!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  distributions(
+    where: {
+      _and: [
+        { beneficiary: { id: { eq: $beneficiaryId } } }
+        { status: { code: { eq: $statusCode } } }
+      ]
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ distributionDate: DESC }]
+  ) {
+    id
+    distributionDate
+    observations
+    responsibleStaff {
+      id
+      name
+    }
+    status {
+      id
+      code
+      description
+    }
+    createdAt
+  }
+}
+
 # List distributions by status
 query ListDistributionsByStatus($statusCode: String!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   distributions(

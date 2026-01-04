@@ -5,10 +5,14 @@ import com.example.sas.data.repository.AuthRepositoryImpl
 import com.example.sas.data.repository.BeneficiariesRepositoryImpl
 import com.example.sas.data.repository.DistributionItemsRepositoryImpl
 import com.example.sas.data.repository.DistributionsRepositoryImpl
+import com.example.sas.data.repository.StatusTypesRepositoryImpl
+import com.example.sas.data.repository.UsersRepositoryImpl
 import com.example.sas.domain.repositories.AuthRepository
 import com.example.sas.domain.repositories.BeneficiariesRepository
 import com.example.sas.domain.repositories.DistributionItemsRepository
 import com.example.sas.domain.repositories.DistributionsRepository
+import com.example.sas.domain.repositories.StatusTypesRepository
+import com.example.sas.domain.repositories.UsersRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Binds
 import dagger.Module
@@ -44,6 +48,18 @@ abstract class RepositoryBindsModule {
     abstract fun bindDistributionItemsRepository(
         impl: DistributionItemsRepositoryImpl
     ): DistributionItemsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUsersRepository(
+        impl: UsersRepositoryImpl
+    ): UsersRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindStatusTypesRepository(
+        impl: StatusTypesRepositoryImpl
+    ): StatusTypesRepository
 }
 
 @Module

@@ -46,3 +46,12 @@ query ListActiveStatusTypes($limit: Int = 8, $offset: Int = 0) @auth(level: PUBL
   }
 }
 
+# Get status type by code
+query GetStatusTypeByCode($code: String!) @auth(level: PUBLIC, insecureReason: "Anyone can get a status type by code.") {
+  statusTypes(where: { code: { eq: $code } }, limit: 1) {
+    id
+    code
+    description
+    color
+  }
+}

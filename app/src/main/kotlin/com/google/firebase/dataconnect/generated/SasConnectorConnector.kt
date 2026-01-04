@@ -78,6 +78,8 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val getProductById: GetProductByIdQuery
   
+    public val getStatusTypeByCode: GetStatusTypeByCodeQuery
+  
     public val getStatusTypeById: GetStatusTypeByIdQuery
   
     public val getUserById: GetUserByIdQuery
@@ -103,6 +105,8 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
     public val listDistributions: ListDistributionsQuery
   
     public val listDistributionsByBeneficiary: ListDistributionsByBeneficiaryQuery
+  
+    public val listDistributionsByBeneficiaryAndStatus: ListDistributionsByBeneficiaryAndStatusQuery
   
     public val listDistributionsByStatus: ListDistributionsByStatusQuery
   
@@ -327,6 +331,10 @@ private class SasConnectorConnectorImpl(
       GetProductByIdQueryImpl(this)
     }
   
+    override val getStatusTypeByCode by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      GetStatusTypeByCodeQueryImpl(this)
+    }
+  
     override val getStatusTypeById by lazy(LazyThreadSafetyMode.PUBLICATION) {
       GetStatusTypeByIdQueryImpl(this)
     }
@@ -377,6 +385,10 @@ private class SasConnectorConnectorImpl(
   
     override val listDistributionsByBeneficiary by lazy(LazyThreadSafetyMode.PUBLICATION) {
       ListDistributionsByBeneficiaryQueryImpl(this)
+    }
+  
+    override val listDistributionsByBeneficiaryAndStatus by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListDistributionsByBeneficiaryAndStatusQueryImpl(this)
     }
   
     override val listDistributionsByStatus by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -566,6 +578,7 @@ private class SasConnectorConnectorImpl(
         getDonationById,
         getLotById,
         getProductById,
+        getStatusTypeByCode,
         getStatusTypeById,
         getUserById,
         listActiveBeneficiaries,
@@ -579,6 +592,7 @@ private class SasConnectorConnectorImpl(
         listDistributionItemsByLot,
         listDistributions,
         listDistributionsByBeneficiary,
+        listDistributionsByBeneficiaryAndStatus,
         listDistributionsByStatus,
         listDonationItemsByDonation,
         listDonationItemsByLot,
@@ -1181,6 +1195,21 @@ private class GetProductByIdQueryImpl(
   )
 
 
+private class GetStatusTypeByCodeQueryImpl(
+  connector: SasConnectorConnector
+):
+  GetStatusTypeByCodeQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      GetStatusTypeByCodeQuery.Data,
+      GetStatusTypeByCodeQuery.Variables
+  >(
+    connector,
+    GetStatusTypeByCodeQuery.Companion.operationName,
+    GetStatusTypeByCodeQuery.Companion.dataDeserializer,
+    GetStatusTypeByCodeQuery.Companion.variablesSerializer,
+  )
+
+
 private class GetStatusTypeByIdQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -1373,6 +1402,21 @@ private class ListDistributionsByBeneficiaryQueryImpl(
     ListDistributionsByBeneficiaryQuery.Companion.operationName,
     ListDistributionsByBeneficiaryQuery.Companion.dataDeserializer,
     ListDistributionsByBeneficiaryQuery.Companion.variablesSerializer,
+  )
+
+
+private class ListDistributionsByBeneficiaryAndStatusQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListDistributionsByBeneficiaryAndStatusQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListDistributionsByBeneficiaryAndStatusQuery.Data,
+      ListDistributionsByBeneficiaryAndStatusQuery.Variables
+  >(
+    connector,
+    ListDistributionsByBeneficiaryAndStatusQuery.Companion.operationName,
+    ListDistributionsByBeneficiaryAndStatusQuery.Companion.dataDeserializer,
+    ListDistributionsByBeneficiaryAndStatusQuery.Companion.variablesSerializer,
   )
 
 

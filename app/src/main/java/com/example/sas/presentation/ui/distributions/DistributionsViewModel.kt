@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
+import com.example.sas.domain.usecase.distributions.ListDistributionsByBeneficiaryAndStatusUseCase
 import com.example.sas.domain.usecase.distributions.ListDistributionsByBeneficiaryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DistributionsViewModel @Inject constructor(
     private val listDistributionsUseCase: ListDistributionsByBeneficiaryUseCase,
+    private val listDistributionsByStatusUseCase: ListDistributionsByBeneficiaryAndStatusUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -25,6 +27,9 @@ class DistributionsViewModel @Inject constructor(
 
     private val beneficiaryId: String? = savedStateHandle["beneficiaryId"]
     private val beneficiaryName: String? = savedStateHandle["beneficiaryName"]
+
+    // Expor o beneficiaryId para uso na navegação
+    val currentBeneficiaryId: String? get() = beneficiaryId
 
     private companion object {
         const val TAG = "BeneficiaryDistributionsVM"
@@ -44,36 +49,48 @@ class DistributionsViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch {
-            Log.d(TAG, "Loading distributions for beneficiary: $id")
+        val statusFilter = _uiState.value.selectedStatusFilter
 
-            listDistributionsUseCase.execute(beneficiaryId = id, limit = 100, offset = 0)
-                .collect { result ->
-                    when (result) {
-                        is ResultWrapper.Loading -> {
-                            _uiState.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            Log.d(TAG, "Loading distributions for beneficiary: $id, status: $statusFilter")
+
+            val useCase = if (statusFilter != null) {
+                listDistributionsByStatusUseCase.execute(id, statusFilter, 100, 0)
+            } else {
+                listDistributionsUseCase.execute(id, 100, 0)
+            }
+
+            useCase.collect { result ->
+                when (result) {
+                    is ResultWrapper.Loading -> {
+                        _uiState.update { it.copy(isLoading = true, error = null) }
+                    }
+                    is ResultWrapper.Success -> {
+                        Log.d(TAG, "Loaded ${result.data?.size ?: 0} distributions")
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                distributions = result.data ?: emptyList()
+                            )
                         }
-                        is ResultWrapper.Success -> {
-                            Log.d(TAG, "Loaded ${result.data?.size ?: 0} distributions")
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    distributions = result.data ?: emptyList()
-                                )
-                            }
-                        }
-                        is ResultWrapper.Error -> {
-                            Log.e(TAG, "Failed to load distributions: ${result.message}")
-                            _uiState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    error = result.message ?: "Erro ao carregar distribuições"
-                                )
-                            }
+                    }
+                    is ResultWrapper.Error -> {
+                        Log.e(TAG, "Failed to load distributions: ${result.message}")
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.message ?: "Erro ao carregar distribuições"
+                            )
                         }
                     }
                 }
+            }
         }
+    }
+
+    fun filterByStatus(statusCode: String?) {
+        _uiState.update { it.copy(selectedStatusFilter = statusCode) }
+        loadDistributions()
     }
 
     fun refreshDistributions() {

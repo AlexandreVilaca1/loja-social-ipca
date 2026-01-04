@@ -3,14 +3,13 @@ package com.example.sas.presentation.ui.Home
 import DrawerContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -42,9 +41,14 @@ fun HomeView() {
 
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
+    val shouldShowBackButton = currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") ||
+                                currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items")
+
     val currentTitle = when {
         currentRoute?.startsWith("agendamentos") == true -> "Agendamentos"
         currentRoute == DrawerRoute.Beneficiarios.route -> "Beneficiários"
+        currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") -> "Distribuições"
+        currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items") -> "Itens da Distribuição"
         currentRoute == DrawerRoute.Doacoes.route -> "Doações"
         currentRoute == DrawerRoute.Produtos.route -> "Produtos"
         currentRoute == DrawerRoute.Relatorios.route -> "Relatórios"
@@ -85,17 +89,27 @@ fun HomeView() {
                     },
                     navigationIcon = {
                         IconButton(onClick = {
-                            scope.launch { drawerState.open() }
+                            if (shouldShowBackButton) {
+                                navController.navigateUp()
+                            } else {
+                                scope.launch { drawerState.open() }
+                            }
                         }) {
                             Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
+                                imageVector = if (shouldShowBackButton) {
+                                    Icons.AutoMirrored.Filled.ArrowBack
+                                } else {
+                                    Icons.Default.Menu
+                                },
+                                contentDescription = if (shouldShowBackButton) "Voltar" else "Menu",
                                 tint = Color.White
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = GreenPrimary
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = GreenPrimary,
+                        titleContentColor = Color.White,
+                        navigationIconContentColor = Color.White
                     ),
                     windowInsets = WindowInsets(0,0,0,0)
                 )
@@ -137,7 +151,7 @@ fun HomeView() {
                     }
 
                     composable("distribution/{distributionId}/items?date={distributionDate}") {
-                        DistributionItemsView(navController = navController)
+                        DistributionItemsView()
                     }
 
                     composable(DrawerRoute.Doacoes.route) {
