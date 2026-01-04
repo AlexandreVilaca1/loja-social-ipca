@@ -10,6 +10,13 @@ import kotlinx.coroutines.flow.Flow
 interface DistributionsRepository {
 
     /**
+     * Gets a distribution by its ID.
+     * @param distributionId UUID of the distribution
+     * @return Flow with result wrapper containing the distribution
+     */
+    fun getDistributionById(distributionId: String): Flow<ResultWrapper<Distribution?>>
+
+    /**
      * Lists all distributions.
      */
     fun listDistributions(
@@ -67,4 +74,32 @@ interface DistributionsRepository {
         statusId: String,
         observations: String?
     ): Flow<ResultWrapper<String>>
+
+    /**
+     * Updates the status of a distribution.
+     * @param distributionId UUID of the distribution
+     * @param statusId UUID of the new status
+     * @return Flow with result wrapper indicating success or failure
+     */
+    fun updateDistributionStatus(
+        distributionId: String,
+        statusId: String
+    ): Flow<ResultWrapper<Unit>>
+
+    /**
+     * Updates a distribution.
+     * @param distributionId UUID of the distribution
+     * @param distributionDate Date of the distribution
+     * @param responsibleStaffId UUID of the responsible staff member
+     * @param statusId UUID of the status
+     * @param observations Optional observations
+     * @return Flow with result wrapper indicating success or failure
+     */
+    fun updateDistribution(
+        distributionId: String,
+        distributionDate: String,
+        responsibleStaffId: String,
+        statusId: String,
+        observations: String?
+    ): Flow<ResultWrapper<Unit>>
 }

@@ -90,7 +90,6 @@ fun LotsView(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            // Search bar
             OutlinedTextField(
                 value = state.searchQuery,
                 onValueChange = { viewModel.setSearchQuery(it) },

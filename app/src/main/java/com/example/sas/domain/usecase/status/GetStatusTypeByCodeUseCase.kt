@@ -15,7 +15,7 @@ class GetStatusTypeByCodeUseCase @Inject constructor(
 
     /**
      * Executes the use case to get a status type by its code.
-     * @param code Status code (e.g., "NAO_ENTREGUE", "ENTREGUE")
+     * @param code Status code (e.g., "POR_ENTREGAR", "ENTREGUE")
      * @return Flow with result wrapper containing the status type
      */
     fun execute(code: String): Flow<ResultWrapper<StatusType?>> {

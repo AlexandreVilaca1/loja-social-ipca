@@ -44,5 +44,20 @@ class DistributionItemsRepositoryImpl @Inject constructor(
             emit(ResultWrapper.Error(e.message ?: "Erro ao listar itens da distribuição"))
         }
     }.flowOn(Dispatchers.IO)
+
+    override fun createDistributionItem(
+        distributionId: String,
+        lotId: String,
+        quantity: Int,
+        observations: String?
+    ): Flow<ResultWrapper<Unit>> = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            dataSource.createDistributionItem(distributionId, lotId, quantity, observations)
+            emit(ResultWrapper.Success(Unit))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao criar item da distribuição"))
+        }
+    }.flowOn(Dispatchers.IO)
 }
 

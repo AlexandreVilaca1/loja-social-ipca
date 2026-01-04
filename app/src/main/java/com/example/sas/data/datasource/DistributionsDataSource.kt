@@ -1,6 +1,8 @@
 package com.example.sas.data.datasource
 
 import com.google.firebase.dataconnect.generated.BeneficiaryKey
+import com.google.firebase.dataconnect.generated.DistributionKey
+import com.google.firebase.dataconnect.generated.GetDistributionByIdQuery
 import com.google.firebase.dataconnect.generated.ListDistributionsByBeneficiaryAndStatusQuery
 import com.google.firebase.dataconnect.generated.ListDistributionsByBeneficiaryQuery
 import com.google.firebase.dataconnect.generated.ListDistributionsByStatusQuery
@@ -21,6 +23,14 @@ class DistributionsDataSource @Inject constructor() {
 
     private val connector: SasConnectorConnector
         get() = SasConnectorConnector.instance
+
+    /**
+     * Gets a distribution by ID from Firebase Data Connect.
+     */
+    suspend fun getDistributionById(distributionId: String): GetDistributionByIdQuery.Data.Distribution? {
+        val result = connector.getDistributionById.execute(id = java.util.UUID.fromString(distributionId))
+        return result.data.distribution
+    }
 
     /**
      * Lists all distributions from Firebase Data Connect.
@@ -126,6 +136,46 @@ class DistributionsDataSource @Inject constructor() {
             this.statusId = StatusTypeKey(java.util.UUID.fromString(statusId))
         }
         return result.data.distribution_insert.id.toString()
+    }
+    /**
+     * Updates the status of a distribution in Firebase Data Connect.
+     */
+    suspend fun updateDistributionStatus(
+        distributionId: String,
+        statusId: String
+    ) {
+        connector.updateDistributionStatus.execute(
+            id = java.util.UUID.fromString(distributionId),
+            statusId = StatusTypeKey(java.util.UUID.fromString(statusId))
+        )
+    }
+
+    /**
+     * Updates a distribution in Firebase Data Connect.
+     */
+    suspend fun updateDistribution(
+        distributionId: String,
+        distributionDate: String,
+        responsibleStaffId: String,
+        statusId: String,
+        observations: String?
+    ) {
+        // Parse date string (format: YYYY-MM-DD)
+        val dateParts = distributionDate.split("-")
+        val localDate = com.google.firebase.dataconnect.LocalDate(
+            year = dateParts[0].toInt(),
+            month = dateParts[1].toInt(),
+            day = dateParts[2].toInt()
+        )
+
+        connector.updateDistribution.execute(
+            id = java.util.UUID.fromString(distributionId)
+        ) {
+            this.distributionDate = localDate
+            this.observations = observations
+            this.responsibleStaffId = UserKey(java.util.UUID.fromString(responsibleStaffId))
+            this.statusId = StatusTypeKey(java.util.UUID.fromString(statusId))
+        }
     }
 }
 

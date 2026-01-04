@@ -17,8 +17,18 @@ class StatusTypesDataSource @Inject constructor() {
         get() = SasConnectorConnector.instance
 
     /**
-     * Gets a status type by its code from Firebase Data Connect.
-     * @param code Status code (e.g., "NAO_ENTREGUE", "ENTREGUE")
+     * Lists all status types from Firebase Data Connect.
+     */
+    suspend fun listStatusTypes(): List<com.google.firebase.dataconnect.generated.ListStatusTypesQuery.Data.StatusTypesItem> {
+        val result = connector.listStatusTypes.execute {
+            this.limit = 100
+            this.offset = 0
+        }
+        return result.data.statusTypes
+    }
+
+    /**
+     * Gets a status type by code from Firebase Data Connect.
      * @return The status type if found, null otherwise
      */
     suspend fun getStatusTypeByCode(code: String): GetStatusTypeByCodeQuery.Data.StatusTypesItem? {

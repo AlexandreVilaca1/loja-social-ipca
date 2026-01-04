@@ -6,6 +6,8 @@ import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.Distribution
 import com.example.sas.domain.usecase.distributions.ListDistributionsUseCase
 import com.example.sas.domain.usecase.distributions.ListDistributionsByStatusUseCase
+import com.example.sas.domain.usecase.distributions.UpdateDistributionStatusUseCase
+import com.example.sas.domain.usecase.status.GetStatusTypeByCodeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,9 +21,11 @@ import javax.inject.Inject
  * ViewModel for Agendamentos (Appointments/Distributions) screen.
  */
 @HiltViewModel
-class AgendamentosViewModel @Inject constructor(
+class AppointmentViewModel @Inject constructor(
     private val listDistributionsUseCase: ListDistributionsUseCase,
-    private val listDistributionsByStatusUseCase: ListDistributionsByStatusUseCase
+    private val listDistributionsByStatusUseCase: ListDistributionsByStatusUseCase,
+    private val updateDistributionStatusUseCase: UpdateDistributionStatusUseCase,
+    private val getStatusByCodeUseCase: GetStatusTypeByCodeUseCase
 ) : ViewModel() {
 
     // State for all distributions
@@ -46,7 +50,7 @@ class AgendamentosViewModel @Inject constructor(
 
     init {
         // Load all distributions on initialization
-        loadDistributionsByStatus("NAO_ENTREGUE")
+        loadDistributionsByStatus("POR_ENTREGAR")
     }
 
     /**
@@ -130,7 +134,7 @@ class AgendamentosViewModel @Inject constructor(
      * Loads pending distributions only.
      */
     fun loadPendingDistributions() {
-        loadDistributionsByStatus("NAO_ENTREGUE")
+        loadDistributionsByStatus("POR_ENTREGAR")
     }
 
     /**
@@ -151,6 +155,68 @@ class AgendamentosViewModel @Inject constructor(
      * Refreshes the data.
      */
     fun refresh() {
-        loadAllDistributions()
+        loadDistributionsByStatus("POR_ENTREGAR")
+    }
+
+    /**
+     * Updates distribution status to "ENTREGUE" (delivered).
+     */
+    fun markAsDelivered(distributionId: String) {
+        updateStatus(distributionId, "ENTREGUE")
+    }
+
+    /**
+     * Updates distribution status to "NAO_COMPARECEU" (did not show up).
+     */
+    fun markAsNoShow(distributionId: String) {
+        updateStatus(distributionId, "NAO_COMPARECEU")
+    }
+
+    /**
+     * Updates the status of a distribution.
+     */
+    private fun updateStatus(distributionId: String, statusCode: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+
+            // First, get the status ID by code
+            getStatusByCodeUseCase.execute(statusCode).collect { statusResult ->
+                when (statusResult) {
+                    is ResultWrapper.Success -> {
+                        val statusId = statusResult.data?.id
+                        if (statusId != null) {
+                            // Update the distribution status
+                            updateDistributionStatusUseCase.execute(distributionId, statusId)
+                                .collect { updateResult ->
+                                    when (updateResult) {
+                                        is ResultWrapper.Success -> {
+                                            // Reload distributions after successful update
+                                            loadDistributionsByStatus("POR_ENTREGAR")
+                                        }
+                                        is ResultWrapper.Error -> {
+                                            _isLoading.value = false
+                                            _errorMessage.value = updateResult.message
+                                        }
+                                        is ResultWrapper.Loading -> {
+                                            // Keep loading state
+                                        }
+                                    }
+                                }
+                        } else {
+                            _isLoading.value = false
+                            _errorMessage.value = "Status $statusCode não encontrado"
+                        }
+                    }
+                    is ResultWrapper.Error -> {
+                        _isLoading.value = false
+                        _errorMessage.value = statusResult.message
+                    }
+                    is ResultWrapper.Loading -> {
+                        // Keep loading state
+                    }
+                }
+            }
+        }
     }
 }
