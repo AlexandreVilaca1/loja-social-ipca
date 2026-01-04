@@ -66,6 +66,9 @@ abstract class RepositoryBindsModule {
     abstract fun bindStatusTypesRepository(
         impl: StatusTypesRepositoryImpl
     ): StatusTypesRepository
+
+    @Binds
+    @Singleton
     abstract fun bindCategoriesRepository(
         impl: CategoriesRepositoryImpl
     ): CategoriesRepository

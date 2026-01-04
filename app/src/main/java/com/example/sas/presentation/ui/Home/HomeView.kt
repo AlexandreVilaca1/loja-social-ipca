@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -27,6 +28,9 @@ import com.example.sas.presentation.ui.Drawer.DrawerRoute
 import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
 import com.example.sas.presentation.ui.distributionItems.DistributionItemsView
 import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsView
+import com.example.sas.presentation.ui.stock.lots.LotsView
+import com.example.sas.presentation.ui.stock.lots.LotsViewModel
+import com.example.sas.presentation.ui.stock.products.ProductsView
 import com.example.sas.presentation.ui.theme.GreenPrimary
 import kotlinx.coroutines.launch
 
@@ -139,6 +143,20 @@ fun HomeView() {
                         }
                     }
 
+                    navigation(
+                        route = "stock",
+                        startDestination = "stock/lots"
+                    ){
+                        composable("stock/lots") { backStackEntry ->
+                            val viewModel = hiltViewModel<LotsViewModel>(backStackEntry)
+                            LotsView(navController = navController)
+                        }
+                        composable("stock/products") { backStackEntry ->
+                            val viewModel = hiltViewModel<LotsViewModel>(backStackEntry)
+                            ProductsView(navController = navController)
+                        }
+                    }
+
                     composable(DrawerRoute.Beneficiarios.route) {
                         BeneficiariesView(
                             innerPadding = padding,
@@ -156,10 +174,6 @@ fun HomeView() {
 
                     composable(DrawerRoute.Doacoes.route) {
                         Text("Tela Doações")
-                    }
-
-                    composable(DrawerRoute.Produtos.route) {
-                        Text("Tela Produtos")
                     }
 
                     composable(DrawerRoute.Relatorios.route) {

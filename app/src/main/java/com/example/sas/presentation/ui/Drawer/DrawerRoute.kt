@@ -4,6 +4,6 @@ sealed class DrawerRoute(val route: String) {
     object Agendamentos : DrawerRoute("agendamentos")
     object Beneficiarios : DrawerRoute("beneficiarios")
     object Doacoes : DrawerRoute("doacoes")
-    object Produtos : DrawerRoute("produtos")
+    object Produtos : DrawerRoute("stock")
     object Relatorios : DrawerRoute("relatorios")
 }
