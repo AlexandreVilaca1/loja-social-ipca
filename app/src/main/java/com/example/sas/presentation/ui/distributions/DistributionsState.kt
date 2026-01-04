@@ -9,6 +9,7 @@ data class DistributionsUiState(
     val beneficiaryName: String = "",
     val distributions: List<Distribution> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val selectedStatusFilter: String? = null // null = todos, ou código do status
 )
 

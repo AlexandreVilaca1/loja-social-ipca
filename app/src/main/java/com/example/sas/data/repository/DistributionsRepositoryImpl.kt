@@ -62,6 +62,26 @@ class DistributionsRepositoryImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
+    override fun listDistributionsByBeneficiaryAndStatus(
+        beneficiaryId: String,
+        statusCode: String,
+        limit: Int,
+        offset: Int
+    ): Flow<ResultWrapper<List<Distribution>>> = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            val items = dataSource.listDistributionsByBeneficiaryAndStatus(beneficiaryId, statusCode, limit, offset)
+            val distributions = items.map { item ->
+                mapToDistribution(item.id.toString(), item.distributionDate, item.observations,
+                    item.responsibleStaff?.name, item.status?.code, item.status?.description,
+                    item.createdAt?.toString())
+            }
+            emit(ResultWrapper.Success(distributions))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao listar distribuições por beneficiário e status"))
+        }
+    }.flowOn(Dispatchers.IO)
+
     override fun listDistributionsByStatus(
         statusCode: String,
         limit: Int,
@@ -78,6 +98,28 @@ class DistributionsRepositoryImpl @Inject constructor(
             emit(ResultWrapper.Success(distributions))
         } catch (e: Exception) {
             emit(ResultWrapper.Error(e.message ?: "Erro ao listar distribuições por status"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun createDistribution(
+        beneficiaryId: String,
+        distributionDate: String,
+        responsibleStaffId: String,
+        statusId: String,
+        observations: String?
+    ): Flow<ResultWrapper<String>> = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            val distributionId = dataSource.createDistribution(
+                beneficiaryId = beneficiaryId,
+                distributionDate = distributionDate,
+                responsibleStaffId = responsibleStaffId,
+                statusId = statusId,
+                observations = observations
+            )
+            emit(ResultWrapper.Success(distributionId))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao criar distribuição"))
         }
     }.flowOn(Dispatchers.IO)
 
