@@ -19,6 +19,24 @@ class StatusTypesRepositoryImpl @Inject constructor(
     private val dataSource: StatusTypesDataSource
 ) : StatusTypesRepository {
 
+    override fun listStatusTypes(): Flow<ResultWrapper<List<StatusType>>> = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            val items = dataSource.listStatusTypes()
+            val statusTypes = items.map { item ->
+                StatusType(
+                    id = item.id.toString(),
+                    code = item.code,
+                    description = item.description,
+                    color = item.color
+                )
+            }
+            emit(ResultWrapper.Success(statusTypes))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao listar status"))
+        }
+    }.flowOn(Dispatchers.IO)
+
     override fun getStatusTypeByCode(code: String): Flow<ResultWrapper<StatusType?>> = flow<ResultWrapper<StatusType?>> {
         emit(ResultWrapper.Loading())
         try {

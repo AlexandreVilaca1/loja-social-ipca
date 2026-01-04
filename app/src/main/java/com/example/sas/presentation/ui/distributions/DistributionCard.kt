@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,7 +34,8 @@ import com.example.sas.presentation.ui.theme.TextDark
 @Composable
 fun DistributionCard(
     distribution: Distribution,
-    onViewItems: (Distribution) -> Unit
+    onViewItems: (Distribution) -> Unit,
+    onEdit: (Distribution) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -45,33 +48,57 @@ fun DistributionCard(
                 .fillMaxWidth()
                 .padding(12.dp)
         ) {
-            // Data e Status na mesma linha
+            // Header: Data, Status e Ícone de Edição
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                // Data e ID
+                Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.CalendarMonth,
-                        contentDescription = null,
-                        tint = GreenPrimary,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.size(6.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.CalendarMonth,
+                            contentDescription = null,
+                            tint = GreenPrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.size(6.dp))
+                        Text(
+                            text = distribution.distributionDate,
+                            fontWeight = FontWeight.SemiBold,
+                            color = TextDark,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    // ID da distribuição
                     Text(
-                        text = distribution.distributionDate,
-                        fontWeight = FontWeight.SemiBold,
-                        color = TextDark,
-                        style = MaterialTheme.typography.bodyMedium
+                        text = "ID: ${distribution.id.take(8)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(start = 24.dp, top = 2.dp)
                     )
                 }
 
+                // Status
                 if (distribution.statusDescription != null) {
                     StatusChip(text = distribution.statusDescription)
+                    Spacer(modifier = Modifier.size(8.dp))
+                }
+
+                // Ícone de Edição
+                IconButton(
+                    onClick = { onEdit(distribution) },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Editar",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
             }
 
@@ -107,10 +134,10 @@ fun DistributionCard(
             Spacer(modifier = Modifier.height(4.dp))
             TextButton(
                 onClick = { onViewItems(distribution) },
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(
-                    text = "Ver itens",
+                    text = "Ver produtos",
                     color = GreenPrimary,
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Medium

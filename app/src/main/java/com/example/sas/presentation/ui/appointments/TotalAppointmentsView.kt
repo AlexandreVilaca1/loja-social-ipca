@@ -1,38 +1,43 @@
 package com.example.sas.presentation.ui.appointments
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.presentation.ui.theme.BackgroundGreen
-import com.example.sas.presentation.ui.theme.GreenPrimary
+import com.example.sas.presentation.ui.theme.TextDark
 
 @Composable
 fun TotalAppointmentsView(
     navController: NavController,
-    viewModel: AgendamentosViewModel = hiltViewModel()
+    viewModel: AppointmentViewModel = hiltViewModel()
 ) {
     val distributionsState by viewModel.distributionsState.collectAsState()
+
+    // Refresh data whenever this screen becomes visible
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
+    }
 
     Scaffold(
         containerColor = BackgroundGreen,
@@ -80,16 +85,19 @@ fun TotalAppointmentsView(
                         )
                     }
                 } else {
-                    LazyColumn(
+                    Column(
                         modifier = Modifier
                             .padding(padding)
                             .padding(16.dp)
                     ) {
-                        items(distributions) { distribution ->
-                            AppointmentCard(distribution) {
-                                navController.navigate("agendamentos/detalhe/${distribution.id}")
+
+                        LazyColumn {
+                            items(distributions) { distribution ->
+                                AppointmentCard(distribution) {
+                                    navController.navigate("agendamentos/detalhe/${distribution.id}")
+                                }
+                                Spacer(modifier = Modifier.height(12.dp))
                             }
-                            Spacer(modifier = Modifier.height(12.dp))
                         }
                     }
                 }

@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -22,7 +21,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.sas.presentation.ui.BottomBar.BottomBar
 import com.example.sas.presentation.ui.appointments.AppointmentsView
-import com.example.sas.presentation.ui.appointments.AgendamentosViewModel
+import com.example.sas.presentation.ui.appointments.AppointmentViewModel
 import com.example.sas.presentation.ui.appointments.TotalAppointmentsView
 import com.example.sas.presentation.ui.Drawer.DrawerRoute
 import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
@@ -45,14 +44,17 @@ fun HomeView() {
 
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
-    val shouldShowBackButton = currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") ||
+    val shouldShowBackButton = currentRoute == "agendamentos/todos" ||
+                                currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") ||
                                 currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items")
 
     val currentTitle = when {
+        currentRoute == "agendamentos/home" -> "Agendamentos"
+        currentRoute == "agendamentos/todos" -> "Lista de Distribuições"
         currentRoute?.startsWith("agendamentos") == true -> "Agendamentos"
         currentRoute == DrawerRoute.Beneficiarios.route -> "Beneficiários"
         currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") -> "Distribuições"
-        currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items") -> "Itens da Distribuição"
+        currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items") -> "Produtos da Distribuição"
         currentRoute == DrawerRoute.Doacoes.route -> "Doações"
         currentRoute == DrawerRoute.Produtos.route -> "Produtos"
         currentRoute == DrawerRoute.Relatorios.route -> "Relatórios"
@@ -127,18 +129,17 @@ fun HomeView() {
                     navController = navController,
                     startDestination = DrawerRoute.Agendamentos.route
                 ) {
-
                     navigation(
                         route = "agendamentos",
                         startDestination = "agendamentos/home"
                     ) {
                         composable("agendamentos/home") { backStackEntry ->
-                            val viewModel = hiltViewModel<AgendamentosViewModel>(backStackEntry)
+                            val viewModel = hiltViewModel<AppointmentViewModel>(backStackEntry)
                             AppointmentsView(navController, viewModel)
                         }
 
                         composable("agendamentos/todos") { backStackEntry ->
-                            val viewModel = hiltViewModel<AgendamentosViewModel>(backStackEntry)
+                            val viewModel = hiltViewModel<AppointmentViewModel>(backStackEntry)
                             TotalAppointmentsView(navController, viewModel)
                         }
                     }

@@ -77,8 +77,6 @@ fun LoginView(
                         contentScale = ContentScale.Fit
                     )
 
-
-                    // 🧾 FORMULÁRIO
                     Text(
                         text = "Bem-vindo",
                         fontSize = 20.sp,

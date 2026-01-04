@@ -36,9 +36,9 @@ class CreateDistributionViewModel @Inject constructor(
 
     private fun loadDefaultStatus() {
         viewModelScope.launch {
-            Log.d(TAG, "Loading default status NAO_ENTREGUE...")
+            Log.d(TAG, "Loading default status POR_ENTREGAR...")
 
-            getStatusByCodeUseCase.execute("NAO_ENTREGUE")
+            getStatusByCodeUseCase.execute("POR_ENTREGAR")
                 .collect { result ->
                     when (result) {
                         is ResultWrapper.Loading -> {
@@ -47,12 +47,12 @@ class CreateDistributionViewModel @Inject constructor(
                         is ResultWrapper.Success -> {
                             val statusId = result.data?.id
                             if (statusId != null) {
-                                Log.d(TAG, "Found status NAO_ENTREGUE with ID: $statusId")
+                                Log.d(TAG, "Found status POR_ENTREGAR with ID: $statusId")
                                 _uiState.update { it.copy(selectedStatusId = statusId) }
                             } else {
-                                Log.e(TAG, "Status NAO_ENTREGUE not found")
+                                Log.e(TAG, "Status POR_ENTREGAR not found")
                                 _uiState.update {
-                                    it.copy(error = "Status NAO_ENTREGUE não encontrado no sistema")
+                                    it.copy(error = "Status POR_ENTREGAR não encontrado no sistema")
                                 }
                             }
                         }

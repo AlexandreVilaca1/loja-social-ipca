@@ -75,7 +75,6 @@ fun BeneficiariesView(
             modifier = Modifier
                 .fillMaxSize()
                 .background(BackgroundGreen)
-                .padding(innerPadding)
                 .padding(16.dp)
         ) {
             OutlinedTextField(
@@ -128,7 +127,6 @@ fun BeneficiariesView(
                             },
                             onDelete = { /* TODO */ },
                             onClick = {
-                                // Navegar para histórico de distribuições
                                 navController.navigate(
                                     "beneficiary/${b.id}/distributions?name=${b.fullName}"
                                 )
@@ -138,7 +136,6 @@ fun BeneficiariesView(
 
                     // Total count footer
                     item {
-                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Total: ${state.beneficiaries.size} beneficiários",
                             style = MaterialTheme.typography.bodyMedium,

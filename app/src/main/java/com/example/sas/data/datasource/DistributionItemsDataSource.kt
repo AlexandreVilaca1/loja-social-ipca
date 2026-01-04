@@ -1,6 +1,8 @@
 package com.example.sas.data.datasource
 
+import com.google.firebase.dataconnect.generated.DistributionKey
 import com.google.firebase.dataconnect.generated.ListDistributionItemsByDistributionQuery
+import com.google.firebase.dataconnect.generated.LotKey
 import com.google.firebase.dataconnect.generated.SasConnectorConnector
 import com.google.firebase.dataconnect.generated.execute
 import com.google.firebase.dataconnect.generated.instance
@@ -31,6 +33,26 @@ class DistributionItemsDataSource @Inject constructor() {
             this.offset = offset
         }
         return result.data.distributionItems
+    }
+
+    /**
+     * Creates a new distribution item.
+     */
+    suspend fun createDistributionItem(
+        distributionId: String,
+        lotId: String,
+        quantity: Int,
+        observations: String?
+    ) {
+        //Parametros obrigatórios vao dentro do execute
+        connector.createDistributionItem.execute(
+            distributionId = DistributionKey(java.util.UUID.fromString(distributionId)),
+            lotId = LotKey(java.util.UUID.fromString(lotId)),
+            quantity = quantity
+        ) {
+            //Parametros opcionais vao dentro do bloco
+            this.observations = observations
+        }
     }
 }
 

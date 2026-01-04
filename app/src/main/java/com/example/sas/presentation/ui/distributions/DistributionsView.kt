@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sas.presentation.ui.distributions.create.CreateDistributionViewModel
+import com.example.sas.presentation.ui.distributions.edit.EditDistributionViewModel
 import com.example.sas.presentation.ui.theme.GreenPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,12 +57,16 @@ import com.example.sas.presentation.ui.theme.GreenPrimary
 fun BeneficiaryDistributionsView(
     navController: NavController,
     viewModel: DistributionsViewModel = hiltViewModel(),
-    createViewModel: CreateDistributionViewModel = hiltViewModel()
+    createViewModel: CreateDistributionViewModel = hiltViewModel(),
+    editViewModel: EditDistributionViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val createState by createViewModel.uiState.collectAsState()
+    val editState by editViewModel.uiState.collectAsState()
 
     var showCreateSheet by remember { mutableStateOf(false) }
+    var showEditSheet by remember { mutableStateOf(false) }
+    var selectedDistribution by remember { mutableStateOf<com.example.sas.domain.models.Distribution?>(null) }
     val sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Box(
@@ -72,6 +78,7 @@ fun BeneficiaryDistributionsView(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+
             // Filtros de status - sempre visíveis
             item {
                 StatusFilterChips(
@@ -138,20 +145,40 @@ fun BeneficiaryDistributionsView(
                     )
                 }
 
-                items(state.distributions) { distribution ->
-                    DistributionCard(
-                        distribution = distribution,
-                        onViewItems = { dist ->
-                            navController.navigate(
-                                "distribution/${dist.id}/items?date=${dist.distributionDate}"
+                if (state.distributions.isEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Nenhuma distribuição encontrada",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Gray
                             )
                         }
-                    )
+                    }
+                } else {
+                    items(state.distributions) { distribution ->
+                        DistributionCard(
+                            distribution = distribution,
+                            onViewItems = { dist ->
+                                navController.navigate(
+                                    "distribution/${dist.id}/items?date=${dist.distributionDate}"
+                                )
+                            },
+                            onEdit = { dist ->
+                                selectedDistribution = dist
+                                showEditSheet = true
+                            }
+                        )
+                    }
                 }
             }
         }
 
-        // FloatingActionButton para criar nova distribuição
         viewModel.currentBeneficiaryId?.let { beneficiaryId ->
             FloatingActionButton(
                 onClick = {
@@ -172,7 +199,6 @@ fun BeneficiaryDistributionsView(
         }
     }
 
-    // ModalBottomSheet para criar distribuição
     if (showCreateSheet) {
         CreateDistributionBottomSheet(
             sheetState = sheetState,
@@ -182,8 +208,29 @@ fun BeneficiaryDistributionsView(
                 showCreateSheet = false
                 createViewModel.clearError()
             },
-            onSuccess = {
+            onSuccess = { distributionId ->
                 showCreateSheet = false
+                viewModel.refreshDistributions()
+                navController.navigate("distribution/$distributionId/items?date=${createState.distributionDate}")
+            }
+        )
+    }
+
+    // ModalBottomSheet para editar distribuição
+    if (showEditSheet && selectedDistribution != null) {
+        EditDistributionBottomSheet(
+            sheetState = sheetState,
+            distribution = selectedDistribution!!,
+            editState = editState,
+            editViewModel = editViewModel,
+            onDismiss = {
+                showEditSheet = false
+                selectedDistribution = null
+                editViewModel.clearError()
+            },
+            onSuccess = {
+                showEditSheet = false
+                selectedDistribution = null
                 viewModel.refreshDistributions()
             }
         )
@@ -198,7 +245,8 @@ private fun StatusFilterChips(
     val statusOptions = listOf(
         null to "Todos",
         "ENTREGUE" to "Entregue",
-        "NAO_ENTREGUE" to "Não Entregue"
+        "POR_ENTREGAR" to "Por Entregar",
+        "NAO_COMPARECEU" to "Não Compareceu"
     )
 
     LazyRow(
@@ -230,7 +278,7 @@ private fun CreateDistributionBottomSheet(
     createState: com.example.sas.presentation.ui.distributions.create.CreateDistributionUiState,
     createViewModel: CreateDistributionViewModel,
     onDismiss: () -> Unit,
-    onSuccess: () -> Unit
+    onSuccess: (String) -> Unit
 ) {
     var showUserDropdown by remember { mutableStateOf(false) }
 
@@ -357,7 +405,6 @@ private fun CreateDistributionBottomSheet(
                 )
             }
 
-            // Campo de Observações
             item {
                 OutlinedTextField(
                     value = createState.observations,
@@ -378,8 +425,8 @@ private fun CreateDistributionBottomSheet(
             item {
                 Button(
                     onClick = {
-                        createViewModel.createDistribution { _ ->
-                            onSuccess()
+                        createViewModel.createDistribution { distributionId ->
+                            onSuccess(distributionId)
                         }
                     },
                     modifier = Modifier
@@ -397,6 +444,218 @@ private fun CreateDistributionBottomSheet(
                         )
                     } else {
                         Text("Criar Distribuição")
+                    }
+                }
+            }
+
+            // Botão Cancelar
+            item {
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onDismiss
+                ) {
+                    Text("Cancelar")
+                }
+            }
+
+            item {
+                Spacer(Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditDistributionBottomSheet(
+    sheetState: SheetState,
+    distribution: com.example.sas.domain.models.Distribution,
+    editState: com.example.sas.presentation.ui.distributions.edit.EditDistributionUiState,
+    editViewModel: EditDistributionViewModel,
+    onDismiss: () -> Unit,
+    onSuccess: () -> Unit
+) {
+    var showUserDropdown by remember { mutableStateOf(false) }
+    var showStatusDropdown by remember { mutableStateOf(false) }
+
+    // Initialize ViewModel with distribution data
+    LaunchedEffect(distribution.id) {
+        editViewModel.initializeWithDistribution(distribution)
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = Color.White
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Título
+            item {
+                Text(
+                    text = "Editar Distribuição",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color(0xFF1C1C1C)
+                )
+            }
+
+            // Campo de Data
+            item {
+                OutlinedTextField(
+                    value = editState.distributionDate,
+                    onValueChange = { editViewModel.onDistributionDateChanged(it) },
+                    label = { Text("Data da Distribuição (YYYY/MM/DD)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = GreenPrimary,
+                        focusedLabelColor = GreenPrimary
+                    )
+                )
+            }
+
+            // Dropdown para selecionar funcionário responsável
+            item {
+                ExposedDropdownMenuBox(
+                    expanded = showUserDropdown,
+                    onExpandedChange = { showUserDropdown = !showUserDropdown }
+                ) {
+                    OutlinedTextField(
+                        value = editState.availableUsers.find { it.id == editState.selectedResponsibleStaffId }?.name
+                            ?: editState.responsibleStaffName ?: "Selecionar funcionário",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Funcionário Responsável") },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = GreenPrimary,
+                            focusedLabelColor = GreenPrimary
+                        )
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = showUserDropdown,
+                        onDismissRequest = { showUserDropdown = false }
+                    ) {
+                        editState.availableUsers.forEach { user ->
+                            DropdownMenuItem(
+                                text = { Text(user.name) },
+                                onClick = {
+                                    editViewModel.onResponsibleStaffSelected(user.id)
+                                    showUserDropdown = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Dropdown para selecionar status
+            item {
+                ExposedDropdownMenuBox(
+                    expanded = showStatusDropdown,
+                    onExpandedChange = { showStatusDropdown = !showStatusDropdown }
+                ) {
+                    OutlinedTextField(
+                        value = editState.availableStatuses.find { it.id == editState.selectedStatusId }?.description
+                            ?: editState.statusDescription ?: "Selecionar status",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Status") },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = GreenPrimary,
+                            focusedLabelColor = GreenPrimary
+                        )
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = showStatusDropdown,
+                        onDismissRequest = { showStatusDropdown = false }
+                    ) {
+                        editState.availableStatuses.forEach { status ->
+                            DropdownMenuItem(
+                                text = { Text(status.description) },
+                                onClick = {
+                                    editViewModel.onStatusSelected(status.id)
+                                    showStatusDropdown = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Campo de Observações
+            item {
+                OutlinedTextField(
+                    value = editState.observations,
+                    onValueChange = { editViewModel.onObservationsChanged(it) },
+                    label = { Text("Observações (opcional)") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    maxLines = 4,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = GreenPrimary,
+                        focusedLabelColor = GreenPrimary
+                    )
+                )
+            }
+
+            // Mensagem de erro
+            editState.error?.let { errorMsg ->
+                item {
+                    Text(
+                        text = errorMsg,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+
+            // Botão Salvar
+            item {
+                Button(
+                    onClick = {
+                        editViewModel.updateDistribution {
+                            onSuccess()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    enabled = !editState.isUpdating,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = GreenPrimary
+                    )
+                ) {
+                    if (editState.isUpdating) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(8.dp),
+                            color = Color.White
+                        )
+                    } else {
+                        Text("Salvar Alterações")
                     }
                 }
             }

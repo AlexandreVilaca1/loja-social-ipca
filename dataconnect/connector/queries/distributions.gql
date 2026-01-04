@@ -4,7 +4,7 @@
 
 # List all distributions with pagination
 query ListDistributions($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
-  distributions(limit: $limit, offset: $offset, orderBy: [{ distributionDate: DESC }]) {
+  distributions(limit: $limit, offset: $offset, orderBy: [{ distributionDate: ASC }]) {
     id
     distributionDate
     observations
@@ -61,7 +61,7 @@ query ListDistributionsByBeneficiary($beneficiaryId: UUID!, $limit: Int = 8, $of
     where: { beneficiary: { id: { eq: $beneficiaryId } } }
     limit: $limit
     offset: $offset
-    orderBy: [{ distributionDate: DESC }]
+    orderBy: [{ distributionDate: ASC }]
   ) {
     id
     distributionDate
@@ -90,7 +90,7 @@ query ListDistributionsByBeneficiaryAndStatus($beneficiaryId: UUID!, $statusCode
     }
     limit: $limit
     offset: $offset
-    orderBy: [{ distributionDate: DESC }]
+    orderBy: [{ distributionDate: ASC }]
   ) {
     id
     distributionDate
@@ -108,13 +108,16 @@ query ListDistributionsByBeneficiaryAndStatus($beneficiaryId: UUID!, $statusCode
   }
 }
 
+# Note: Search by partial UUID is not supported by Firebase Data Connect
+# UUIDs only support exact match with 'eq', not 'contains'
+
 # List distributions by status
 query ListDistributionsByStatus($statusCode: String!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   distributions(
     where: { status: { code: { eq: $statusCode } } }
     limit: $limit
     offset: $offset
-    orderBy: [{ distributionDate: DESC }]
+    orderBy: [{ distributionDate: ASC }]
   ) {
     id
     distributionDate

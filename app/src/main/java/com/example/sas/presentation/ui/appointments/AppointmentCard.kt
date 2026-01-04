@@ -43,13 +43,33 @@ fun AppointmentCard(distribution: Distribution, onClick: () -> Unit) {
         Column(modifier = Modifier.padding(16.dp)) {
 
             Text(
-                text = "Distribuição #${distribution.id.take(8)}",
+                text = "Distribuição ${distribution.id.take(8)}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = TextDark
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+
+            // Beneficiário
+            distribution.beneficiaryName?.let { beneficiary ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = null,
+                        tint = GreenPrimary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Beneficiário: $beneficiary",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextDark,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
 
             // Data
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -67,7 +87,6 @@ fun AppointmentCard(distribution: Distribution, onClick: () -> Unit) {
                 )
             }
 
-            // Responsável
             distribution.responsibleStaffName?.let { staff ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -79,7 +98,7 @@ fun AppointmentCard(distribution: Distribution, onClick: () -> Unit) {
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = staff,
+                        text = "Responsável: $staff",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextDark
                     )

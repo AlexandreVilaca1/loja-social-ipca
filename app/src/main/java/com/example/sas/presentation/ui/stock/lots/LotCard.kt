@@ -1,5 +1,7 @@
 package com.example.sas.presentation.ui.stock.lots
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -272,6 +274,7 @@ private fun InfoRow(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 private fun formatDateForDisplay(dateStr: String): String {
     return try {
         val date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy/MM/dd"))
@@ -280,7 +283,7 @@ private fun formatDateForDisplay(dateStr: String): String {
         dateStr
     }
 }
-
+@RequiresApi(Build.VERSION_CODES.O)
 private fun isExpiringSoon(expirationDate: String): Boolean {
     return try {
         val date = LocalDate.parse(expirationDate, DateTimeFormatter.ofPattern("yyyy/MM/dd"))
@@ -291,7 +294,7 @@ private fun isExpiringSoon(expirationDate: String): Boolean {
         false
     }
 }
-
+@RequiresApi(Build.VERSION_CODES.O)
 private fun isExpired(expirationDate: String): Boolean {
     return try {
         val date = LocalDate.parse(expirationDate, DateTimeFormatter.ofPattern("yyyy/MM/dd"))
