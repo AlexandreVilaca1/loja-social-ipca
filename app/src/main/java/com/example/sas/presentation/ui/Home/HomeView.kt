@@ -59,7 +59,10 @@ fun HomeView() {
         currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") -> "Distribuições"
         currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items") -> "Produtos da Distribuição"
         currentRoute == DrawerRoute.Doacoes.route -> "Doações"
-        currentRoute == DrawerRoute.Produtos.route -> "Produtos"
+        currentRoute?.startsWith("stock/") == true && currentRoute.contains("/home") -> "Stock"
+        currentRoute?.startsWith("stock/") == true && currentRoute.contains("/products") -> "Produtos"
+        currentRoute?.startsWith("stock/") == true && currentRoute.contains("/lots") -> "Lotes"
+        currentRoute?.startsWith("stock/") == true && currentRoute.contains("/categories") -> "Categorias"
         currentRoute == DrawerRoute.Relatorios.route -> "Relatórios"
         else -> ""
     }
