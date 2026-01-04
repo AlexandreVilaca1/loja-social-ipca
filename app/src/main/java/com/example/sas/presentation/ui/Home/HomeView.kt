@@ -27,6 +27,9 @@ import com.example.sas.presentation.ui.Drawer.DrawerRoute
 import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
 import com.example.sas.presentation.ui.distributionItems.DistributionItemsView
 import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsView
+import com.example.sas.presentation.ui.stock.categories.CategoriesView
+import com.example.sas.presentation.ui.stock.home.StockHomeView
+import com.example.sas.presentation.ui.stock.home.StockHomeViewModel
 import com.example.sas.presentation.ui.stock.lots.LotsView
 import com.example.sas.presentation.ui.stock.lots.LotsViewModel
 import com.example.sas.presentation.ui.stock.products.ProductsView
@@ -146,15 +149,19 @@ fun HomeView() {
 
                     navigation(
                         route = "stock",
-                        startDestination = "stock/lots"
+                        startDestination = "stock/home"
                     ){
-                        composable("stock/lots") { backStackEntry ->
-                            val viewModel = hiltViewModel<LotsViewModel>(backStackEntry)
+                        composable("stock/home") {
+                            StockHomeView(navController = navController)
+                        }
+                        composable("stock/lots") {
                             LotsView(navController = navController)
                         }
-                        composable("stock/products") { backStackEntry ->
-                            val viewModel = hiltViewModel<LotsViewModel>(backStackEntry)
+                        composable("stock/products") {
                             ProductsView(navController = navController)
+                        }
+                        composable("stock/categories"){
+                            CategoriesView(navController = navController)
                         }
                     }
 
