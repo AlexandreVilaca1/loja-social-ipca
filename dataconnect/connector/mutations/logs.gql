@@ -1,0 +1,56 @@
+# ============================
+# LOG MUTATIONS
+# ============================
+
+# Create a new log
+mutation CreateLog(
+  $description: String!,
+  $logTypeId: UUID!,
+  $userId: UUID!
+) @auth(level: USER) {
+  log_insert(
+    data: {
+      description: $description,
+      logTypeId: $logTypeId,
+      userId: $userId
+    }
+  )
+}
+
+# Update log
+mutation UpdateLog(
+  $id: UUID!,
+  $description: String,
+  $logTypeId: UUID,
+  $userId: UUID
+) @auth(level: USER) {
+  log_update(
+    id: $id,
+    data: {
+      description: $description,
+      logTypeId: $logTypeId,
+      userId: $userId
+    }
+  )
+}
+
+# Delete log
+mutation DeleteLog($id: UUID!) @auth(level: USER) {
+  log_delete(id: $id)
+}
+
+# Batch create logs (útil para criar múltiplos logs de uma vez)
+mutation CreateLogBatch(
+  $description: String!,
+  $logTypeId: UUID!,
+  $userId: UUID!
+) @auth(level: USER) {
+  log_insert(
+    data: {
+      description: $description,
+      logTypeId: $logTypeId,
+      userId: $userId
+    }
+  )
+}
+

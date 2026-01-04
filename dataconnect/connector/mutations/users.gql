@@ -4,6 +4,7 @@
 
 # Create a new user
 mutation CreateUser(
+  $uid: String!,
   $name: String!,
   $email: String!,
   $passwordHash: String!,
@@ -11,6 +12,7 @@ mutation CreateUser(
 ) @auth(level: USER) {
   user_insert(
     data: {
+      uid: $uid,
       name: $name,
       email: $email,
       passwordHash: $passwordHash,
@@ -22,6 +24,7 @@ mutation CreateUser(
 # Update user
 mutation UpdateUser(
   $id: UUID!,
+  $uid: String,
   $name: String,
   $email: String,
   $role: String
@@ -29,6 +32,7 @@ mutation UpdateUser(
   user_update(
     id: $id,
     data: {
+      uid: $uid,
       name: $name,
       email: $email,
       role: $role

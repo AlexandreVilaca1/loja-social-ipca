@@ -1,0 +1,49 @@
+# ============================
+# LOG TYPE QUERIES
+# ============================
+
+# List all log types with pagination
+query ListLogTypes($limit: Int = 20, $offset: Int = 0) @auth(level: USER) {
+  logTypes(limit: $limit, offset: $offset, orderBy: [{ name: ASC }]) {
+    id
+    name
+    code
+    createdAt
+  }
+}
+
+# Get log type by id
+query GetLogTypeById($id: UUID!) @auth(level: USER) {
+  logType(id: $id) {
+    id
+    name
+    code
+    createdAt
+  }
+}
+
+# Get log type by code
+query GetLogTypeByCode($code: String!) @auth(level: USER) {
+  logTypes(where: { code: { eq: $code } }, limit: 1) {
+    id
+    name
+    code
+    createdAt
+  }
+}
+
+# Search log types by name
+query SearchLogTypesByName($name: String!, $limit: Int = 20, $offset: Int = 0) @auth(level: USER) {
+  logTypes(
+    where: { name: { eq: $name } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ name: ASC }]
+  ) {
+    id
+    name
+    code
+    createdAt
+  }
+}
+

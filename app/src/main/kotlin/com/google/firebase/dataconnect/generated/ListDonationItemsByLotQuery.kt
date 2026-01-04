@@ -100,7 +100,7 @@ public interface ListDonationItemsByLotQuery :
     val quantity: Int,
     val state: State?,
     val observations: String?,
-    val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp?
+    val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp
   ) {
     
       

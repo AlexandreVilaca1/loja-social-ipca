@@ -1,0 +1,167 @@
+# ============================
+# LOG QUERIES
+# ============================
+
+# List all logs with pagination
+query ListLogs($limit: Int = 50, $offset: Int = 0) @auth(level: USER) {
+  logs(limit: $limit, offset: $offset, orderBy: [{ createdAt: DESC }]) {
+    id
+    description
+    logType {
+      id
+      name
+      code
+    }
+    user {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+}
+
+# Get log by id
+query GetLogById($id: UUID!) @auth(level: USER) {
+  log(id: $id) {
+    id
+    description
+    logType {
+      id
+      name
+      code
+    }
+    user {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+}
+
+# List logs by user
+query ListLogsByUser($userId: UUID!, $limit: Int = 50, $offset: Int = 0) @auth(level: USER) {
+  logs(
+    where: { user: { id: { eq: $userId } } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ createdAt: DESC }]
+  ) {
+    id
+    description
+    logType {
+      id
+      name
+      code
+    }
+    user {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+}
+
+# List logs by log type
+query ListLogsByLogType($logTypeId: UUID!, $limit: Int = 50, $offset: Int = 0) @auth(level: USER) {
+  logs(
+    where: { logType: { id: { eq: $logTypeId } } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ createdAt: DESC }]
+  ) {
+    id
+    description
+    logType {
+      id
+      name
+      code
+    }
+    user {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+}
+
+# List logs by log type code
+query ListLogsByLogTypeCode($logTypeCode: String!, $limit: Int = 50, $offset: Int = 0) @auth(level: USER) {
+  logs(
+    where: { logType: { code: { eq: $logTypeCode } } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ createdAt: DESC }]
+  ) {
+    id
+    description
+    logType {
+      id
+      name
+      code
+    }
+    user {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+}
+
+# List logs by date range
+query ListLogsByDateRange($startDate: Timestamp!, $endDate: Timestamp!, $limit: Int = 50, $offset: Int = 0) @auth(level: USER) {
+  logs(
+    where: {
+      createdAt: { ge: $startDate, le: $endDate }
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ createdAt: DESC }]
+  ) {
+    id
+    description
+    logType {
+      id
+      name
+      code
+    }
+    user {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+}
+
+# List logs by user and log type
+query ListLogsByUserAndLogType($userId: UUID!, $logTypeId: UUID!, $limit: Int = 50, $offset: Int = 0) @auth(level: USER) {
+  logs(
+    where: {
+      user: { id: { eq: $userId } }
+      logType: { id: { eq: $logTypeId } }
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ createdAt: DESC }]
+  ) {
+    id
+    description
+    logType {
+      id
+      name
+      code
+    }
+    user {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+}
+
