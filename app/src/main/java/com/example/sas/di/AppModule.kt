@@ -5,12 +5,14 @@ import com.example.sas.data.repository.AuthRepositoryImpl
 import com.example.sas.data.repository.BeneficiariesRepositoryImpl
 import com.example.sas.data.repository.DistributionItemsRepositoryImpl
 import com.example.sas.data.repository.DistributionsRepositoryImpl
+import com.example.sas.data.repository.LotsRepositoryImpl
 import com.example.sas.data.repository.StatusTypesRepositoryImpl
 import com.example.sas.data.repository.UsersRepositoryImpl
 import com.example.sas.domain.repositories.AuthRepository
 import com.example.sas.domain.repositories.BeneficiariesRepository
 import com.example.sas.domain.repositories.DistributionItemsRepository
 import com.example.sas.domain.repositories.DistributionsRepository
+import com.example.sas.domain.repositories.LotsRepository
 import com.example.sas.domain.repositories.StatusTypesRepository
 import com.example.sas.domain.repositories.UsersRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -60,6 +62,12 @@ abstract class RepositoryBindsModule {
     abstract fun bindStatusTypesRepository(
         impl: StatusTypesRepositoryImpl
     ): StatusTypesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLotsRepository(
+        impl: LotsRepositoryImpl
+    ): LotsRepository
 }
 
 @Module
