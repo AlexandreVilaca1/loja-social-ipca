@@ -39,9 +39,6 @@ class LotsRepositoryImpl @Inject constructor(
                     expirationDate = formatDate(item.expirationDate),
                     observations = item.observations,
                     productId = item.product?.id?.toString(),
-                    productName = item.product?.name,
-                    productUnitOfMeasure = item.product?.unitOfMeasure,
-                    productDescription = null,
                     createdAt = item.createdAt?.toString(),
                     updatedAt = item.updatedAt?.toString()
                 )
@@ -70,9 +67,6 @@ class LotsRepositoryImpl @Inject constructor(
                     expirationDate = formatDate(item.expirationDate),
                     observations = item.observations,
                     productId = productId,
-                    productName = null,
-                    productUnitOfMeasure = null,
-                    productDescription = null,
                     createdAt = item.createdAt?.toString(),
                     updatedAt = item.updatedAt?.toString()
                 )
@@ -101,9 +95,6 @@ class LotsRepositoryImpl @Inject constructor(
                     expirationDate = formatDate(item.expirationDate),
                     observations = item.observations,
                     productId = item.product?.id?.toString(),
-                    productName = item.product?.name,
-                    productUnitOfMeasure = null,
-                    productDescription = null,
                     createdAt = item.createdAt?.toString(),
                     updatedAt = item.updatedAt?.toString()
                 )
@@ -128,9 +119,6 @@ class LotsRepositoryImpl @Inject constructor(
                     expirationDate = formatDate(item.expirationDate),
                     observations = item.observations,
                     productId = item.product?.id?.toString(),
-                    productName = item.product?.name,
-                    productUnitOfMeasure = item.product?.unitOfMeasure,
-                    productDescription = item.product?.description,
                     createdAt = item.createdAt?.toString(),
                     updatedAt = item.updatedAt?.toString()
                 )
