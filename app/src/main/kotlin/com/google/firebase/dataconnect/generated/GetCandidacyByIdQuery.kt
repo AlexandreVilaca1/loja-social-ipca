@@ -47,7 +47,6 @@ public interface GetCandidacyByIdQuery :
   public data class Candidacy(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val beneficiary: Beneficiary,
     val applicationDate: com.google.firebase.dataconnect.LocalDate,
     val status: Status?,
     val observations: String?,
@@ -55,23 +54,6 @@ public interface GetCandidacyByIdQuery :
     val updatedAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp
   ) {
     
-      
-        @kotlinx.serialization.Serializable
-  public data class Beneficiary(
-  
-    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val fullName: String,
-    val studentNumer: Int,
-    val nif: String,
-    val course: String,
-    val isActive: Boolean,
-    val contactNumber: String,
-    val address: String?,
-    val observations: String?
-  ) {
-    
-    
-  }
       
         @kotlinx.serialization.Serializable
   public data class Status(

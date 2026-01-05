@@ -30,6 +30,7 @@ class DistributionsRepositoryImpl @Inject constructor(
                     item.distributionDate,
                     item.observations,
                     item.responsibleStaff?.name,
+                    item.beneficiary?.id?.toString(),
                     item.beneficiary?.fullName,
                     item.status?.code,
                     item.status?.description,
@@ -57,6 +58,7 @@ class DistributionsRepositoryImpl @Inject constructor(
                     item.distributionDate,
                     item.observations,
                     item.responsibleStaff?.name,
+                    item.beneficiary?.id?.toString(),
                     item.beneficiary?.fullName,
                     item.status?.code,
                     item.status?.description,
@@ -78,9 +80,17 @@ class DistributionsRepositoryImpl @Inject constructor(
         try {
             val items = dataSource.listDistributionsByBeneficiary(beneficiaryId, limit, offset)
             val distributions = items.map { item ->
-                mapToDistribution(item.id.toString(), item.distributionDate, item.observations,
-                    item.responsibleStaff?.name, null, item.status?.code, item.status?.description,
-                    item.createdAt?.toString())
+                mapToDistribution(
+                    item.id.toString(),
+                    item.distributionDate,
+                    item.observations,
+                    item.responsibleStaff?.name,
+                    item.beneficiary?.id?.toString(),
+                    item.beneficiary?.fullName,
+                    item.status?.code,
+                    item.status?.description,
+                    item.createdAt?.toString()
+                )
             }
             emit(ResultWrapper.Success(distributions))
         } catch (e: Exception) {
@@ -98,9 +108,17 @@ class DistributionsRepositoryImpl @Inject constructor(
         try {
             val items = dataSource.listDistributionsByBeneficiaryAndStatus(beneficiaryId, statusCode, limit, offset)
             val distributions = items.map { item ->
-                mapToDistribution(item.id.toString(), item.distributionDate, item.observations,
-                    item.responsibleStaff?.name, null, item.status?.code, item.status?.description,
-                    item.createdAt?.toString())
+                mapToDistribution(
+                    item.id.toString(),
+                    item.distributionDate,
+                    item.observations,
+                    item.responsibleStaff?.name,
+                    item.beneficiary?.id?.toString(),
+                    item.beneficiary?.fullName,
+                    item.status?.code,
+                    item.status?.description,
+                    item.createdAt?.toString()
+                )
             }
             emit(ResultWrapper.Success(distributions))
         } catch (e: Exception) {
@@ -117,9 +135,17 @@ class DistributionsRepositoryImpl @Inject constructor(
         try {
             val items = dataSource.listDistributionsByStatus(statusCode, limit, offset)
             val distributions = items.map { item ->
-                mapToDistribution(item.id.toString(), item.distributionDate, item.observations,
-                    item.responsibleStaff?.name, item.beneficiary?.fullName, item.status?.code, item.status?.description,
-                    item.createdAt?.toString())
+                mapToDistribution(
+                    item.id.toString(),
+                    item.distributionDate,
+                    item.observations,
+                    item.responsibleStaff?.name,
+                    item.beneficiary?.id?.toString(),
+                    item.beneficiary?.fullName,
+                    item.status?.code,
+                    item.status?.description,
+                    item.createdAt?.toString()
+                )
             }
             emit(ResultWrapper.Success(distributions))
         } catch (e: Exception) {
@@ -194,6 +220,7 @@ class DistributionsRepositoryImpl @Inject constructor(
         distributionDate: com.google.firebase.dataconnect.LocalDate,
         observations: String?,
         responsibleStaffName: String?,
+        beneficiaryId: String?,
         beneficiaryName: String?,
         statusCode: String?,
         statusDescription: String?,
@@ -211,6 +238,7 @@ class DistributionsRepositoryImpl @Inject constructor(
             distributionDate = formattedDate,
             observations = observations,
             responsibleStaffName = responsibleStaffName,
+            beneficiaryId = beneficiaryId,
             beneficiaryName = beneficiaryName,
             statusCode = statusCode,
             statusDescription = statusDescription,

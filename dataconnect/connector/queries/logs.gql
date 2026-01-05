@@ -3,7 +3,7 @@
 # ============================
 
 # List all logs with pagination
-query ListLogs($limit: Int = 50, $offset: Int = 0) @auth(level: USER) {
+query ListLogs($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   logs(limit: $limit, offset: $offset, orderBy: [{ createdAt: DESC }]) {
     id
     description
@@ -41,7 +41,7 @@ query GetLogById($id: UUID!) @auth(level: USER) {
 }
 
 # List logs by user
-query ListLogsByUser($userId: UUID!, $limit: Int = 50, $offset: Int = 0) @auth(level: USER) {
+query ListLogsByUser($userId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   logs(
     where: { user: { id: { eq: $userId } } }
     limit: $limit
@@ -65,7 +65,7 @@ query ListLogsByUser($userId: UUID!, $limit: Int = 50, $offset: Int = 0) @auth(l
 }
 
 # List logs by log type
-query ListLogsByLogType($logTypeId: UUID!, $limit: Int = 50, $offset: Int = 0) @auth(level: USER) {
+query ListLogsByLogType($logTypeId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   logs(
     where: { logType: { id: { eq: $logTypeId } } }
     limit: $limit

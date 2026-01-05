@@ -3,8 +3,8 @@
 # ============================
 
 # List all products with pagination
-query ListProducts($limit: Int = 8, $offset: Int = 0) @auth(level: PUBLIC, insecureReason: "Anyone can list products.") {
-  products(limit: $limit, offset: $offset, orderBy: [{ createdAt: DESC }]) {
+query ListProducts($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  products(limit: $limit, offset: $offset, orderBy: [{ name: ASC }]) {
     id
     name
     unitOfMeasure

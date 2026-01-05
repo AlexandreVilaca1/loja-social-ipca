@@ -80,9 +80,9 @@ val connector: SasConnectorConnector = SasConnectorConnector.getInstance(
 ### SasConnectorConnector - Query and Mutation Properties
 
 The `sas-connector` Data Connect connector defines
-64 queries and
+62 queries and
 59 mutations,
-a total of 123 operations.
+a total of 121 operations.
 Each of these operations is exposed
 as a property of [SasConnectorConnector].
 

@@ -8,6 +8,7 @@ data class Distribution(
     val distributionDate: String,
     val observations: String?,
     val responsibleStaffName: String?,
+    val beneficiaryId: String?,
     val beneficiaryName: String?,
     val statusCode: String?,
     val statusDescription: String?,
