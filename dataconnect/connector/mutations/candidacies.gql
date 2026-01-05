@@ -7,7 +7,7 @@ mutation CreateCandidacy(
   $applicationDate: Date!,
   $statusId: UUID,
   $observations: String
-) @auth(level: USER) {
+) @auth(level: PUBLIC) {
   candidacy_insert(
     data: {
       applicationDate: $applicationDate,
