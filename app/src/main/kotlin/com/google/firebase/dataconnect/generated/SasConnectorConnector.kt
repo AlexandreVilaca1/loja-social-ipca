@@ -138,8 +138,6 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val listCandidacies: ListCandidaciesQuery
   
-    public val listCandidaciesByBeneficiary: ListCandidaciesByBeneficiaryQuery
-  
     public val listCandidaciesByStatus: ListCandidaciesByStatusQuery
   
     public val listCategories: ListCategoriesQuery
@@ -205,8 +203,6 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
     public val searchBeneficiaries: SearchBeneficiariesQuery
   
     public val searchCampaigns: SearchCampaignsQuery
-  
-    public val searchCandidacies: SearchCandidaciesQuery
   
     public val searchDonations: SearchDonationsQuery
   
@@ -543,10 +539,6 @@ private class SasConnectorConnectorImpl(
       ListCandidaciesQueryImpl(this)
     }
   
-    override val listCandidaciesByBeneficiary by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      ListCandidaciesByBeneficiaryQueryImpl(this)
-    }
-  
     override val listCandidaciesByStatus by lazy(LazyThreadSafetyMode.PUBLICATION) {
       ListCandidaciesByStatusQueryImpl(this)
     }
@@ -677,10 +669,6 @@ private class SasConnectorConnectorImpl(
   
     override val searchCampaigns by lazy(LazyThreadSafetyMode.PUBLICATION) {
       SearchCampaignsQueryImpl(this)
-    }
-  
-    override val searchCandidacies by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      SearchCandidaciesQueryImpl(this)
     }
   
     override val searchDonations by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -893,7 +881,6 @@ private class SasConnectorConnectorImpl(
         listCampaigns,
         listCampaignsByDateRange,
         listCandidacies,
-        listCandidaciesByBeneficiary,
         listCandidaciesByStatus,
         listCategories,
         listDistributionItemsByDistribution,
@@ -925,7 +912,6 @@ private class SasConnectorConnectorImpl(
         listUsers,
         searchBeneficiaries,
         searchCampaigns,
-        searchCandidacies,
         searchDonations,
         searchLogTypesByName,
         searchLots,
@@ -1967,21 +1953,6 @@ private class ListCandidaciesQueryImpl(
   )
 
 
-private class ListCandidaciesByBeneficiaryQueryImpl(
-  connector: SasConnectorConnector
-):
-  ListCandidaciesByBeneficiaryQuery,
-  SasConnectorConnectorGeneratedQueryImpl<
-      ListCandidaciesByBeneficiaryQuery.Data,
-      ListCandidaciesByBeneficiaryQuery.Variables
-  >(
-    connector,
-    ListCandidaciesByBeneficiaryQuery.Companion.operationName,
-    ListCandidaciesByBeneficiaryQuery.Companion.dataDeserializer,
-    ListCandidaciesByBeneficiaryQuery.Companion.variablesSerializer,
-  )
-
-
 private class ListCandidaciesByStatusQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -2474,21 +2445,6 @@ private class SearchCampaignsQueryImpl(
     SearchCampaignsQuery.Companion.operationName,
     SearchCampaignsQuery.Companion.dataDeserializer,
     SearchCampaignsQuery.Companion.variablesSerializer,
-  )
-
-
-private class SearchCandidaciesQueryImpl(
-  connector: SasConnectorConnector
-):
-  SearchCandidaciesQuery,
-  SasConnectorConnectorGeneratedQueryImpl<
-      SearchCandidaciesQuery.Data,
-      SearchCandidaciesQuery.Variables
-  >(
-    connector,
-    SearchCandidaciesQuery.Companion.operationName,
-    SearchCandidaciesQuery.Companion.dataDeserializer,
-    SearchCandidaciesQuery.Companion.variablesSerializer,
   )
 
 

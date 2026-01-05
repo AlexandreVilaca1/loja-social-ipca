@@ -125,7 +125,6 @@ type Log @table {
 }
 
 type Candidacy @table {
-  beneficiary: Beneficiary!
   applicationDate: Date!
   status: StatusType
   observations: String

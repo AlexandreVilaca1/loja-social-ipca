@@ -9,7 +9,6 @@ import androidx.compose.material.icons.outlined.People
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -69,12 +68,22 @@ fun BottomBar(navController: NavController) {
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    navController.navigate(item.route) {
+                    // Para rotas com sub-navegação (agendamentos e stock),
+                    // navegar diretamente para a home delas
+                    val targetRoute = when (item.route) {
+                        DrawerRoute.Agendamentos.route -> "agendamentos/home"
+                        DrawerRoute.Produtos.route -> "stock/home"
+                        else -> item.route
+                    }
+
+                    navController.navigate(targetRoute) {
                         popUpTo(navController.graph.startDestinationId) {
                             saveState = true
                         }
                         launchSingleTop = true
-                        restoreState = true
+                        // Não restaurar estado para rotas com sub-navegação
+                        restoreState = item.route != DrawerRoute.Agendamentos.route &&
+                                      item.route != DrawerRoute.Produtos.route
                     }
                 },
                 icon = {

@@ -4,7 +4,7 @@
 
 # List all distributions with pagination
 query ListDistributions($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
-  distributions(limit: $limit, offset: $offset, orderBy: [{ distributionDate: ASC }]) {
+  distributions(limit: $limit, offset: $offset, orderBy: [{ distributionDate: DESC }]) {
     id
     distributionDate
     observations
@@ -61,7 +61,7 @@ query ListDistributionsByBeneficiary($beneficiaryId: UUID!, $limit: Int = 8, $of
     where: { beneficiary: { id: { eq: $beneficiaryId } } }
     limit: $limit
     offset: $offset
-    orderBy: [{ distributionDate: ASC }]
+    orderBy: [{ distributionDate: DESC }]
   ) {
     id
     distributionDate
@@ -69,6 +69,10 @@ query ListDistributionsByBeneficiary($beneficiaryId: UUID!, $limit: Int = 8, $of
     responsibleStaff {
       id
       name
+    }
+    beneficiary {
+      id
+      fullName
     }
     status {
       id
@@ -90,7 +94,7 @@ query ListDistributionsByBeneficiaryAndStatus($beneficiaryId: UUID!, $statusCode
     }
     limit: $limit
     offset: $offset
-    orderBy: [{ distributionDate: ASC }]
+    orderBy: [{ distributionDate: DESC }]
   ) {
     id
     distributionDate
@@ -98,6 +102,10 @@ query ListDistributionsByBeneficiaryAndStatus($beneficiaryId: UUID!, $statusCode
     responsibleStaff {
       id
       name
+    }
+    beneficiary {
+      id
+      fullName
     }
     status {
       id
@@ -117,7 +125,7 @@ query ListDistributionsByStatus($statusCode: String!, $limit: Int = 8, $offset: 
     where: { status: { code: { eq: $statusCode } } }
     limit: $limit
     offset: $offset
-    orderBy: [{ distributionDate: ASC }]
+    orderBy: [{ distributionDate: DESC }]
   ) {
     id
     distributionDate

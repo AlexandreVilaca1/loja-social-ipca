@@ -106,6 +106,7 @@ public interface ListDistributionsByBeneficiaryAndStatusQuery :
     val distributionDate: com.google.firebase.dataconnect.LocalDate,
     val observations: String?,
     val responsibleStaff: ResponsibleStaff?,
+    val beneficiary: Beneficiary?,
     val status: Status?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp
   ) {
@@ -116,6 +117,16 @@ public interface ListDistributionsByBeneficiaryAndStatusQuery :
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val name: String
+  ) {
+    
+    
+  }
+      
+        @kotlinx.serialization.Serializable
+  public data class Beneficiary(
+  
+    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
+    val fullName: String
   ) {
     
     

@@ -4,7 +4,7 @@
 
 # List all users with pagination
 query ListUsers($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
-  users(limit: $limit, offset: $offset, orderBy: [{ createdAt: DESC }]) {
+  users(limit: $limit, offset: $offset, orderBy: [{ name: ASC }]) {
     id
     uid
     name
@@ -39,7 +39,7 @@ query SearchUsers($searchTerm: String, $limit: Int = 8, $offset: Int = 0) @auth(
     }
     limit: $limit
     offset: $offset
-    orderBy: [{ createdAt: DESC }]
+    orderBy: [{ name: ASC }]
   ) {
     id
     uid
