@@ -1,10 +1,15 @@
 package com.example.sas.presentation.ui.Home
 
 import DrawerContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -12,6 +17,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -24,6 +31,7 @@ import com.example.sas.presentation.ui.appointments.AppointmentsView
 import com.example.sas.presentation.ui.appointments.AppointmentViewModel
 import com.example.sas.presentation.ui.appointments.TotalAppointmentsView
 import com.example.sas.presentation.ui.Drawer.DrawerRoute
+import com.example.sas.presentation.ui.auth.AuthViewModel
 import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
 import com.example.sas.presentation.ui.distributionItems.DistributionItemsView
 import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsView
@@ -43,6 +51,8 @@ import com.example.sas.presentation.ui.candidacies.CandidaciesView
 fun HomeView(onSignOut : () -> Unit) {
 
     val navController = rememberNavController()
+
+    val authViewModel: AuthViewModel = hiltViewModel()
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -77,14 +87,21 @@ fun HomeView(onSignOut : () -> Unit) {
             DrawerContent(
                 currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route,
                 onDestinationClick = { route ->
-                    scope.launch { drawerState.close() }
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
+                    if (route == "action_create_user") {
+                        authViewModel.toggleCreateUserDialog(true) // Abre o diálogo
+                        scope.launch { drawerState.close() } // Fecha o menu lateral
+                    } else {
+                        // Navegação normal para outras rotas
+                        scope.launch { drawerState.close() }
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 },
-                onSignOut = {onSignOut()}
+                onSignOut = {onSignOut()},
+                authViewModel = authViewModel
             )
         }
     ) {
@@ -131,6 +148,8 @@ fun HomeView(onSignOut : () -> Unit) {
             }
 
         ) { padding ->
+
+            CreateUserDialog(authViewModel = authViewModel)
 
             Box(modifier = Modifier.padding(padding)) {
 
@@ -200,5 +219,72 @@ fun HomeView(onSignOut : () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun CreateUserDialog(authViewModel: AuthViewModel) {
+    val state by authViewModel.uiState.collectAsState()
+    val form = state.newUserForm
+    val context = LocalContext.current
+
+    if (state.showCreateUserDialog) {
+        AlertDialog(
+            onDismissRequest = { authViewModel.toggleCreateUserDialog(false) },
+            title = { Text("Registar Utilizador", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (state.createUserError != null) {
+                        Text(state.createUserError!!, color = Color.Red, style = MaterialTheme.typography.labelSmall)
+                    }
+
+                    OutlinedTextField(value = form.name, onValueChange = { authViewModel.onNewUserFormChange(name = it) }, label = { Text("Nome") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(value = form.email, onValueChange = { authViewModel.onNewUserFormChange(email = it) }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
+                    OutlinedTextField(value = form.password, onValueChange = { authViewModel.onNewUserFormChange(password = it) }, label = { Text("Password") }, modifier = Modifier.fillMaxWidth())
+
+                    Text("Tipo de Utilizador:", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
+
+                    // Seleção de Role entre SAS e Beneficiário
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("SAS", "Beneficiário").forEach { roleName ->
+                            val isSelected = form.role == roleName
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = { authViewModel.onNewUserFormChange(role = roleName) },
+                                label = { Text(roleName) },
+                                modifier = Modifier.weight(1f),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = GreenPrimary.copy(alpha = 0.2f),
+                                    selectedLabelColor = GreenPrimary
+                                )
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { authViewModel.createNewUser(context) },
+                    enabled = !state.isCreatingUser,
+                    colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary)
+                ) {
+                    if (state.isCreatingUser) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Criar Conta")
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { authViewModel.toggleCreateUserDialog(false) }) { Text("Cancelar") }
+            }
+        )
     }
 }

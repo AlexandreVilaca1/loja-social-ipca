@@ -1,5 +1,6 @@
 package com.example.sas.domain.repositories
 
+import android.content.Context
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.User
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,8 @@ interface AuthRepository {
      * Checks if user is authenticated.
      */
     fun isAuthenticated(): Boolean
+
+    fun createAccount(context: Context, email: String, password: String): Flow<ResultWrapper<String>>
 
     /**
      * Signs out current user.

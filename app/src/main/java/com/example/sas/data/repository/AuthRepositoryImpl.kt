@@ -1,5 +1,6 @@
 package com.example.sas.data.repository
 
+import android.content.Context
 import com.example.sas.data.datasource.AuthDataSource
 import com.example.sas.data.datasource.UsersDataSource
 import com.example.sas.domain.common.ResultWrapper
@@ -25,6 +26,16 @@ class AuthRepositoryImpl @Inject constructor(
             emit(ResultWrapper.Success(Unit))
         } catch (e: Exception) {
             emit(ResultWrapper.Error(e.message ?: "Erro ao autenticar"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun createAccount(context: Context, email: String, password: String) = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            val uid = authDataSource.createUserAccount(context, email, password)
+            emit(ResultWrapper.Success(uid))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao criar conta"))
         }
     }.flowOn(Dispatchers.IO)
 
