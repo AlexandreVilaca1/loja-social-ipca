@@ -37,7 +37,9 @@ class MainActivity : ComponentActivity() {
                             LoginView(navController)
                         }
                         composable("home") {
-                            HomeView()
+                            HomeView(){
+                                navController.navigate("login")
+                            }
                         }
                     }
                 }

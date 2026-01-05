@@ -1,5 +1,6 @@
 package com.example.sas.data.datasource
 
+import com.google.firebase.dataconnect.generated.GetUserByUidQuery
 import com.google.firebase.dataconnect.generated.ListUsersQuery
 import com.google.firebase.dataconnect.generated.SasConnectorConnector
 import com.google.firebase.dataconnect.generated.execute
@@ -28,6 +29,11 @@ class UsersDataSource @Inject constructor() {
             this.offset = offset
         }
         return result.data.users
+    }
+
+    suspend fun getUserByUid(uid: String): GetUserByUidQuery.Data.UsersItem? {
+        val result = connector.getUserByUid.execute(uid = uid)
+        return result.data.users.firstOrNull()
     }
 }
 

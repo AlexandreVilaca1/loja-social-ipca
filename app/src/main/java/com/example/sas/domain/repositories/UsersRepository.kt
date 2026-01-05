@@ -16,5 +16,7 @@ interface UsersRepository {
         limit: Int,
         offset: Int
     ): Flow<ResultWrapper<List<User>>>
+
+    fun getUserByUid(uid: String): Flow<ResultWrapper<User>>
 }
 

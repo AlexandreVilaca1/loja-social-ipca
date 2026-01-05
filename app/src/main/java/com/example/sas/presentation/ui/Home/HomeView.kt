@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView() {
+fun HomeView(onSignOut : () -> Unit) {
 
     val navController = rememberNavController()
 
@@ -75,13 +75,13 @@ fun HomeView() {
                 currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route,
                 onDestinationClick = { route ->
                     scope.launch { drawerState.close() }
-
                     navController.navigate(route) {
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
                     }
-                }
+                },
+                onSignOut = {onSignOut()}
             )
         }
     ) {

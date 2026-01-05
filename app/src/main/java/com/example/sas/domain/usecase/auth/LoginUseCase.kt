@@ -12,6 +12,6 @@ class LoginUseCase @Inject constructor(
         email: String,
         password: String
     ): Flow<ResultWrapper<Unit>> {
-        return repository.login(email, password)
+        return repository.authenticate(email, password)
     }
 }
