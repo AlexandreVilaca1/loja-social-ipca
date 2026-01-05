@@ -6,14 +6,6 @@
 query ListCandidacies($limit: Int = 10, $offset: Int = 0) @auth(level: USER) {
   candidacies(limit: $limit, offset: $offset, orderBy: [{ applicationDate: DESC }]) {
     id
-    beneficiary {
-      id
-      fullName
-      studentNumer
-      nif
-      course
-      contactNumber
-    }
     applicationDate
     status {
       id
@@ -31,17 +23,6 @@ query ListCandidacies($limit: Int = 10, $offset: Int = 0) @auth(level: USER) {
 query GetCandidacyById($id: UUID!) @auth(level: USER) {
   candidacy(id: $id) {
     id
-    beneficiary {
-      id
-      fullName
-      studentNumer
-      nif
-      course
-      isActive
-      contactNumber
-      address
-      observations
-    }
     applicationDate
     status {
       id
@@ -56,32 +37,6 @@ query GetCandidacyById($id: UUID!) @auth(level: USER) {
   }
 }
 
-# List candidacies by beneficiary
-query ListCandidaciesByBeneficiary($beneficiaryId: UUID!, $limit: Int = 10, $offset: Int = 0) @auth(level: USER) {
-  candidacies(
-    where: { beneficiary: { id: { eq: $beneficiaryId } } }
-    limit: $limit
-    offset: $offset
-    orderBy: [{ applicationDate: DESC }]
-  ) {
-    id
-    beneficiary {
-      id
-      fullName
-      studentNumer
-    }
-    applicationDate
-    status {
-      id
-      code
-      description
-      color
-    }
-    observations
-    createdAt
-    updatedAt
-  }
-}
 
 # List candidacies by status
 query ListCandidaciesByStatus($statusCode: String!, $limit: Int = 10, $offset: Int = 0) @auth(level: USER) {
@@ -92,47 +47,6 @@ query ListCandidaciesByStatus($statusCode: String!, $limit: Int = 10, $offset: I
     orderBy: [{ applicationDate: DESC }]
   ) {
     id
-    beneficiary {
-      id
-      fullName
-      studentNumer
-      nif
-      course
-      contactNumber
-    }
-    applicationDate
-    status {
-      id
-      code
-      description
-      color
-    }
-    observations
-    createdAt
-    updatedAt
-  }
-}
-
-# Search candidacies by beneficiary name
-query SearchCandidacies($searchTerm: String, $limit: Int = 10, $offset: Int = 0) @auth(level: USER) {
-  candidacies(
-    where: {
-      beneficiary: {
-        fullName: { contains: $searchTerm }
-      }
-    }
-    limit: $limit
-    offset: $offset
-    orderBy: [{ applicationDate: DESC }]
-  ) {
-    id
-    beneficiary {
-      id
-      fullName
-      studentNumer
-      nif
-      contactNumber
-    }
     applicationDate
     status {
       id

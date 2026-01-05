@@ -63,7 +63,7 @@ query ListCampaignsByDateRange($startDate: Date!, $endDate: Date!, $limit: Int =
     }
     limit: $limit
     offset: $offset
-    orderBy: [{ campaignStartDate: ASC }]
+    orderBy: [{ campaignStartDate: DESC }]
   ) {
     id
     campaignName

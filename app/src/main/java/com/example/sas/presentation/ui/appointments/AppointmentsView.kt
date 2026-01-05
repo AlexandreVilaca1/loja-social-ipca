@@ -100,8 +100,16 @@ fun AppointmentsView(
             else -> {
                 todayDistributions.forEach { distribution ->
                     AppointmentCard(distribution) {
-                        selectedDistribution = distribution
-                        showStatusDialog = true
+                        // Navegar para as distribuições do beneficiário se tiver beneficiaryId
+                        distribution.beneficiaryId?.let { beneficiaryId ->
+                            navController.navigate(
+                                "beneficiary/$beneficiaryId/distributions?name=${distribution.beneficiaryName ?: "Beneficiário"}"
+                            )
+                        } ?: run {
+                            // Se não tiver beneficiaryId, mostrar o diálogo de atualização de status
+                            selectedDistribution = distribution
+                            showStatusDialog = true
+                        }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                 }

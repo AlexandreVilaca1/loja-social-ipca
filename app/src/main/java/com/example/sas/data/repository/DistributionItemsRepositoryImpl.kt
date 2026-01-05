@@ -31,6 +31,7 @@ class DistributionItemsRepositoryImpl @Inject constructor(
             // Map Firebase Data Connect items to domain models
             val distributionItems = items.map { item ->
                 DistributionItem(
+                    lotId = item.lot.id.toString(),
                     lotCode = item.lot.lotCode,
                     productName = item.lot.product?.name ?: "Produto desconhecido",
                     productUnit = item.lot.product?.unitOfMeasure ?: "",

@@ -35,7 +35,8 @@ import com.example.sas.presentation.ui.theme.TextDark
 fun AppointmentCard(distribution: Distribution, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(1.dp, CardBorder),
         colors = CardDefaults.cardColors(containerColor = Color.White)

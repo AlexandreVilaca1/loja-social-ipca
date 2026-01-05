@@ -54,8 +54,6 @@ class DistributionsViewModel @Inject constructor(
         val statusFilter = _uiState.value.selectedStatusFilter
 
         viewModelScope.launch {
-            Log.d(TAG, "Loading distributions for beneficiary: $id, status: $statusFilter")
-
             val useCase = if (statusFilter != null) {
                 listDistributionsByStatusUseCase.execute(id, statusFilter, 100, 0)
             } else {
@@ -68,7 +66,6 @@ class DistributionsViewModel @Inject constructor(
                         _uiState.update { it.copy(isLoading = true, error = null) }
                     }
                     is ResultWrapper.Success -> {
-                        Log.d(TAG, "Loaded ${result.data?.size ?: 0} distributions")
                         _uiState.update {
                             it.copy(
                                 isLoading = false,

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.Distribution
+import com.example.sas.domain.usecase.distributions.CompleteDistributionUseCase
 import com.example.sas.domain.usecase.distributions.ListDistributionsUseCase
 import com.example.sas.domain.usecase.distributions.ListDistributionsByStatusUseCase
 import com.example.sas.domain.usecase.distributions.UpdateDistributionStatusUseCase
@@ -25,6 +26,7 @@ class AppointmentViewModel @Inject constructor(
     private val listDistributionsUseCase: ListDistributionsUseCase,
     private val listDistributionsByStatusUseCase: ListDistributionsByStatusUseCase,
     private val updateDistributionStatusUseCase: UpdateDistributionStatusUseCase,
+    private val completeDistributionUseCase: CompleteDistributionUseCase,
     private val getStatusByCodeUseCase: GetStatusTypeByCodeUseCase
 ) : ViewModel() {
 
@@ -186,23 +188,42 @@ class AppointmentViewModel @Inject constructor(
                     is ResultWrapper.Success -> {
                         val statusId = statusResult.data?.id
                         if (statusId != null) {
-                            // Update the distribution status
-                            updateDistributionStatusUseCase.execute(distributionId, statusId)
-                                .collect { updateResult ->
-                                    when (updateResult) {
-                                        is ResultWrapper.Success -> {
-                                            // Reload distributions after successful update
-                                            loadDistributionsByStatus("POR_ENTREGAR")
-                                        }
-                                        is ResultWrapper.Error -> {
-                                            _isLoading.value = false
-                                            _errorMessage.value = updateResult.message
-                                        }
-                                        is ResultWrapper.Loading -> {
-                                            // Keep loading state
+                            // Se o status for ENTREGUE, usar CompleteDistributionUseCase
+                            if (statusCode == "ENTREGUE") {
+                                completeDistributionUseCase.execute(distributionId, statusId)
+                                    .collect { updateResult ->
+                                        when (updateResult) {
+                                            is ResultWrapper.Success -> {
+                                                loadDistributionsByStatus("POR_ENTREGAR")
+                                            }
+                                            is ResultWrapper.Error -> {
+                                                _isLoading.value = false
+                                                _errorMessage.value = updateResult.message
+                                            }
+                                            is ResultWrapper.Loading -> {
+                                                // Keep loading state
+                                            }
                                         }
                                     }
-                                }
+                            } else {
+                                // Para outros status, usar UpdateDistributionStatusUseCase normal
+                                updateDistributionStatusUseCase.execute(distributionId, statusId)
+                                    .collect { updateResult ->
+                                        when (updateResult) {
+                                            is ResultWrapper.Success -> {
+                                                // Reload distributions after successful update
+                                                loadDistributionsByStatus("POR_ENTREGAR")
+                                            }
+                                            is ResultWrapper.Error -> {
+                                                _isLoading.value = false
+                                                _errorMessage.value = updateResult.message
+                                            }
+                                            is ResultWrapper.Loading -> {
+                                                // Keep loading state
+                                            }
+                                        }
+                                    }
+                            }
                         } else {
                             _isLoading.value = false
                             _errorMessage.value = "Status $statusCode não encontrado"

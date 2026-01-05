@@ -73,12 +73,11 @@ fun DistributionCard(
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                    // ID da distribuição
                     Text(
                         text = "ID: ${distribution.id.take(8)}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(start = 24.dp, top = 2.dp)
+                        color = TextDark,
+                        modifier = Modifier.padding(top = 6.dp)
                     )
                 }
 
@@ -88,7 +87,6 @@ fun DistributionCard(
                     Spacer(modifier = Modifier.size(8.dp))
                 }
 
-                // Ícone de Edição - apenas se status for POR_ENTREGAR
                 if (distribution.statusCode == "POR_ENTREGAR") {
                     IconButton(
                         onClick = { onEdit(distribution) },
@@ -101,6 +99,24 @@ fun DistributionCard(
                             modifier = Modifier.size(18.dp)
                         )
                     }
+                }
+            }
+
+            // Beneficiário
+            if (distribution.beneficiaryName != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Beneficiário: ",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = distribution.beneficiaryName,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium,
+                        color = TextDark
+                    )
                 }
             }
 

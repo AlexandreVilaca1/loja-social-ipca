@@ -4,14 +4,12 @@
 
 # Create a new candidacy
 mutation CreateCandidacy(
-  $beneficiaryId: UUID!,
   $applicationDate: Date!,
   $statusId: UUID,
   $observations: String
 ) @auth(level: USER) {
   candidacy_insert(
     data: {
-      beneficiaryId: $beneficiaryId,
       applicationDate: $applicationDate,
       statusId: $statusId,
       observations: $observations

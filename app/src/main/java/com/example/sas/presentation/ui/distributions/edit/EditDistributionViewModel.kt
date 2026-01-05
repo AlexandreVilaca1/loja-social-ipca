@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.Distribution
 import com.example.sas.domain.models.StatusType
+import com.example.sas.domain.repositories.DistributionItemsRepository
+import com.example.sas.domain.usecase.distributions.CompleteDistributionUseCase
 import com.example.sas.domain.usecase.distributions.UpdateDistributionUseCase
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.status.GetStatusTypeByCodeUseCase
@@ -21,6 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EditDistributionViewModel @Inject constructor(
     private val updateDistributionUseCase: UpdateDistributionUseCase,
+    private val completeDistributionUseCase: CompleteDistributionUseCase,
+    private val distributionItemsRepository: DistributionItemsRepository,
     private val listUsersUseCase: ListUsersUseCase,
     private val getStatusTypeByCodeUseCase: GetStatusTypeByCodeUseCase,
     private val logActivityUseCase: LogActivityUseCase
@@ -128,9 +132,27 @@ class EditDistributionViewModel @Inject constructor(
         // Converter data de YYYY/MM/DD para YYYY-MM-DD
         val formattedDate = state.distributionDate.replace("/", "-")
 
-        viewModelScope.launch {
-            Log.d(TAG, "Updating distribution: ${state.distributionId}")
+        // Verificar se o novo status é ENTREGUE
+        val newStatusCode = state.availableStatuses.find { it.id == state.selectedStatusId }?.code
+        val isCompletingDistribution = newStatusCode == "ENTREGUE"
 
+        viewModelScope.launch {
+            // Se o status for ENTREGUE, verificar se há itens na distribuição ANTES de atualizar
+            if (isCompletingDistribution) {
+                // Verificar se há itens
+                val hasItemsCheck = checkDistributionHasItems(state.distributionId)
+                if (!hasItemsCheck) {
+                    _uiState.update {
+                        it.copy(
+                            isUpdating = false,
+                            error = "Não é possível marcar como 'Entregue'. A distribuição não tem produtos associados. Por favor, adicione produtos antes de marcar como entregue."
+                        )
+                    }
+                    return@launch
+                }
+            }
+
+            // SEMPRE atualizar a distribuição primeiro com UpdateDistributionUseCase
             updateDistributionUseCase.execute(
                 distributionId = state.distributionId,
                 distributionDate = formattedDate,
@@ -143,9 +165,34 @@ class EditDistributionViewModel @Inject constructor(
                         _uiState.update { it.copy(isUpdating = true, error = null) }
                     }
                     is ResultWrapper.Success -> {
-                        logActivityUseCase.execute("Editou distribuição:${state.distributionId}", "DISTRIBUTION")
-                        Log.d(TAG, "Distribution updated successfully")
+                        // Se completar distribuição (status ENTREGUE), reduzir quantidades dos lotes
+                        if (isCompletingDistribution) {
+                            // Usar CompleteDistributionUseCase apenas para reduzir quantidades
+                            launch {
+                                completeDistributionUseCase.execute(
+                                    distributionId = state.distributionId,
+                                    statusId = state.selectedStatusId
+                                ).collect { completeResult ->
+                                    when (completeResult) {
+                                        is ResultWrapper.Success -> {
+                                            logActivityUseCase.execute(
+                                                "Completou distribuição:${state.distributionId} (Status: ENTREGUE, quantidades reduzidas)",
+                                                "DISTRIBUTION"
+                                            )
+                                        }
+                                        is ResultWrapper.Error -> {
+                                            Log.e(TAG, "Failed to reduce lot quantities: ${completeResult.message}")
+                                        }
+                                        is ResultWrapper.Loading -> {}
+                                    }
+                                }
+                            }
+                        } else {
+                            logActivityUseCase.execute("Editou distribuição:${state.distributionId}", "DISTRIBUTION")
+                        }
+
                         _uiState.update { it.copy(isUpdating = false) }
+                        kotlinx.coroutines.delay(500)
                         onSuccess()
                     }
                     is ResultWrapper.Error -> {
@@ -159,6 +206,45 @@ class EditDistributionViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun checkDistributionHasItems(distributionId: String): Boolean {
+        return try {
+            // Coletar resultados, pulando Loading
+            var result: ResultWrapper<List<com.example.sas.domain.models.DistributionItem>>? = null
+            distributionItemsRepository.listItemsByDistribution(
+                distributionId = distributionId,
+                limit = 1,
+                offset = 0
+            ).collect { emittedResult ->
+                when (emittedResult) {
+                    is ResultWrapper.Loading -> {
+                        // Continuar coletando
+                    }
+                    is ResultWrapper.Success, is ResultWrapper.Error -> {
+                        result = emittedResult
+                        // Parar de coletar quando tiver resultado final
+                    }
+                }
+            }
+
+            when (result) {
+                is ResultWrapper.Success -> {
+                    val itemsCount = (result as ResultWrapper.Success).data?.size ?: 0
+                    itemsCount > 0
+                }
+                is ResultWrapper.Error -> {
+                    Log.e(TAG, "Error checking distribution items: ${(result as ResultWrapper.Error).message}")
+                    false
+                }
+                else -> {
+                    false
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Exception checking distribution items: ${e.message}", e)
+            false
         }
     }
 

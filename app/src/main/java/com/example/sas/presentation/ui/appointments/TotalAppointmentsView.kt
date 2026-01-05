@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,13 +18,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.presentation.ui.theme.BackgroundGreen
-import com.example.sas.presentation.ui.theme.TextDark
 
 @Composable
 fun TotalAppointmentsView(
@@ -94,7 +91,11 @@ fun TotalAppointmentsView(
                         LazyColumn {
                             items(distributions) { distribution ->
                                 AppointmentCard(distribution) {
-                                    navController.navigate("agendamentos/detalhe/${distribution.id}")
+                                    distribution.beneficiaryId?.let { beneficiaryId ->
+                                        navController.navigate(
+                                            "beneficiary/$beneficiaryId/distributions?name=${distribution.beneficiaryName ?: "Beneficiário"}"
+                                        )
+                                    }
                                 }
                                 Spacer(modifier = Modifier.height(12.dp))
                             }

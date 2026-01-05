@@ -43,7 +43,7 @@ query GetLotById($id: UUID!) @auth(level: USER) {
   }
 }
 
-# Search lots by code
+# Search lots by lotCode
 query SearchLots($lotCode: String, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   lots(
     where: { lotCode: { contains: $lotCode } }
