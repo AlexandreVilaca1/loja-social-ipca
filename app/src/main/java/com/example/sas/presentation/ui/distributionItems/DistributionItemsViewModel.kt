@@ -8,6 +8,7 @@ import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.usecase.distributionItems.CreateDistributionItemUseCase
 import com.example.sas.domain.usecase.distributionItems.ListDistributionItemsUseCase
 import com.example.sas.domain.usecase.distributions.GetDistributionByIdUseCase
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.lots.ListLotsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ class DistributionItemsViewModel @Inject constructor(
     private val createDistributionItemUseCase: CreateDistributionItemUseCase,
     private val listLotsUseCase: ListLotsUseCase,
     private val getDistributionByIdUseCase: GetDistributionByIdUseCase,
+    private val logActivityUseCase: LogActivityUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -169,6 +171,7 @@ class DistributionItemsViewModel @Inject constructor(
                         _uiState.update { it.copy(isCreating = true, error = null) }
                     }
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Criou item da distribuição:${distributionId}", "DISTRIBUTION_ITEM")
                         Log.d(TAG, "Distribution item created successfully")
                         _uiState.update { it.copy(isCreating = false) }
                         refreshItems()

@@ -7,6 +7,7 @@ import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.Distribution
 import com.example.sas.domain.models.StatusType
 import com.example.sas.domain.usecase.distributions.UpdateDistributionUseCase
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.status.GetStatusTypeByCodeUseCase
 import com.example.sas.domain.usecase.users.ListUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class EditDistributionViewModel @Inject constructor(
     private val updateDistributionUseCase: UpdateDistributionUseCase,
     private val listUsersUseCase: ListUsersUseCase,
-    private val getStatusTypeByCodeUseCase: GetStatusTypeByCodeUseCase
+    private val getStatusTypeByCodeUseCase: GetStatusTypeByCodeUseCase,
+    private val logActivityUseCase: LogActivityUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EditDistributionUiState())
@@ -132,6 +134,7 @@ class EditDistributionViewModel @Inject constructor(
                         _uiState.update { it.copy(isUpdating = true, error = null) }
                     }
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Editou distribuição:${state.distributionId}", "DISTRIBUTION")
                         Log.d(TAG, "Distribution updated successfully")
                         _uiState.update { it.copy(isUpdating = false) }
                         onSuccess()

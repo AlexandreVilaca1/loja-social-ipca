@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.usecase.distributions.ListDistributionsByBeneficiaryAndStatusUseCase
 import com.example.sas.domain.usecase.distributions.ListDistributionsByBeneficiaryUseCase
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class DistributionsViewModel @Inject constructor(
     private val listDistributionsUseCase: ListDistributionsByBeneficiaryUseCase,
     private val listDistributionsByStatusUseCase: ListDistributionsByBeneficiaryAndStatusUseCase,
+    private val logActivityUseCase: LogActivityUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

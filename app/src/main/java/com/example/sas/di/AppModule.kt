@@ -6,6 +6,7 @@ import com.example.sas.data.repository.BeneficiariesRepositoryImpl
 import com.example.sas.data.repository.CategoriesRepositoryImpl
 import com.example.sas.data.repository.DistributionItemsRepositoryImpl
 import com.example.sas.data.repository.DistributionsRepositoryImpl
+import com.example.sas.data.repository.LogsRepositoryImpl
 import com.example.sas.data.repository.LotsRepositoryImpl
 import com.example.sas.data.repository.StatusTypesRepositoryImpl
 import com.example.sas.data.repository.UsersRepositoryImpl
@@ -15,6 +16,7 @@ import com.example.sas.domain.repositories.BeneficiariesRepository
 import com.example.sas.domain.repositories.CategoriesRepository
 import com.example.sas.domain.repositories.DistributionItemsRepository
 import com.example.sas.domain.repositories.DistributionsRepository
+import com.example.sas.domain.repositories.LogsRepository
 import com.example.sas.domain.repositories.LotsRepository
 import com.example.sas.domain.repositories.StatusTypesRepository
 import com.example.sas.domain.repositories.UsersRepository
@@ -84,6 +86,12 @@ abstract class RepositoryBindsModule {
     abstract fun bindLotsRepository(
         impl: LotsRepositoryImpl
     ): LotsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLogsRepository(
+        logsRepositoryImpl: LogsRepositoryImpl
+    ): LogsRepository
 
 }
 

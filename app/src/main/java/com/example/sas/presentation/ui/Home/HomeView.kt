@@ -27,6 +27,7 @@ import com.example.sas.presentation.ui.Drawer.DrawerRoute
 import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
 import com.example.sas.presentation.ui.distributionItems.DistributionItemsView
 import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsView
+import com.example.sas.presentation.ui.reports.ReportsView
 import com.example.sas.presentation.ui.stock.categories.CategoriesView
 import com.example.sas.presentation.ui.stock.home.StockHomeView
 import com.example.sas.presentation.ui.stock.home.StockHomeViewModel
@@ -188,7 +189,7 @@ fun HomeView(onSignOut : () -> Unit) {
                     }
 
                     composable(DrawerRoute.Relatorios.route) {
-                        Text("Tela Relatórios")
+                        ReportsView()
                     }
                 }
             }

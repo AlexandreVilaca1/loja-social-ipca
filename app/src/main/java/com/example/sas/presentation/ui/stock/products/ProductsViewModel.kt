@@ -10,6 +10,7 @@ import com.example.sas.domain.models.UpdateProductRequest
 import com.example.sas.domain.models.Category
 import com.example.sas.domain.usecase.products.*
 import com.example.sas.domain.usecase.categories.ListActiveCategoriesUseCase
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,7 +45,7 @@ class ProductsViewModel @Inject constructor(
     private val createProductUseCase: CreateProductUseCase,
     private val updateProductUseCase: UpdateProductUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
-    private val listActiveCategoriesUseCase: ListActiveCategoriesUseCase
+    private val listActiveCategoriesUseCase: ListActiveCategoriesUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductsUiState())

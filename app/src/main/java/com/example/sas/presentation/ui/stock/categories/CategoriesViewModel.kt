@@ -6,7 +6,11 @@ import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.Category
 import com.example.sas.domain.models.CreateCategoryRequest
 import com.example.sas.domain.models.UpdateCategoryRequest
+import com.example.sas.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.sas.domain.usecase.categories.*
+import com.example.sas.domain.usecase.logs.CreateLogUseCase
+import com.example.sas.domain.usecase.logs.GetLogTypeByCodeUseCase
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +40,8 @@ class CategoriesViewModel @Inject constructor(
     private val listActiveCategoriesUseCase: ListActiveCategoriesUseCase,
     private val createCategoryUseCase: CreateCategoryUseCase,
     private val updateCategoryUseCase: UpdateCategoryUseCase,
-    private val deleteCategoryUseCase: DeleteCategoryUseCase
+    private val deleteCategoryUseCase: DeleteCategoryUseCase,
+    private val logActivityUseCase: LogActivityUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CategoriesUiState())
@@ -45,7 +50,6 @@ class CategoriesViewModel @Inject constructor(
     init {
         loadCategories()
     }
-
     fun loadCategories() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
@@ -105,6 +109,7 @@ class CategoriesViewModel @Inject constructor(
             createCategoryUseCase.execute(request).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Criou categoria: ${state.name}", "STOCK_CATEGORY")
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             createdCategoryId = result.data
@@ -143,6 +148,7 @@ class CategoriesViewModel @Inject constructor(
             updateCategoryUseCase.execute(request).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Editou categoria: ${state.name}", "STOCK_CATEGORY")
                         _uiState.value = _uiState.value.copy(isLoading = false)
                         clearForm()
                         loadCategories()
@@ -172,10 +178,17 @@ class CategoriesViewModel @Inject constructor(
     }
 
     fun deleteCategory(categoryId: String) {
+        val category = uiState.value.categories.find { it.id == categoryId }
+        val name = category?.name ?: "Categoria desconhecida"
+
         viewModelScope.launch {
             deleteCategoryUseCase.execute(categoryId).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute(
+                            "Removeu categoria: $name",
+                            "STOCK_CATEGORY"
+                        )
                         loadCategories()
                     }
                     is ResultWrapper.Error -> {
@@ -186,6 +199,7 @@ class CategoriesViewModel @Inject constructor(
             }
         }
     }
+
 
     fun cancelEdit() {
         clearForm()

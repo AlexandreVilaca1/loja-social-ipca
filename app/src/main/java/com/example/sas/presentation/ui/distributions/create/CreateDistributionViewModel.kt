@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.usecase.distributions.CreateDistributionUseCase
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.status.GetStatusTypeByCodeUseCase
 import com.example.sas.domain.usecase.users.ListUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class CreateDistributionViewModel @Inject constructor(
     private val createDistributionUseCase: CreateDistributionUseCase,
     private val listUsersUseCase: ListUsersUseCase,
-    private val getStatusByCodeUseCase: GetStatusTypeByCodeUseCase
+    private val getStatusByCodeUseCase: GetStatusTypeByCodeUseCase,
+    private val logActivityUseCase: LogActivityUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateDistributionUiState())
@@ -156,6 +158,7 @@ class CreateDistributionViewModel @Inject constructor(
                         _uiState.update { it.copy(isCreating = true, error = null) }
                     }
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Criou distribuição: ${result}", "DISTRIBUTION")
                         Log.d(TAG, "Distribution created successfully: ${result.data}")
                         _uiState.update { it.copy(isCreating = false) }
                         result.data?.let { onSuccess(it) }
