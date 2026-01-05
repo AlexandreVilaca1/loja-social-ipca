@@ -54,5 +54,18 @@ class DistributionItemsDataSource @Inject constructor() {
             this.observations = observations
         }
     }
+
+    /**
+     * Deletes a distribution item.
+     */
+    suspend fun deleteDistributionItem(
+        distributionId: String,
+        lotId: String
+    ) {
+        connector.deleteDistributionItem.execute(
+            distributionId = java.util.UUID.fromString(distributionId),
+            lotId = java.util.UUID.fromString(lotId)
+        )
+    }
 }
 

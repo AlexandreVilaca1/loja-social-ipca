@@ -31,6 +31,7 @@ class DistributionItemsRepositoryImpl @Inject constructor(
             // Map Firebase Data Connect items to domain models
             val distributionItems = items.map { item ->
                 DistributionItem(
+                    distributionId = item.distribution.id.toString(),
                     lotId = item.lot.id.toString(),
                     lotCode = item.lot.lotCode,
                     productName = item.lot.product?.name ?: "Produto desconhecido",
@@ -58,6 +59,19 @@ class DistributionItemsRepositoryImpl @Inject constructor(
             emit(ResultWrapper.Success(Unit))
         } catch (e: Exception) {
             emit(ResultWrapper.Error(e.message ?: "Erro ao criar item da distribuição"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun deleteDistributionItem(
+        distributionId: String,
+        lotId: String
+    ): Flow<ResultWrapper<Unit>> = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            dataSource.deleteDistributionItem(distributionId, lotId)
+            emit(ResultWrapper.Success(Unit))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao eliminar item da distribuição"))
         }
     }.flowOn(Dispatchers.IO)
 }

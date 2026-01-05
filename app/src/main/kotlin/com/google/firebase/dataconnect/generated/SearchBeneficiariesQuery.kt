@@ -103,6 +103,7 @@ public interface SearchBeneficiariesQuery :
     val course: String,
     val isActive: Boolean,
     val contactNumber: String,
+    val uid: String?,
     val address: String?,
     val observations: String?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp,

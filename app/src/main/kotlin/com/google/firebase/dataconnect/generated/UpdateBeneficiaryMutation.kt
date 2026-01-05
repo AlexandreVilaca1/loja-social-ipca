@@ -32,6 +32,7 @@ public interface UpdateBeneficiaryMutation :
     val course: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val isActive: com.google.firebase.dataconnect.OptionalVariable<Boolean?>,
     val contactNumber: com.google.firebase.dataconnect.OptionalVariable<String?>,
+    val uid: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val address: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>
   ) {
@@ -49,6 +50,7 @@ public interface UpdateBeneficiaryMutation :
         public var course: String?
         public var isActive: Boolean?
         public var contactNumber: String?
+        public var uid: String?
         public var address: String?
         public var observations: String?
         
@@ -72,6 +74,8 @@ public interface UpdateBeneficiaryMutation :
             var isActive: com.google.firebase.dataconnect.OptionalVariable<Boolean?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var contactNumber: com.google.firebase.dataconnect.OptionalVariable<String?> =
+                com.google.firebase.dataconnect.OptionalVariable.Undefined
+            var uid: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var address: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
@@ -108,6 +112,10 @@ public interface UpdateBeneficiaryMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { contactNumber = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
               
+            override var uid: String?
+              get() = throw UnsupportedOperationException("getting builder values is not supported")
+              set(value_) { uid = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
+              
             override var address: String?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { address = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
@@ -120,7 +128,7 @@ public interface UpdateBeneficiaryMutation :
           }.apply(block_)
           .let {
             Variables(
-              id=id,fullName=fullName,studentNumer=studentNumer,nif=nif,course=course,isActive=isActive,contactNumber=contactNumber,address=address,observations=observations,
+              id=id,fullName=fullName,studentNumer=studentNumer,nif=nif,course=course,isActive=isActive,contactNumber=contactNumber,uid=uid,address=address,observations=observations,
             )
           }
         }
