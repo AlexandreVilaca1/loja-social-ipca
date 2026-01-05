@@ -32,6 +32,15 @@ package com.google.firebase.dataconnect.generated
   }
 
   @kotlinx.serialization.Serializable
+  public data class CandidacyKey(
+  
+    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
+  ) {
+    
+    
+  }
+
+  @kotlinx.serialization.Serializable
   public data class CategoryKey(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
@@ -107,6 +116,15 @@ package com.google.firebase.dataconnect.generated
 
   @kotlinx.serialization.Serializable
   public data class ProductKey(
+  
+    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
+  ) {
+    
+    
+  }
+
+  @kotlinx.serialization.Serializable
+  public data class RequestKey(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
   ) {

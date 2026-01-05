@@ -88,17 +88,19 @@ fun DistributionCard(
                     Spacer(modifier = Modifier.size(8.dp))
                 }
 
-                // Ícone de Edição
-                IconButton(
-                    onClick = { onEdit(distribution) },
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Editar",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(18.dp)
-                    )
+                // Ícone de Edição - apenas se status for POR_ENTREGAR
+                if (distribution.statusCode == "POR_ENTREGAR") {
+                    IconButton(
+                        onClick = { onEdit(distribution) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar",
+                            tint = Color.Gray,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
 

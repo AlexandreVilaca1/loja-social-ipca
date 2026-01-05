@@ -80,21 +80,21 @@ val connector: SasConnectorConnector = SasConnectorConnector.getInstance(
 ### SasConnectorConnector - Query and Mutation Properties
 
 The `sas-connector` Data Connect connector defines
-51 queries and
-45 mutations,
-a total of 96 operations.
+64 queries and
+59 mutations,
+a total of 123 operations.
 Each of these operations is exposed
 as a property of [SasConnectorConnector].
 
 
 An example of the property for a query
-is the query named "GetBeneficiaryById",
-which can be accessed via the [SasConnectorConnector.getBeneficiaryById] property.
+is the query named "CountCandidaciesByStatus",
+which can be accessed via the [SasConnectorConnector.countCandidaciesByStatus] property.
 
 
 An example of the property for a mutation
-is the mutation named "CreateBeneficiary",
-which can be accessed via the [SasConnectorConnector.createBeneficiary] property.
+is the mutation named "ApproveCandidacy",
+which can be accessed via the [SasConnectorConnector.approveCandidacy] property.
 
 
 ### SasConnectorConnector - The `dataConnect` Property

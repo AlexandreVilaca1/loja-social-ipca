@@ -1,0 +1,108 @@
+# ============================
+# REQUEST MUTATIONS
+# ============================
+
+# Create a new request
+mutation CreateRequest(
+  $beneficiaryId: UUID!,
+  $requestDate: Date!,
+  $description: String,
+  $statusId: UUID
+) @auth(level: USER) {
+  request_insert(
+    data: {
+      beneficiaryId: $beneficiaryId,
+      requestDate: $requestDate,
+      description: $description,
+      statusId: $statusId
+    }
+  )
+}
+
+# Update request
+mutation UpdateRequest(
+  $id: UUID!,
+  $requestDate: Date,
+  $description: String,
+  $statusId: UUID
+) @auth(level: USER) {
+  request_update(
+    id: $id,
+    data: {
+      requestDate: $requestDate,
+      description: $description,
+      statusId: $statusId
+    }
+  )
+}
+
+# Update request status
+mutation UpdateRequestStatus(
+  $id: UUID!,
+  $statusId: UUID!
+) @auth(level: USER) {
+  request_update(
+    id: $id,
+    data: {
+      statusId: $statusId
+    }
+  )
+}
+
+# Update request description
+mutation UpdateRequestDescription(
+  $id: UUID!,
+  $description: String
+) @auth(level: USER) {
+  request_update(
+    id: $id,
+    data: {
+      description: $description
+    }
+  )
+}
+
+# Delete request
+mutation DeleteRequest($id: UUID!) @auth(level: USER) {
+  request_delete(id: $id)
+}
+
+# Approve request (update status to approved)
+mutation ApproveRequest(
+  $id: UUID!,
+  $statusId: UUID!
+) @auth(level: USER) {
+  request_update(
+    id: $id,
+    data: {
+      statusId: $statusId
+    }
+  )
+}
+
+# Reject request (update status to rejected)
+mutation RejectRequest(
+  $id: UUID!,
+  $statusId: UUID!
+) @auth(level: USER) {
+  request_update(
+    id: $id,
+    data: {
+      statusId: $statusId
+    }
+  )
+}
+
+# Complete request (update status to completed)
+mutation CompleteRequest(
+  $id: UUID!,
+  $statusId: UUID!
+) @auth(level: USER) {
+  request_update(
+    id: $id,
+    data: {
+      statusId: $statusId
+    }
+  )
+}
+

@@ -15,7 +15,7 @@ query ListProducts($limit: Int = 8, $offset: Int = 0) @auth(level: PUBLIC, insec
       name
     }
     createdAt
-    updateAt
+    updatedAt
   }
 }
 
@@ -33,7 +33,7 @@ query GetProductById($id: UUID!) @auth(level: PUBLIC, insecureReason: "Anyone ca
       description
     }
     createdAt
-    updateAt
+    updatedAt
   }
 }
 
@@ -55,7 +55,7 @@ query SearchProducts($searchTerm: String, $limit: Int = 8, $offset: Int = 0) @au
       name
     }
     createdAt
-    updateAt
+    updatedAt
   }
 }
 
@@ -73,7 +73,7 @@ query ListProductsByCategory($categoryId: UUID!, $limit: Int = 8, $offset: Int =
     isActive
     description
     createdAt
-    updateAt
+    updatedAt
   }
 }
 

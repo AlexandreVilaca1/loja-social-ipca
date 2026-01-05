@@ -14,6 +14,7 @@ data class EditDistributionUiState(
     val selectedStatusId: String = "",
     val responsibleStaffName: String? = null,
     val statusDescription: String? = null,
+    val statusCode: String? = null,
     val availableUsers: List<User> = emptyList(),
     val availableStatuses: List<StatusType> = emptyList(),
     val isUpdating: Boolean = false,

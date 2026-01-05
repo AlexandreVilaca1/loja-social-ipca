@@ -45,7 +45,8 @@ class EditDistributionViewModel @Inject constructor(
                 distributionDate = distribution.distributionDate,
                 observations = distribution.observations ?: "",
                 responsibleStaffName = distribution.responsibleStaffName,
-                statusDescription = distribution.statusDescription
+                statusDescription = distribution.statusDescription,
+                statusCode = distribution.statusCode
             )
         }
     }
@@ -101,6 +102,14 @@ class EditDistributionViewModel @Inject constructor(
 
     fun updateDistribution(onSuccess: () -> Unit) {
         val state = _uiState.value
+
+        // Validação de permissão - só pode editar se status for POR_ENTREGAR
+        if (state.statusCode != "POR_ENTREGAR") {
+            _uiState.update {
+                it.copy(error = "Apenas distribuições com status 'Por Entregar' podem ser editadas")
+            }
+            return
+        }
 
         // Validações
         if (state.distributionDate.isBlank()) {

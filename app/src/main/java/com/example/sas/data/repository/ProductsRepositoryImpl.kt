@@ -39,7 +39,7 @@ class ProductsRepositoryImpl @Inject constructor(
                     categoryName = item.category?.name,
                     categoryDescription = null,
                     createdAt = item.createdAt?.toString(),
-                    updatedAt = item.updateAt?.toString()
+                    updatedAt = item.updatedAt?.toString()
                 )
             }
             emit(ResultWrapper.Success(products))
@@ -67,7 +67,7 @@ class ProductsRepositoryImpl @Inject constructor(
                     categoryName = null,
                     categoryDescription = null,
                     createdAt = item.createdAt?.toString(),
-                    updatedAt = item.updateAt?.toString()
+                    updatedAt = item.updatedAt?.toString()
                 )
             }
             emit(ResultWrapper.Success(products))
@@ -95,7 +95,7 @@ class ProductsRepositoryImpl @Inject constructor(
                     categoryName = item.category?.name,
                     categoryDescription = null,
                     createdAt = item.createdAt?.toString(),
-                    updatedAt = item.updateAt?.toString()
+                    updatedAt = item.updatedAt?.toString()
                 )
             }
             emit(ResultWrapper.Success(products))
@@ -119,7 +119,7 @@ class ProductsRepositoryImpl @Inject constructor(
                     categoryName = item.category?.name,
                     categoryDescription = item.category?.description,
                     createdAt = item.createdAt?.toString(),
-                    updatedAt = item.updateAt?.toString()
+                    updatedAt = item.updatedAt?.toString()
                 )
                 emit(ResultWrapper.Success(product))
             } else {
