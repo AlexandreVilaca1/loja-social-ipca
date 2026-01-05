@@ -94,6 +94,7 @@ public interface ListActiveBeneficiariesQuery :
     val nif: String,
     val course: String,
     val contactNumber: String,
+    val uid: String?,
     val address: String?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp,
     val updatedAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp

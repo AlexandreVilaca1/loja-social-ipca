@@ -12,6 +12,7 @@ query ListBeneficiaries($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
     course
     isActive
     contactNumber
+    uid
     address
     observations
     createdAt
@@ -29,6 +30,7 @@ query GetBeneficiaryById($id: UUID!) @auth(level: USER) {
     course
     isActive
     contactNumber
+    uid
     address
     observations
     createdAt
@@ -56,6 +58,7 @@ query SearchBeneficiaries($searchTerm: String, $limit: Int = 8, $offset: Int = 0
     course
     isActive
     contactNumber
+    uid
     address
     observations
     createdAt
@@ -77,6 +80,7 @@ query ListActiveBeneficiaries($limit: Int = 8, $offset: Int = 0) @auth(level: US
     nif
     course
     contactNumber
+    uid
     address
     createdAt
     updatedAt

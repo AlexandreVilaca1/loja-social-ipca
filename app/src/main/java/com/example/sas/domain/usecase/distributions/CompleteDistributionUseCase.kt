@@ -114,7 +114,6 @@ class CompleteDistributionUseCase @Inject constructor(
                             return@flow
                         }
 
-                        // Update lot quantity
                         var updateError: String? = null
 
                         lotsRepository.updateLotQuantity(

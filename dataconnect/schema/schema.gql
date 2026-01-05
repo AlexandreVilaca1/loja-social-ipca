@@ -75,6 +75,7 @@ type Beneficiary @table {
   course: String!
   isActive: Boolean!
   contactNumber: String!
+  uid: String
   address: String
   observations: String
   createdAt: Timestamp! @default(expr: "request.time")

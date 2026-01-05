@@ -36,5 +36,16 @@ interface DistributionItemsRepository {
         quantity: Int,
         observations: String?
     ): Flow<ResultWrapper<Unit>>
+
+    /**
+     * Deletes a distribution item.
+     * @param distributionId UUID of the distribution
+     * @param lotId UUID of the lot
+     * @return Flow with result wrapper indicating success or failure
+     */
+    fun deleteDistributionItem(
+        distributionId: String,
+        lotId: String
+    ): Flow<ResultWrapper<Unit>>
 }
 

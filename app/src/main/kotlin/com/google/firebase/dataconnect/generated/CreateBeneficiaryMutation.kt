@@ -31,6 +31,7 @@ public interface CreateBeneficiaryMutation :
     val course: String,
     val isActive: Boolean,
     val contactNumber: String,
+    val uid: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val address: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>
   ) {
@@ -47,6 +48,7 @@ public interface CreateBeneficiaryMutation :
         public var course: String
         public var isActive: Boolean
         public var contactNumber: String
+        public var uid: String?
         public var address: String?
         public var observations: String?
         
@@ -64,6 +66,8 @@ public interface CreateBeneficiaryMutation :
             var course= course
             var isActive= isActive
             var contactNumber= contactNumber
+            var uid: com.google.firebase.dataconnect.OptionalVariable<String?> =
+                com.google.firebase.dataconnect.OptionalVariable.Undefined
             var address: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var observations: com.google.firebase.dataconnect.OptionalVariable<String?> =
@@ -95,6 +99,10 @@ public interface CreateBeneficiaryMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { contactNumber = value_ }
               
+            override var uid: String?
+              get() = throw UnsupportedOperationException("getting builder values is not supported")
+              set(value_) { uid = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
+              
             override var address: String?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { address = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
@@ -107,7 +115,7 @@ public interface CreateBeneficiaryMutation :
           }.apply(block_)
           .let {
             Variables(
-              fullName=fullName,studentNumer=studentNumer,nif=nif,course=course,isActive=isActive,contactNumber=contactNumber,address=address,observations=observations,
+              fullName=fullName,studentNumer=studentNumer,nif=nif,course=course,isActive=isActive,contactNumber=contactNumber,uid=uid,address=address,observations=observations,
             )
           }
         }

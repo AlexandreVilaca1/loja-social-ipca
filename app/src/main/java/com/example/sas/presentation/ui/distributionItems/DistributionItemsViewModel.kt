@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.usecase.distributionItems.CreateDistributionItemUseCase
+import com.example.sas.domain.usecase.distributionItems.DeleteDistributionItemUseCase
 import com.example.sas.domain.usecase.distributionItems.ListDistributionItemsUseCase
 import com.example.sas.domain.usecase.distributions.GetDistributionByIdUseCase
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class DistributionItemsViewModel @Inject constructor(
     private val listDistributionItemsUseCase: ListDistributionItemsUseCase,
     private val createDistributionItemUseCase: CreateDistributionItemUseCase,
+    private val deleteDistributionItemUseCase: DeleteDistributionItemUseCase,
     private val listLotsUseCase: ListLotsUseCase,
     private val getDistributionByIdUseCase: GetDistributionByIdUseCase,
     private val logActivityUseCase: LogActivityUseCase,
@@ -183,6 +185,43 @@ class DistributionItemsViewModel @Inject constructor(
                             it.copy(
                                 isCreating = false,
                                 error = result.message ?: "Erro ao criar item"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteDistributionItem(
+        distributionId: String,
+        lotId: String,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            Log.d(TAG, "Deleting distribution item: distribution=$distributionId, lot=$lotId")
+
+            deleteDistributionItemUseCase.execute(
+                distributionId = distributionId,
+                lotId = lotId
+            ).collect { result ->
+                when (result) {
+                    is ResultWrapper.Loading -> {
+                        _uiState.update { it.copy(isCreating = true, error = null) }
+                    }
+                    is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Eliminou item da distribuição:${distributionId}", "DISTRIBUTION_ITEM")
+                        Log.d(TAG, "Distribution item deleted successfully")
+                        _uiState.update { it.copy(isCreating = false) }
+                        refreshItems()
+                        onSuccess()
+                    }
+                    is ResultWrapper.Error -> {
+                        Log.e(TAG, "Failed to delete distribution item: ${result.message}")
+                        _uiState.update {
+                            it.copy(
+                                isCreating = false,
+                                error = result.message ?: "Erro ao eliminar item"
                             )
                         }
                     }

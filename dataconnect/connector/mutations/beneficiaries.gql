@@ -10,6 +10,7 @@ mutation CreateBeneficiary(
   $course: String!,
   $isActive: Boolean!,
   $contactNumber: String!,
+  $uid: String,
   $address: String,
   $observations: String
 ) @auth(level: USER) {
@@ -21,6 +22,7 @@ mutation CreateBeneficiary(
       course: $course,
       isActive: $isActive,
       contactNumber: $contactNumber,
+      uid: $uid,
       address: $address,
       observations: $observations
     }
@@ -36,6 +38,7 @@ mutation UpdateBeneficiary(
   $course: String,
   $isActive: Boolean,
   $contactNumber: String,
+  $uid: String,
   $address: String,
   $observations: String
 ) @auth(level: USER) {
@@ -48,6 +51,7 @@ mutation UpdateBeneficiary(
       course: $course,
       isActive: $isActive,
       contactNumber: $contactNumber,
+      uid: $uid,
       address: $address,
       observations: $observations
     }

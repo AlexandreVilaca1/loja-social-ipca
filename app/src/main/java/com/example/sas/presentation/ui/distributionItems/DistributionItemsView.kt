@@ -118,7 +118,17 @@ fun DistributionItemsView(
                     }
 
                     items(state.items) { item ->
-                        DistributionItemCard(item = item)
+                        DistributionItemCard(
+                            item = item,
+                            canDelete = state.distributionStatusCode == "POR_ENTREGAR",
+                            onDeleteClick = { distributionId, lotId ->
+                                viewModel.deleteDistributionItem(
+                                    distributionId = distributionId,
+                                    lotId = lotId,
+                                    onSuccess = {}
+                                )
+                            }
+                        )
                     }
                 }
             }

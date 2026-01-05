@@ -245,7 +245,7 @@ however, if they _are_ specified,
 then they are specified in a Kotlin DSL block as the last argument
 of the `execute()` method.
 
-For example, the "UpdateBeneficiary" mutation has 8 optional variables ("fullName", "studentNumer", "nif", "course", "isActive", "contactNumber", "address", and "observations")
+For example, the "UpdateBeneficiary" mutation has 9 optional variables ("fullName", "studentNumer", "nif", "course", "isActive", "contactNumber", "uid", "address", and "observations")
 and can be executed via the [SasConnectorConnector.updateBeneficiary]
 property as follows:
 
@@ -258,6 +258,7 @@ val mutationResult = connector.updateBeneficiary.execute(id=java.util.UUID.rando
   course = "baz"
   isActive = true
   contactNumber = "qux"
+  uid = "qux"
   address = "qux"
   observations = "thud"
 }
