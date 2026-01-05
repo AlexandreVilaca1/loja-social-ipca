@@ -3,7 +3,9 @@ package com.example.sas.presentation.ui.Login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -30,6 +32,7 @@ import androidx.navigation.NavController
 import com.example.sas.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +40,7 @@ fun LoginView(
     navController: NavController
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val green = Color(0xFF2FBF71)
     val lightBg = Color(0xFFF6FFFA)
@@ -132,36 +136,6 @@ fun LoginView(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = false,
-                                onCheckedChange = {}
-                            )
-                            Text(
-                                text = "Lembra-me",
-                                fontSize = 14.sp
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        Text(
-                            text = "Esqueceste da password?",
-                            color = green,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.clickable {}
-                        )
-
-                    }
-
                     Spacer(modifier = Modifier.height(60.dp))
 
                     Button(
@@ -179,10 +153,92 @@ fun LoginView(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    Text(
+                        text = "Candidatar-se a beneficiário",
+                        color = green,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        modifier = Modifier.clickable {
+                            viewModel.toggleCandidacyForm(true)
+                        }
+                    )
+                    if (uiState.showCandidacyForm) {
+                        AlertDialog(
+                            onDismissRequest = { viewModel.toggleCandidacyForm(false) },
+                            confirmButton = {
+                                Button(
+                                    onClick = { viewModel.sendCandidacyEmail(context) },
+                                    colors = ButtonDefaults.buttonColors(containerColor = green)
+                                ) {
+                                    Text("Concluir")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { viewModel.toggleCandidacyForm(false) }) {
+                                    Text("Cancelar", color = Color.Gray)
+                                }
+                            },
+                            title = {
+                                Text(
+                                    "Formulário de Candidatura",
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            text = {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .verticalScroll(rememberScrollState()),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    CandidacyTextField(
+                                        "Nome Completo",
+                                        uiState.candFullName
+                                    ) { viewModel.updateCandidacyField(name = it) }
+                                    CandidacyTextField(
+                                        "Nº Aluno",
+                                        uiState.candStudentNumber
+                                    ) { viewModel.updateCandidacyField(studentNum = it) }
+                                    CandidacyTextField(
+                                        "NIF",
+                                        uiState.candNif
+                                    ) { viewModel.updateCandidacyField(nif = it) }
+                                    CandidacyTextField(
+                                        "Curso",
+                                        uiState.candCourse
+                                    ) { viewModel.updateCandidacyField(course = it) }
+                                    CandidacyTextField(
+                                        "Contacto",
+                                        uiState.candContact
+                                    ) { viewModel.updateCandidacyField(contact = it) }
+
+                                    OutlinedTextField(
+                                        value = uiState.candReason,
+                                        onValueChange = { viewModel.updateCandidacyField(reason = it) },
+                                        label = { Text("Por que quer ser beneficiário?") },
+                                        modifier = Modifier.fillMaxWidth().height(120.dp),
+                                        maxLines = 5
+                                    )
+                                }
+                            }
+                        )
+                    }
+
                     // pequeno respiro inferior
                     Spacer(modifier = Modifier.weight(0.3f))
                 }
             }
         }
     }
+}
+
+@Composable
+fun CandidacyTextField(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
 }

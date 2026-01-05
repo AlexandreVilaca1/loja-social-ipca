@@ -46,13 +46,13 @@ fun BottomBar(navController: NavController) {
         currentRoute?.startsWith("agendamentos") == true ->
             DrawerRoute.Agendamentos.route
 
-        currentRoute == DrawerRoute.Beneficiarios.route ->
+        currentRoute?.startsWith("beneficiarios") == true ->
             DrawerRoute.Beneficiarios.route
 
-        currentRoute == DrawerRoute.Doacoes.route ->
+        currentRoute?.startsWith("doacoes") == true ->
             DrawerRoute.Doacoes.route
 
-        currentRoute == DrawerRoute.Produtos.route ->
+        currentRoute?.startsWith("stock") == true->
             DrawerRoute.Produtos.route
 
         currentRoute == DrawerRoute.Relatorios.route ->

@@ -1,5 +1,8 @@
 package com.example.sas.presentation.ui.Login
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,10 +17,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class LoginState(
-    var email: String? = null,
-    var password: String?  = null,
-    var error: String? = null,
-    var isLoading: Boolean? = null
+    val email: String? = null,
+    val password: String? = null,
+    val error: String? = null,
+    val isLoading: Boolean = false,
+    val showCandidacyForm: Boolean = false,
+    val candFullName: String = "",
+    val candStudentNumber: String = "",
+    val candNif: String = "",
+    val candCourse: String = "",
+    val candContact: String = "",
+    val candReason: String = ""
 )
 
 @HiltViewModel
@@ -80,6 +90,59 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun toggleCandidacyForm(show: Boolean) {
+        uiState.value = uiState.value.copy(showCandidacyForm = show)
+    }
+
+    fun updateCandidacyField(
+        name: String? = null,
+        studentNum: String? = null,
+        nif: String? = null,
+        course: String? = null,
+        contact: String? = null,
+        reason: String? = null
+    ) {
+        uiState.value = uiState.value.copy(
+            candFullName = name ?: uiState.value.candFullName,
+            candStudentNumber = studentNum ?: uiState.value.candStudentNumber,
+            candNif = nif ?: uiState.value.candNif,
+            candCourse = course ?: uiState.value.candCourse,
+            candContact = contact ?: uiState.value.candContact,
+            candReason = reason ?: uiState.value.candReason
+        )
+    }
+
+    fun sendCandidacyEmail(context: Context) {
+        val state = uiState.value
+        val emailDestino = "pedrotcalvess@gmail.com" // Email da instituição
+        val assunto = "Nova Candidatura a Beneficiário - ${state.candFullName}"
+
+        val corpoEmail = """
+            Nome Completo: ${state.candFullName}
+            Número de Aluno: ${state.candStudentNumber}
+            NIF: ${state.candNif}
+            Curso: ${state.candCourse}
+            Contacto: ${state.candContact}
+            
+            Motivo da Candidatura:
+            ${state.candReason}
+        """.trimIndent()
+
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(emailDestino))
+            putExtra(Intent.EXTRA_SUBJECT, assunto)
+            putExtra(Intent.EXTRA_TEXT, corpoEmail)
+        }
+
+        try {
+            context.startActivity(Intent.createChooser(intent, "Enviar candidatura via..."))
+            toggleCandidacyForm(false) // Fecha o formulário após enviar
+        } catch (e: Exception) {
+            uiState.value = uiState.value.copy(error = "Não foi possível abrir o app de email")
         }
     }
 }
