@@ -1,0 +1,191 @@
+# ============================
+# REQUEST QUERIES
+# ============================
+
+# List all requests with pagination
+query ListRequests($limit: Int = 10, $offset: Int = 0) @auth(level: USER) {
+  requests(limit: $limit, offset: $offset, orderBy: [{ requestDate: DESC }]) {
+    id
+    beneficiary {
+      id
+      fullName
+      studentNumer
+      nif
+      course
+      contactNumber
+    }
+    requestDate
+    description
+    status {
+      id
+      code
+      description
+      color
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Get request by id
+query GetRequestById($id: UUID!) @auth(level: USER) {
+  request(id: $id) {
+    id
+    beneficiary {
+      id
+      fullName
+      studentNumer
+      nif
+      course
+      isActive
+      contactNumber
+      address
+      observations
+    }
+    requestDate
+    description
+    status {
+      id
+      code
+      description
+      color
+      sortOrder
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# List requests by beneficiary
+query ListRequestsByBeneficiary($beneficiaryId: UUID!, $limit: Int = 10, $offset: Int = 0) @auth(level: USER) {
+  requests(
+    where: { beneficiary: { id: { eq: $beneficiaryId } } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ requestDate: DESC }]
+  ) {
+    id
+    beneficiary {
+      id
+      fullName
+      studentNumer
+    }
+    requestDate
+    description
+    status {
+      id
+      code
+      description
+      color
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# List requests by status
+query ListRequestsByStatus($statusCode: String!, $limit: Int = 10, $offset: Int = 0) @auth(level: USER) {
+  requests(
+    where: { status: { code: { eq: $statusCode } } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ requestDate: DESC }]
+  ) {
+    id
+    beneficiary {
+      id
+      fullName
+      studentNumer
+      nif
+      course
+      contactNumber
+    }
+    requestDate
+    description
+    status {
+      id
+      code
+      description
+      color
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# List requests by beneficiary and status
+query ListRequestsByBeneficiaryAndStatus(
+  $beneficiaryId: UUID!,
+  $statusCode: String!,
+  $limit: Int = 10,
+  $offset: Int = 0
+) @auth(level: USER) {
+  requests(
+    where: {
+      beneficiary: { id: { eq: $beneficiaryId } },
+      status: { code: { eq: $statusCode } }
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ requestDate: DESC }]
+  ) {
+    id
+    beneficiary {
+      id
+      fullName
+      studentNumer
+    }
+    requestDate
+    description
+    status {
+      id
+      code
+      description
+      color
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Search requests by beneficiary name or description
+query SearchRequests($searchTerm: String, $limit: Int = 10, $offset: Int = 0) @auth(level: USER) {
+  requests(
+    where: {
+      _or: [
+        { beneficiary: { fullName: { contains: $searchTerm } } },
+        { description: { contains: $searchTerm } }
+      ]
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ requestDate: DESC }]
+  ) {
+    id
+    beneficiary {
+      id
+      fullName
+      studentNumer
+      nif
+      contactNumber
+    }
+    requestDate
+    description
+    status {
+      id
+      code
+      description
+      color
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Count requests by status
+query CountRequestsByStatus($statusCode: String!) @auth(level: USER) {
+  requests(where: { status: { code: { eq: $statusCode } } }) {
+    id
+  }
+}
+

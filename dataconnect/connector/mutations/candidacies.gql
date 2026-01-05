@@ -1,0 +1,86 @@
+# ============================
+# CANDIDACY MUTATIONS
+# ============================
+
+# Create a new candidacy
+mutation CreateCandidacy(
+  $beneficiaryId: UUID!,
+  $applicationDate: Date!,
+  $statusId: UUID,
+  $observations: String
+) @auth(level: USER) {
+  candidacy_insert(
+    data: {
+      beneficiaryId: $beneficiaryId,
+      applicationDate: $applicationDate,
+      statusId: $statusId,
+      observations: $observations
+    }
+  )
+}
+
+# Update candidacy
+mutation UpdateCandidacy(
+  $id: UUID!,
+  $applicationDate: Date,
+  $statusId: UUID,
+  $observations: String
+) @auth(level: USER) {
+  candidacy_update(
+    id: $id,
+    data: {
+      applicationDate: $applicationDate,
+      statusId: $statusId,
+      observations: $observations
+    }
+  )
+}
+
+# Update candidacy status
+mutation UpdateCandidacyStatus(
+  $id: UUID!,
+  $statusId: UUID!
+) @auth(level: USER) {
+  candidacy_update(
+    id: $id,
+    data: {
+      statusId: $statusId
+    }
+  )
+}
+
+# Delete candidacy
+mutation DeleteCandidacy($id: UUID!) @auth(level: USER) {
+  candidacy_delete(id: $id)
+}
+
+# Approve candidacy (update status to approved)
+mutation ApproveCandidacy(
+  $id: UUID!,
+  $statusId: UUID!,
+  $observations: String
+) @auth(level: USER) {
+  candidacy_update(
+    id: $id,
+    data: {
+      statusId: $statusId,
+      observations: $observations
+    }
+  )
+}
+
+# Reject candidacy (update status to rejected)
+mutation RejectCandidacy(
+  $id: UUID!,
+  $statusId: UUID!,
+  $observations: String
+) @auth(level: USER) {
+  candidacy_update(
+    id: $id,
+    data: {
+      statusId: $statusId,
+      observations: $observations
+    }
+  )
+}
+

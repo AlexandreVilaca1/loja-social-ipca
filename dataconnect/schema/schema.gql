@@ -23,7 +23,7 @@ type Product @table {
   description: String
   category: Category
   createdAt: Timestamp! @default(expr: "request.time")
-  updateAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
 type Lot @table {
@@ -122,4 +122,22 @@ type Log @table {
   logType: LogType!
   user: User!
   createdAt: Timestamp! @default(expr: "request.time")
+}
+
+type Candidacy @table {
+  beneficiary: Beneficiary!
+  applicationDate: Date!
+  status: StatusType
+  observations: String
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
+}
+
+type Request @table {
+  beneficiary: Beneficiary!
+  requestDate: Date!
+  description: String
+  status: StatusType
+  createdAt: Timestamp! @default(expr: "request.time")
+  updatedAt: Timestamp! @default(expr: "request.time")
 }
