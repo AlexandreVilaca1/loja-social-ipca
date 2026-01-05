@@ -38,6 +38,24 @@ query GetBeneficiaryById($id: UUID!) @auth(level: USER) {
   }
 }
 
+# Get beneficiary by user ID (uid)
+query GetBeneficiaryByUserId($uid: String!) @auth(level: USER) {
+  beneficiaries(where: { uid: { eq: $uid } }, limit: 1) {
+    id
+    fullName
+    studentNumer
+    nif
+    course
+    isActive
+    contactNumber
+    uid
+    address
+    observations
+    createdAt
+    updatedAt
+  }
+}
+
 # Search beneficiaries by name or NIF
 query SearchBeneficiaries($searchTerm: String, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   beneficiaries(

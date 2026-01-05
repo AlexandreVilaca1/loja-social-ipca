@@ -94,6 +94,8 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val getBeneficiaryById: GetBeneficiaryByIdQuery
   
+    public val getBeneficiaryByUserId: GetBeneficiaryByUserIdQuery
+  
     public val getCampaignById: GetCampaignByIdQuery
   
     public val getCandidacyById: GetCandidacyByIdQuery
@@ -449,6 +451,10 @@ private class SasConnectorConnectorImpl(
   
     override val getBeneficiaryById by lazy(LazyThreadSafetyMode.PUBLICATION) {
       GetBeneficiaryByIdQueryImpl(this)
+    }
+  
+    override val getBeneficiaryByUserId by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      GetBeneficiaryByUserIdQueryImpl(this)
     }
   
     override val getCampaignById by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -859,6 +865,7 @@ private class SasConnectorConnectorImpl(
       countCandidaciesByStatus,
         countRequestsByStatus,
         getBeneficiaryById,
+        getBeneficiaryByUserId,
         getCampaignById,
         getCandidacyById,
         getCategoryById,
@@ -1620,6 +1627,21 @@ private class GetBeneficiaryByIdQueryImpl(
     GetBeneficiaryByIdQuery.Companion.operationName,
     GetBeneficiaryByIdQuery.Companion.dataDeserializer,
     GetBeneficiaryByIdQuery.Companion.variablesSerializer,
+  )
+
+
+private class GetBeneficiaryByUserIdQueryImpl(
+  connector: SasConnectorConnector
+):
+  GetBeneficiaryByUserIdQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      GetBeneficiaryByUserIdQuery.Data,
+      GetBeneficiaryByUserIdQuery.Variables
+  >(
+    connector,
+    GetBeneficiaryByUserIdQuery.Companion.operationName,
+    GetBeneficiaryByUserIdQuery.Companion.dataDeserializer,
+    GetBeneficiaryByUserIdQuery.Companion.variablesSerializer,
   )
 
 
