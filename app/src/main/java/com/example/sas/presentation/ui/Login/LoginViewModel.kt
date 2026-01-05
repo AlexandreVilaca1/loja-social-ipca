@@ -1,19 +1,16 @@
 package com.example.sas.presentation.ui.Login
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.usecase.auth.LoginUseCase
 import com.example.sas.domain.usecase.auth.SignOutUseCase
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
+import com.example.sas.domain.usecase.candidacies.CreateCandidacyUseCase
+import com.google.firebase.dataconnect.LocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 data class LoginState(
@@ -27,13 +24,15 @@ data class LoginState(
     val candNif: String = "",
     val candCourse: String = "",
     val candContact: String = "",
-    val candReason: String = ""
+    val candReason: String = "",
+    val isSubmittingCandidacy: Boolean = false
 )
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val signOutUseCase: SignOutUseCase
+    private val signOutUseCase: SignOutUseCase,
+    private val createCandidacyUseCase: CreateCandidacyUseCase
 ) : ViewModel() {
 
     var uiState = mutableStateOf(LoginState())
@@ -48,46 +47,20 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login(onLoginSuccess: () -> Unit) {
-
-        // 1️⃣ Validação
-        if (uiState.value.email.isNullOrEmpty()) {
-            uiState.value = uiState.value.copy(error = "Email is required")
-            return
-        }
-
-        if (uiState.value.password.isNullOrEmpty()) {
-            uiState.value = uiState.value.copy(error = "Password is required")
+        if (uiState.value.email.isNullOrEmpty() || uiState.value.password.isNullOrEmpty()) {
+            uiState.value = uiState.value.copy(error = "Email e Password são obrigatórios")
             return
         }
 
         viewModelScope.launch {
-            loginUseCase(
-                uiState.value.email!!,
-                uiState.value.password!!
-            ).collect { result ->
-
+            loginUseCase(uiState.value.email!!, uiState.value.password!!).collect { result ->
                 when (result) {
-                    is ResultWrapper.Loading -> {
-                        uiState.value = uiState.value.copy(
-                            isLoading = true,
-                            error = null
-                        )
-                    }
-
+                    is ResultWrapper.Loading -> uiState.value = uiState.value.copy(isLoading = true, error = null)
                     is ResultWrapper.Success -> {
-                        uiState.value = uiState.value.copy(
-                            isLoading = false,
-                            error = null
-                        )
+                        uiState.value = uiState.value.copy(isLoading = false)
                         onLoginSuccess()
                     }
-
-                    is ResultWrapper.Error -> {
-                        uiState.value = uiState.value.copy(
-                            isLoading = false,
-                            error = result.message
-                        )
-                    }
+                    is ResultWrapper.Error -> uiState.value = uiState.value.copy(isLoading = false, error = result.message)
                 }
             }
         }
@@ -115,34 +88,66 @@ class LoginViewModel @Inject constructor(
         )
     }
 
-    fun sendCandidacyEmail(context: Context) {
+    fun submitCandidacy() {
         val state = uiState.value
-        val emailDestino = "pedrotcalvess@gmail.com" // Email da instituição
-        val assunto = "Nova Candidatura a Beneficiário - ${state.candFullName}"
+        val pendenteID = "e0260af6-f4a2-4a7f-9f83-659e0c9b0385"
 
-        val corpoEmail = """
-            Nome Completo: ${state.candFullName}
-            Número de Aluno: ${state.candStudentNumber}
+        // 1. Validação simples
+        if (state.candFullName.isBlank() || state.candNif.isBlank()) {
+            uiState.value = uiState.value.copy(error = "Nome e NIF são obrigatórios")
+            return
+        }
+
+        // 2. Preparar a data (LocalDate do Data Connect)
+        val calendar = Calendar.getInstance()
+        val today = LocalDate(
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH) + 1,
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+
+        // 3. Estruturar os dados do Beneficiário no campo observations
+        val structuredObservations = """
+            [DADOS DO BENEFICIÁRIO]
+            Nome: ${state.candFullName}
+            Nº Aluno: ${state.candStudentNumber}
             NIF: ${state.candNif}
             Curso: ${state.candCourse}
             Contacto: ${state.candContact}
             
-            Motivo da Candidatura:
+            [MOTIVAÇÃO]
             ${state.candReason}
         """.trimIndent()
 
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:")
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(emailDestino))
-            putExtra(Intent.EXTRA_SUBJECT, assunto)
-            putExtra(Intent.EXTRA_TEXT, corpoEmail)
-        }
-
-        try {
-            context.startActivity(Intent.createChooser(intent, "Enviar candidatura via..."))
-            toggleCandidacyForm(false) // Fecha o formulário após enviar
-        } catch (e: Exception) {
-            uiState.value = uiState.value.copy(error = "Não foi possível abrir o app de email")
+        viewModelScope.launch {
+            createCandidacyUseCase.execute(
+                applicationDate = today,
+                statusId = pendenteID, // Inicialmente sem status ou status "Pendente" (se tiver o UUID)
+                observations = structuredObservations
+            ).collect { result ->
+                when (result) {
+                    is ResultWrapper.Loading -> {
+                        uiState.value = uiState.value.copy(isSubmittingCandidacy = true, error = null)
+                    }
+                    is ResultWrapper.Success -> {
+                        uiState.value = uiState.value.copy(
+                            isSubmittingCandidacy = false,
+                            showCandidacyForm = false,
+                            // Limpar formulário
+                            candFullName = "", candStudentNumber = "",
+                            candNif = "", candCourse = "",
+                            candContact = "", candReason = ""
+                        )
+                    }
+                    is ResultWrapper.Error -> {
+                        println("Erro: ${result.message}")
+                        uiState.value = uiState.value.copy(
+                            isSubmittingCandidacy = false,
+                            error = result.message
+                        )
+                    }
+                }
+            }
         }
     }
 }

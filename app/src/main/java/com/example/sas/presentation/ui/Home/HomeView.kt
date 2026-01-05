@@ -36,6 +36,7 @@ import com.example.sas.presentation.ui.stock.lots.LotsViewModel
 import com.example.sas.presentation.ui.stock.products.ProductsView
 import com.example.sas.presentation.ui.theme.GreenPrimary
 import kotlinx.coroutines.launch
+import com.example.sas.presentation.ui.candidacies.CandidaciesView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +58,7 @@ fun HomeView(onSignOut : () -> Unit) {
         currentRoute == "agendamentos/todos" -> "Lista de Distribuições"
         currentRoute?.startsWith("agendamentos") == true -> "Agendamentos"
         currentRoute == DrawerRoute.Beneficiarios.route -> "Beneficiários"
+        currentRoute == DrawerRoute.Candidaturas.route -> "Candidaturas"
         currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") -> "Distribuições"
         currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items") -> "Produtos da Distribuição"
         currentRoute == DrawerRoute.Doacoes.route -> "Doações"
@@ -174,6 +176,10 @@ fun HomeView(onSignOut : () -> Unit) {
                             innerPadding = padding,
                             navController = navController
                         )
+                    }
+
+                    composable(DrawerRoute.Candidaturas.route) {
+                        CandidaciesView()
                     }
 
                     composable("beneficiary/{beneficiaryId}/distributions?name={beneficiaryName}") {

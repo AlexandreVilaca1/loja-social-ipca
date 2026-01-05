@@ -3,6 +3,7 @@ package com.example.sas.di
 import com.example.sas.data.datasource.AuthDataSource
 import com.example.sas.data.repository.AuthRepositoryImpl
 import com.example.sas.data.repository.BeneficiariesRepositoryImpl
+import com.example.sas.data.repository.CandidaciesRepositoryImpl
 import com.example.sas.data.repository.CategoriesRepositoryImpl
 import com.example.sas.data.repository.DistributionItemsRepositoryImpl
 import com.example.sas.data.repository.DistributionsRepositoryImpl
@@ -13,6 +14,7 @@ import com.example.sas.data.repository.UsersRepositoryImpl
 import com.example.sas.data.repository.ProductsRepositoryImpl
 import com.example.sas.domain.repositories.AuthRepository
 import com.example.sas.domain.repositories.BeneficiariesRepository
+import com.example.sas.domain.repositories.CandidaciesRepository
 import com.example.sas.domain.repositories.CategoriesRepository
 import com.example.sas.domain.repositories.DistributionItemsRepository
 import com.example.sas.domain.repositories.DistributionsRepository
@@ -92,6 +94,12 @@ abstract class RepositoryBindsModule {
     abstract fun bindLogsRepository(
         logsRepositoryImpl: LogsRepositoryImpl
     ): LogsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCandidacyRepository(
+        candidaciesRepositoryImpl: CandidaciesRepositoryImpl
+    ): CandidaciesRepository
 
 }
 

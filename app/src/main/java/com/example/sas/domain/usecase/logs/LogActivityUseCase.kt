@@ -12,10 +12,9 @@ class LogActivityUseCase @Inject constructor(
 ) {
     /**
      * Executa o processo completo de logging.
-     * Como é uma ação de auditoria, podemos tratá-la como "fire and forget"
      */
     suspend fun execute(description: String, entityCode: String) {
-        // 1. Obter User (usamos .first() para pegar o primeiro valor emitido pelo Flow)
+        // 1. Obter User
         val userResult = getCurrentUserUseCase.execute().first { it !is ResultWrapper.Loading }
         if (userResult is ResultWrapper.Success) {
             val userId = userResult.data?.id ?: return

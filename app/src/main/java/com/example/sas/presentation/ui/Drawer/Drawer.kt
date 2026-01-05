@@ -42,6 +42,7 @@ fun DrawerContent(
     val menuItems = listOf(
         DrawerNavItem("Agendamentos", DrawerRoute.Agendamentos.route, Icons.Outlined.Event),
         DrawerNavItem("Beneficiários", DrawerRoute.Beneficiarios.route, Icons.Outlined.People),
+        DrawerNavItem("Candidaturas", DrawerRoute.Candidaturas.route, Icons.Outlined.AssignmentInd),
         DrawerNavItem("Doações", DrawerRoute.Doacoes.route, Icons.Outlined.FavoriteBorder),
         DrawerNavItem("Stock", DrawerRoute.Produtos.route, Icons.Outlined.Inventory2),
         DrawerNavItem("Relatórios", DrawerRoute.Relatorios.route, Icons.Outlined.Description)

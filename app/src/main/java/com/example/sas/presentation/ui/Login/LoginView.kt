@@ -167,7 +167,8 @@ fun LoginView(
                             onDismissRequest = { viewModel.toggleCandidacyForm(false) },
                             confirmButton = {
                                 Button(
-                                    onClick = { viewModel.sendCandidacyEmail(context) },
+                                    onClick = { viewModel.submitCandidacy() },
+                                    enabled = !uiState.isSubmittingCandidacy, // Desativar se estiver a carregar
                                     colors = ButtonDefaults.buttonColors(containerColor = green)
                                 ) {
                                     Text("Concluir")
