@@ -21,7 +21,7 @@ data class BeneficiariesUiState(
     val address: String = "",
     val observations: String = "",
 
-    val userSearchQuery: String = "", // Pesquisa de utilizadores no formulário
+    val userSearchQuery: String = "",
     val availableUsers: List<User> = emptyList(),
     val selectedUserUid: String? = null,
 

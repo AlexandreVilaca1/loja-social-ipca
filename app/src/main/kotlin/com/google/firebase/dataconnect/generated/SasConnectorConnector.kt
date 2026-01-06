@@ -182,6 +182,8 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val listLotsByProduct: ListLotsByProductQuery
   
+    public val listLotsByProductAndExpirationDate: ListLotsByProductAndExpirationDateQuery
+  
     public val listProducts: ListProductsQuery
   
     public val listProductsByCategory: ListProductsByCategoryQuery
@@ -211,6 +213,10 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
     public val searchLogTypesByName: SearchLogTypesByNameQuery
   
     public val searchLots: SearchLotsQuery
+  
+    public val searchLotsByExpirationDate: SearchLotsByExpirationDateQuery
+  
+    public val searchLotsByProduct: SearchLotsByProductQuery
   
     public val searchProducts: SearchProductsQuery
   
@@ -629,6 +635,10 @@ private class SasConnectorConnectorImpl(
       ListLotsByProductQueryImpl(this)
     }
   
+    override val listLotsByProductAndExpirationDate by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListLotsByProductAndExpirationDateQueryImpl(this)
+    }
+  
     override val listProducts by lazy(LazyThreadSafetyMode.PUBLICATION) {
       ListProductsQueryImpl(this)
     }
@@ -687,6 +697,14 @@ private class SasConnectorConnectorImpl(
   
     override val searchLots by lazy(LazyThreadSafetyMode.PUBLICATION) {
       SearchLotsQueryImpl(this)
+    }
+  
+    override val searchLotsByExpirationDate by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      SearchLotsByExpirationDateQueryImpl(this)
+    }
+  
+    override val searchLotsByProduct by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      SearchLotsByProductQueryImpl(this)
     }
   
     override val searchProducts by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -909,6 +927,7 @@ private class SasConnectorConnectorImpl(
         listLogsByUserAndLogType,
         listLots,
         listLotsByProduct,
+        listLotsByProductAndExpirationDate,
         listProducts,
         listProductsByCategory,
         listRequests,
@@ -922,6 +941,8 @@ private class SasConnectorConnectorImpl(
         searchDonations,
         searchLogTypesByName,
         searchLots,
+        searchLotsByExpirationDate,
+        searchLotsByProduct,
         searchProducts,
         searchRequests,
         searchUsers,
@@ -2290,6 +2311,21 @@ private class ListLotsByProductQueryImpl(
   )
 
 
+private class ListLotsByProductAndExpirationDateQueryImpl(
+  connector: SasConnectorConnector
+):
+  ListLotsByProductAndExpirationDateQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      ListLotsByProductAndExpirationDateQuery.Data,
+      ListLotsByProductAndExpirationDateQuery.Variables
+  >(
+    connector,
+    ListLotsByProductAndExpirationDateQuery.Companion.operationName,
+    ListLotsByProductAndExpirationDateQuery.Companion.dataDeserializer,
+    ListLotsByProductAndExpirationDateQuery.Companion.variablesSerializer,
+  )
+
+
 private class ListProductsQueryImpl(
   connector: SasConnectorConnector
 ):
@@ -2512,6 +2548,36 @@ private class SearchLotsQueryImpl(
     SearchLotsQuery.Companion.operationName,
     SearchLotsQuery.Companion.dataDeserializer,
     SearchLotsQuery.Companion.variablesSerializer,
+  )
+
+
+private class SearchLotsByExpirationDateQueryImpl(
+  connector: SasConnectorConnector
+):
+  SearchLotsByExpirationDateQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      SearchLotsByExpirationDateQuery.Data,
+      SearchLotsByExpirationDateQuery.Variables
+  >(
+    connector,
+    SearchLotsByExpirationDateQuery.Companion.operationName,
+    SearchLotsByExpirationDateQuery.Companion.dataDeserializer,
+    SearchLotsByExpirationDateQuery.Companion.variablesSerializer,
+  )
+
+
+private class SearchLotsByProductQueryImpl(
+  connector: SasConnectorConnector
+):
+  SearchLotsByProductQuery,
+  SasConnectorConnectorGeneratedQueryImpl<
+      SearchLotsByProductQuery.Data,
+      SearchLotsByProductQuery.Variables
+  >(
+    connector,
+    SearchLotsByProductQuery.Companion.operationName,
+    SearchLotsByProductQuery.Companion.dataDeserializer,
+    SearchLotsByProductQuery.Companion.variablesSerializer,
   )
 
 
