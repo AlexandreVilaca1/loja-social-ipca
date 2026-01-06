@@ -140,7 +140,17 @@ fun LoginView(
 
                     Button(
                         onClick = {
-                            viewModel.login { navController.navigate("home") }
+                            viewModel.login { role ->
+                                if (role == "SAS") {
+                                    navController.navigate("SAS") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                } else {
+                                    navController.navigate("BEN") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                }
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -148,7 +158,11 @@ fun LoginView(
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = green)
                     ) {
-                        Text("Entrar", color = Color.White)
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+                        } else {
+                            Text("Entrar", color = Color.White)
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))

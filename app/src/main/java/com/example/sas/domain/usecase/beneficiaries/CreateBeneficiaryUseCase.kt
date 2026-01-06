@@ -26,7 +26,8 @@ class CreateBeneficiaryUseCase @Inject constructor(
         isActive: Boolean,
         contactNumber: String,
         address: String? = null,
-        observations: String? = null
+        observations: String? = null,
+        uid: String? = null
     ): Flow<ResultWrapper<String>> {
         // Business validation
         require(fullName.isNotBlank()) { "Nome completo é obrigatório" }
@@ -43,7 +44,8 @@ class CreateBeneficiaryUseCase @Inject constructor(
             isActive = isActive,
             contactNumber = contactNumber,
             address = address,
-            observations = observations
+            observations = observations,
+            uid = uid
         )
     }
 }

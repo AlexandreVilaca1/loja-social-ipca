@@ -60,6 +60,7 @@ fun LotsView(
     viewModel: LotsViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val isSAS = state.userRole == "SAS"
 
     var showFormSheet by remember { mutableStateOf(false) }
     var showQuantitySheet by remember { mutableStateOf(false) }
@@ -138,6 +139,7 @@ fun LotsView(
                         LotCard(
                             lot = lot,
                             productName = state.products.find { it.id == lot.productId }?.name,
+                            canEdit = isSAS,
                             onEdit = {
                                 viewModel.startEditLot(lot)
                             },
@@ -167,24 +169,26 @@ fun LotsView(
         }
 
         // FAB
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.cancelEdit()
-                    if (productId != null) {
-                        viewModel.setProductId(productId)
-                    }
-                    showFormSheet = true
-                },
-                containerColor = GreenPrimary,
-                contentColor = Color.White
+        if(isSAS){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.BottomEnd
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Adicionar lote")
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.cancelEdit()
+                        if (productId != null) {
+                            viewModel.setProductId(productId)
+                        }
+                        showFormSheet = true
+                    },
+                    containerColor = GreenPrimary,
+                    contentColor = Color.White
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Adicionar lote")
+                }
             }
         }
     }

@@ -10,6 +10,10 @@ import kotlinx.coroutines.flow.Flow
  */
 interface BeneficiariesRepository {
 
+    fun getBeneficiaryById(id: String): Flow<ResultWrapper<Beneficiary?>>
+
+    fun getBeneficiaryByUserId(uid: String): Flow<ResultWrapper<Beneficiary?>>
+
     /**
      * Lists all beneficiaries with pagination.
      * @param limit Maximum number of results
@@ -39,7 +43,8 @@ interface BeneficiariesRepository {
         isActive: Boolean,
         contactNumber: String,
         address: String? = null,
-        observations: String? = null
+        observations: String? = null,
+        uid: String? = null
     ): Flow<ResultWrapper<String>>
 
     /**
@@ -55,7 +60,8 @@ interface BeneficiariesRepository {
         isActive: Boolean,
         contactNumber: String,
         address: String? = null,
-        observations: String? = null
+        observations: String? = null,
+        uid: String? = null
     ): Flow<ResultWrapper<Unit>>
 }
 

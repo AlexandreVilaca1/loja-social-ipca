@@ -1,6 +1,7 @@
 package com.example.sas.presentation.ui.beneficiaries
 
 import com.example.sas.domain.models.Beneficiary
+import com.example.sas.domain.models.User
 
 /**
  * UI state for the Beneficiarios screen.
@@ -19,6 +20,10 @@ data class BeneficiariesUiState(
     val contactNumber: String = "",
     val address: String = "",
     val observations: String = "",
+
+    val userSearchQuery: String = "", // Pesquisa de utilizadores no formulário
+    val availableUsers: List<User> = emptyList(),
+    val selectedUserUid: String? = null,
 
     // Screen state
     val isLoading: Boolean = false,

@@ -8,13 +8,17 @@ import com.example.sas.domain.models.CreateProductRequest
 import com.example.sas.domain.models.Product
 import com.example.sas.domain.models.UpdateProductRequest
 import com.example.sas.domain.models.Category
+import com.example.sas.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
 import com.example.sas.domain.usecase.products.*
 import com.example.sas.domain.usecase.categories.ListActiveCategoriesUseCase
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
+import com.example.sas.domain.usecase.users.GetUserByUidUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +27,7 @@ data class ProductsUiState(
     val categories: List<Category> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
+    val userRole: String? = null,
     val searchQuery: String = "",
 
     // Form fields
@@ -46,6 +51,7 @@ class ProductsViewModel @Inject constructor(
     private val updateProductUseCase: UpdateProductUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
     private val listActiveCategoriesUseCase: ListActiveCategoriesUseCase,
+    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductsUiState())
@@ -54,7 +60,19 @@ class ProductsViewModel @Inject constructor(
     init {
         loadProducts()
         loadCategories()
+        fetchUserRole()
     }
+
+    private fun fetchUserRole() {
+        viewModelScope.launch {
+            getLoggedUserRoleUseCase.execute().collect { result ->
+                if (result is ResultWrapper.Success) {
+                    _uiState.update { it.copy(userRole = result.data) }
+                }
+            }
+        }
+    }
+
 
     fun loadProducts() {
         viewModelScope.launch {

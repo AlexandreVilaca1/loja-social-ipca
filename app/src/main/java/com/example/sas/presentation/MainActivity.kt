@@ -36,7 +36,12 @@ class MainActivity : ComponentActivity() {
                         composable(route = "login"){
                             LoginView(navController)
                         }
-                        composable("home") {
+                        composable("SAS") {
+                            HomeView(){
+                                navController.navigate("login")
+                            }
+                        }
+                        composable("BEN"){
                             HomeView(){
                                 navController.navigate("login")
                             }

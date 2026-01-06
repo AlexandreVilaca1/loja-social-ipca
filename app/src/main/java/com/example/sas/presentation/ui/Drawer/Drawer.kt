@@ -42,12 +42,12 @@ fun DrawerContent(
     // Mapeamento das suas DrawerRoutes para Labels e Ícones
     val menuItems = remember(authState.currentUser?.role) {
         buildList {
+            add(DrawerNavItem("Agendamentos", DrawerRoute.Agendamentos.route, Icons.Outlined.Event))
+            add(DrawerNavItem("Stock", DrawerRoute.Produtos.route, Icons.Outlined.Inventory2))
             if (authState.currentUser?.role == "SAS") {
-                add(DrawerNavItem("Agendamentos", DrawerRoute.Agendamentos.route, Icons.Outlined.Event))
                 add(DrawerNavItem("Beneficiários", DrawerRoute.Beneficiarios.route, Icons.Outlined.People))
                 add(DrawerNavItem("Candidaturas", DrawerRoute.Candidaturas.route, Icons.Outlined.AssignmentInd))
                 add(DrawerNavItem("Doações", DrawerRoute.Doacoes.route, Icons.Outlined.FavoriteBorder))
-                add(DrawerNavItem("Stock", DrawerRoute.Produtos.route, Icons.Outlined.Inventory2))
                 add(DrawerNavItem("Relatórios", DrawerRoute.Relatorios.route, Icons.Outlined.Description))
                 add(DrawerNavItem("Novo Utilizador", "action_create_user", Icons.Outlined.PersonAdd))
             }

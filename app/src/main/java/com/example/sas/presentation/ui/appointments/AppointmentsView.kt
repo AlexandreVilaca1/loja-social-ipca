@@ -42,6 +42,7 @@ fun AppointmentsView(
     val todayDistributions by viewModel.todayDistributionsState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val userRole by viewModel.userRole.collectAsState()
 
     var showStatusDialog by remember { mutableStateOf(false) }
     var selectedDistribution by remember { mutableStateOf<Distribution?>(null) }
@@ -67,7 +68,7 @@ fun AppointmentsView(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Agendamentos de Hoje",
+            text = if (userRole == "SAS") "Agendamentos de Hoje" else "Os Meus Agendamentos de Hoje",
             style = MaterialTheme.typography.titleMedium,
             color = TextDark
         )
@@ -100,15 +101,11 @@ fun AppointmentsView(
             else -> {
                 todayDistributions.forEach { distribution ->
                     AppointmentCard(distribution) {
-                        // Navegar para as distribuições do beneficiário se tiver beneficiaryId
-                        distribution.beneficiaryId?.let { beneficiaryId ->
-                            navController.navigate(
-                                "beneficiary/$beneficiaryId/distributions?name=${distribution.beneficiaryName ?: "Beneficiário"}"
-                            )
-                        } ?: run {
-                            // Se não tiver beneficiaryId, mostrar o diálogo de atualização de status
-                            selectedDistribution = distribution
-                            showStatusDialog = true
+                        if (userRole == "SAS") {
+                            // SAS navega para detalhes do beneficiário
+                            distribution.beneficiaryId?.let { id ->
+                                navController.navigate("beneficiary/$id/distributions?name=${distribution.beneficiaryName}")
+                            }
                         }
                     }
                     Spacer(modifier = Modifier.height(12.dp))

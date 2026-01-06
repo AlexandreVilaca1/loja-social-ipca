@@ -53,6 +53,8 @@ fun CategoriesView(
 ) {
     val state by viewModel.uiState.collectAsState()
 
+    val isSAS = state.userRole == "SAS"
+
     var showFormSheet by remember { mutableStateOf(false) }
     val sheetState: SheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -103,6 +105,7 @@ fun CategoriesView(
                     items(state.categories) { category ->
                         CategoryCard(
                             category = category,
+                            canEdit = isSAS,
                             onEdit = {
                                 viewModel.startEditCategory(category)
                             },
@@ -126,21 +129,23 @@ fun CategoriesView(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.cancelEdit()
-                    showFormSheet = true
-                },
-                containerColor = GreenPrimary,
-                contentColor = Color.White
+        if(isSAS){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.BottomEnd
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Adicionar categoria")
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.cancelEdit()
+                        showFormSheet = true
+                    },
+                    containerColor = GreenPrimary,
+                    contentColor = Color.White
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Adicionar categoria")
+                }
             }
         }
     }

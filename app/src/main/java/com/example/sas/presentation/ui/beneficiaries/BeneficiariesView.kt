@@ -1,28 +1,48 @@
 package com.example.sas.presentation.ui.beneficiaries
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PersonAdd
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -39,6 +59,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -175,11 +196,14 @@ fun BeneficiariesView(
             },
             sheetState = sheetState
         ) {
+
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = 16.dp)
+                    .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
@@ -250,6 +274,89 @@ fun BeneficiariesView(
                         checked = state.isActive,
                         onCheckedChange = viewModel::setIsActive
                     )
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                Text("Conectar com Conta", style = MaterialTheme.typography.titleSmall, color = GreenPrimary)
+
+                if (state.selectedUserUid != null) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = GreenPrimary.copy(alpha = 0.1f)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Outlined.AccountCircle, null, tint = GreenPrimary)
+                            Spacer(Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("UID: ${state.selectedUserUid?.take(12)}...", fontWeight = FontWeight.Bold)
+                                Text("Conta vinculada", style = MaterialTheme.typography.labelSmall)
+                            }
+                            IconButton(onClick = { viewModel.setSelectedUserUid(null) }) {
+                                Icon(Icons.Default.Close, "Remover", tint = Color.Red)
+                            }
+                        }
+                    }
+                } else {
+                    // ESTADO: PESQUISA DE CONTA
+                    OutlinedTextField(
+                        value = state.userSearchQuery,
+                        onValueChange = {
+                            viewModel.setUserSearchQuery(it)
+                            if (state.availableUsers.isEmpty()) viewModel.loadAvailableUsers()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Pesquisar utilizador por nome...") },
+                        leadingIcon = { Icon(Icons.Default.Search, null) },
+                        trailingIcon = {
+                            if (state.userSearchQuery.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.setUserSearchQuery("") }) {
+                                    Icon(Icons.Default.Clear, null)
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent)
+                    )
+
+                    // BOX DE RESULTADOS (Apenas aparece se houver pesquisa ou lista carregada)
+                    if (state.userSearchQuery.isNotEmpty() || state.availableUsers.isNotEmpty()) {
+                        val results = viewModel.filteredUsers
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 200.dp) // Limita a altura para não quebrar o scroll do pai
+                                .background(Color(0xFFF8F8F8), RoundedCornerShape(8.dp))
+                                .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                        ) {
+                            if (results.isEmpty()) {
+                                Text(
+                                    "Nenhum utilizador encontrado.",
+                                    modifier = Modifier.padding(16.dp).align(Alignment.Center),
+                                    color = Color.Gray
+                                )
+                            } else {
+                                LazyColumn {
+                                    items(results) { user ->
+                                        ListItem(
+                                            modifier = Modifier.clickable {
+                                                viewModel.setSelectedUserUid(user.uid)
+                                                viewModel.setUserSearchQuery("") // Limpa pesquisa após selecionar
+                                            },
+                                            headlineContent = { Text(user.name) },
+                                            supportingContent = { Text(user.email) },
+                                            leadingContent = { Icon(Icons.Outlined.Person, null, tint = GreenPrimary) },
+                                            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                                        )
+                                        HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 androidx.compose.material3.Button(

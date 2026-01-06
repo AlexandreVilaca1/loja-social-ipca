@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
+import com.example.sas.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.sas.domain.usecase.auth.LoginUseCase
 import com.example.sas.domain.usecase.auth.SignOutUseCase
 import com.example.sas.domain.usecase.candidacies.CreateCandidacyUseCase
@@ -32,7 +33,8 @@ data class LoginState(
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val signOutUseCase: SignOutUseCase,
-    private val createCandidacyUseCase: CreateCandidacyUseCase
+    private val createCandidacyUseCase: CreateCandidacyUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
 
     var uiState = mutableStateOf(LoginState())
@@ -46,21 +48,50 @@ class LoginViewModel @Inject constructor(
         uiState.value = uiState.value.copy(password = password)
     }
 
-    fun login(onLoginSuccess: () -> Unit) {
+    fun login(onLoginSuccess: (String) -> Unit) {
         if (uiState.value.email.isNullOrEmpty() || uiState.value.password.isNullOrEmpty()) {
             uiState.value = uiState.value.copy(error = "Email e Password são obrigatórios")
             return
         }
 
         viewModelScope.launch {
-            loginUseCase(uiState.value.email!!, uiState.value.password!!).collect { result ->
-                when (result) {
-                    is ResultWrapper.Loading -> uiState.value = uiState.value.copy(isLoading = true, error = null)
-                    is ResultWrapper.Success -> {
-                        uiState.value = uiState.value.copy(isLoading = false)
-                        onLoginSuccess()
+            // 1. Faz o Login no Firebase Auth
+            loginUseCase(uiState.value.email!!, uiState.value.password!!).collect { authResult ->
+                when (authResult) {
+                    is ResultWrapper.Loading -> {
+                        uiState.value = uiState.value.copy(isLoading = true, error = null)
                     }
-                    is ResultWrapper.Error -> uiState.value = uiState.value.copy(isLoading = false, error = result.message)
+
+                    is ResultWrapper.Success -> {
+                        // 2. Login de Auth sucesso! Agora buscamos a ROLE na base de dados
+                        fetchUserRoleAndNavigate(onLoginSuccess)
+                    }
+
+                    is ResultWrapper.Error -> {
+                        uiState.value =
+                            uiState.value.copy(isLoading = false, error = authResult.message)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fetchUserRoleAndNavigate(onLoginSuccess: (String) -> Unit) {
+        viewModelScope.launch {
+            getCurrentUserUseCase.execute().collect { userResult ->
+                when (userResult) {
+                    is ResultWrapper.Success -> {
+                        val role = userResult.data?.role ?: "BEN"
+                        uiState.value = uiState.value.copy(isLoading = false)
+                        onLoginSuccess(role)
+                    }
+                    is ResultWrapper.Error -> {
+                        uiState.value = uiState.value.copy(
+                            isLoading = false,
+                            error = "Erro ao carregar perfil: ${userResult.message}"
+                        )
+                    }
+                    else -> {}
                 }
             }
         }

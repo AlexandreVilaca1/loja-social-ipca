@@ -58,6 +58,7 @@ fun ProductsView(
     viewModel: ProductsViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val isSAS = state.userRole == "SAS"
 
     var showFormSheet by remember { mutableStateOf(false) }
     val sheetState: SheetState = rememberModalBottomSheetState(
@@ -136,6 +137,7 @@ fun ProductsView(
                             onDelete = {
                                 viewModel.deleteProduct(product.id)
                             },
+                            canEdit = isSAS,
                             onClick = {}
                         )
                     }
@@ -156,21 +158,23 @@ fun ProductsView(
         }
 
         // FAB
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.cancelEdit()
-                    showFormSheet = true
-                },
-                containerColor = GreenPrimary,
-                contentColor = Color.White
+        if(isSAS){
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.BottomEnd
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Adicionar produto")
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.cancelEdit()
+                        showFormSheet = true
+                    },
+                    containerColor = GreenPrimary,
+                    contentColor = Color.White
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Adicionar produto")
+                }
             }
         }
     }

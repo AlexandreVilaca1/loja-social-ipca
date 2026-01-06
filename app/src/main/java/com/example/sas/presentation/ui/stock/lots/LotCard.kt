@@ -44,6 +44,7 @@ import java.time.temporal.ChronoUnit
 fun LotCard(
     lot: Lot,
     productName: String?,
+    canEdit: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onUpdateQuantity: () -> Unit
@@ -109,22 +110,24 @@ fun LotCard(
                     }
                 }
 
-                Row {
-                    IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Editar",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Apagar",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
+                if(canEdit){
+                    Row {
+                        IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Editar",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Apagar",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -212,19 +215,21 @@ fun LotCard(
             }
 
             // Quick quantity update button
-            Spacer(modifier = Modifier.height(12.dp))
-            TextButton(
-                onClick = onUpdateQuantity,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.TrendingDown,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = GreenPrimary
-                )
-                Spacer(modifier = Modifier.size(8.dp))
-                Text("Atualizar quantidade", color = GreenPrimary)
+            if(canEdit){
+                Spacer(modifier = Modifier.height(12.dp))
+                TextButton(
+                    onClick = onUpdateQuantity,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.TrendingDown,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = GreenPrimary
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text("Atualizar quantidade", color = GreenPrimary)
+                }
             }
         }
     }

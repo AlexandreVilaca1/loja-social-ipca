@@ -14,5 +14,6 @@ data class Beneficiary(
     val contactNumber: String,
     val address: String? = null,
     val observations: String? = null,
-    val createdAt: String? = null
+    val createdAt: String? = null,
+    val uid: String? = null
 )
