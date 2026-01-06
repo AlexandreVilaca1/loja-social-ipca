@@ -84,11 +84,6 @@ fun DonationItemCard(item: DonationItem, productName: String, unit: String, canE
                     Text(productName, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                     Text("${item.quantity} $unit", color = GreenPrimary, fontWeight = FontWeight.Medium)
                 }
-                if (item.state != null) {
-                    Surface(color = Color(0xFFF0F0F0), shape = RoundedCornerShape(8.dp)) {
-                        Text(item.state.description, Modifier.padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall)
-                    }
-                }
             }
             if (!item.observations.isNullOrBlank()) {
                 Spacer(Modifier.height(8.dp))
@@ -108,7 +103,6 @@ fun DonationItemCard(item: DonationItem, productName: String, unit: String, canE
 @Composable
 fun DonationItemFormSheet(state: DonationItemsUiState, viewModel: DonationItemsViewModel, onDismiss: () -> Unit) {
     var expP by remember { mutableStateOf(false) }
-    var expS by remember { mutableStateOf(false) }
 
     Column(Modifier.padding(16.dp).fillMaxWidth().padding(bottom = 32.dp), Arrangement.spacedBy(12.dp)) {
         Text(if(state.isEditMode) "Editar Item" else "Adicionar Item", style = MaterialTheme.typography.headlineSmall)
@@ -136,20 +130,6 @@ fun DonationItemFormSheet(state: DonationItemsUiState, viewModel: DonationItemsV
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Seleção de Estado (StatusType)
-        ExposedDropdownMenuBox(expanded = expS, onExpandedChange = { expS = !expS }) {
-            OutlinedTextField(
-                value = state.statusTypes.find { it.id == state.selectedStateId }?.description ?: "Estado do Item",
-                onValueChange = {}, readOnly = true, label = { Text("Estado") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expS) },
-                modifier = Modifier.menuAnchor().fillMaxWidth()
-            )
-            ExposedDropdownMenu(expanded = expS, onDismissRequest = { expS = false }) {
-                state.statusTypes.forEach { s ->
-                    DropdownMenuItem(text = { Text(s.description) }, onClick = { viewModel.updateFormField("state", s.id); expS = false })
-                }
-            }
-        }
 
         OutlinedTextField(
             value = state.observations,

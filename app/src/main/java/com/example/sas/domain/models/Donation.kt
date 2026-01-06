@@ -8,7 +8,6 @@ data class Donation(
     val donorContact: String?,
     val observations: String?,
     val campaignName: String?,
-    val status: DonationStatus?,
     val createdAt: String?,
     val updatedAt: String?
 )

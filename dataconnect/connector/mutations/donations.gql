@@ -9,8 +9,7 @@ mutation CreateDonation(
   $estimatedValue: Float!,
   $donorContact: String,
   $observations: String,
-  $campaignId: Campaign_Key,
-  $statusId: StatusType_Key
+  $campaignId: Campaign_Key
 ) @auth(level: USER) {
   donation_insert(
     data: {
@@ -19,8 +18,7 @@ mutation CreateDonation(
       estimatedValue: $estimatedValue,
       donorContact: $donorContact,
       observations: $observations,
-      campaign: $campaignId,
-      status: $statusId
+      campaign: $campaignId
     }
   )
 }
@@ -33,8 +31,7 @@ mutation UpdateDonation(
   $estimatedValue: Float,
   $donorContact: String,
   $observations: String,
-  $campaignId: Campaign_Key,
-  $statusId: StatusType_Key
+  $campaignId: Campaign_Key
 ) @auth(level: USER) {
   donation_update(
     id: $id,
@@ -44,8 +41,7 @@ mutation UpdateDonation(
       estimatedValue: $estimatedValue,
       donorContact: $donorContact,
       observations: $observations,
-      campaign: $campaignId,
-      status: $statusId
+      campaign: $campaignId
     }
   )
 }
@@ -53,15 +49,5 @@ mutation UpdateDonation(
 # Delete donation
 mutation DeleteDonation($id: UUID!) @auth(level: USER) {
   donation_delete(id: $id)
-}
-
-# Update donation status
-mutation UpdateDonationStatus($id: UUID!, $statusId: StatusType_Key!) @auth(level: USER) {
-  donation_update(
-    id: $id,
-    data: {
-      status: $statusId
-    }
-  )
 }
 

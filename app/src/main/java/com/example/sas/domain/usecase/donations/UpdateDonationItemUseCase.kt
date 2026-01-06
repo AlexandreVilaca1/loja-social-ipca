@@ -8,7 +8,6 @@ class UpdateDonationItemUseCase @Inject constructor(private val repository: Dona
         donationId: String,
         productId: String,
         quantity: Int? = null,
-        stateId: String? = null,
         obs: String? = null
-    ) = repository.updateDonationItem(donationId, productId, quantity, stateId, obs)
+    ) = repository.updateDonationItem(donationId, productId, quantity, obs)
 }

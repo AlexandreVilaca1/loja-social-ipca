@@ -12,7 +12,6 @@ class UpdateDonationUseCase @Inject constructor(private val repository: Donation
         value: Double? = null,
         contact: String? = null,
         obs: String? = null,
-        campaignId: String? = null,
-        statusId: String? = null
-    ) = repository.updateDonation(id, date, name, value, contact, obs, campaignId, statusId)
+        campaignId: String? = null
+    ) = repository.updateDonation(id, date, name, value, contact, obs, campaignId)
 }

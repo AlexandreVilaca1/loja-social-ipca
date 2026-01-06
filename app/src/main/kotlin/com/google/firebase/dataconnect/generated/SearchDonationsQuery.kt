@@ -102,23 +102,9 @@ public interface SearchDonationsQuery :
     val estimatedValue: Double,
     val donorContact: String?,
     val observations: String?,
-    val status: Status?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp,
     val updatedAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp
   ) {
-    
-      
-        @kotlinx.serialization.Serializable
-  public data class Status(
-  
-    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val code: String,
-    val description: String
-  ) {
-    
-    
-  }
-      
     
     
   }

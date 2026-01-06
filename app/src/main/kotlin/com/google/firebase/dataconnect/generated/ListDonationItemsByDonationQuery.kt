@@ -98,7 +98,6 @@ public interface ListDonationItemsByDonationQuery :
     val donation: Donation,
     val product: Product,
     val quantity: Int,
-    val state: State?,
     val observations: String?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp
   ) {
@@ -134,17 +133,6 @@ public interface ListDonationItemsByDonationQuery :
     
   }
       
-    
-    
-  }
-      
-        @kotlinx.serialization.Serializable
-  public data class State(
-  
-    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val code: String,
-    val description: String
-  ) {
     
     
   }

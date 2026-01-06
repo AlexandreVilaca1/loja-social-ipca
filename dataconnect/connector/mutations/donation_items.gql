@@ -7,7 +7,6 @@ mutation CreateDonationItem(
   $donationId: Donation_Key!,
   $productId: Product_Key!,
   $quantity: Int!,
-  $stateId: StatusType_Key,
   $observations: String
 ) @auth(level: USER) {
   donationItem_insert(
@@ -15,7 +14,6 @@ mutation CreateDonationItem(
       donation: $donationId,
       product: $productId,
       quantity: $quantity,
-      state: $stateId,
       observations: $observations
     }
   )
@@ -26,7 +24,6 @@ mutation UpdateDonationItem(
   $donationId: UUID!,
   $productId: UUID!,
   $quantity: Int,
-  $stateId: StatusType_Key,
   $observations: String
 ) @auth(level: USER) {
   donationItem_update(
@@ -36,7 +33,6 @@ mutation UpdateDonationItem(
     },
     data: {
       quantity: $quantity,
-      state: $stateId,
       observations: $observations
     }
   )

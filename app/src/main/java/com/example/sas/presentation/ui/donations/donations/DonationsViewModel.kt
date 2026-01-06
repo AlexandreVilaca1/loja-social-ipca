@@ -5,10 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.Donation
 import com.example.sas.domain.models.Campaign
-import com.example.sas.domain.models.StatusType
 import com.example.sas.domain.usecase.campaigns.ListCampaignsUseCase
 import com.example.sas.domain.usecase.donations.*
-import com.example.sas.domain.usecase.status.ListStatusTypesUseCase
 import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
 import com.google.firebase.dataconnect.LocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +21,6 @@ import javax.inject.Inject
 data class DonationsUiState(
     val donations: List<Donation> = emptyList(),
     val campaigns: List<Campaign> = emptyList(),
-    val statusTypes: List<StatusType> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val userRole: String? = null,
@@ -40,7 +37,6 @@ data class DonationsUiState(
     val donorContact: String = "",
     val observations: String = "",
     val selectedCampaignId: String? = null,
-    val selectedStatusId: String? = null,
 
     val isEditMode: Boolean = false,
     val editingDonationId: String? = null
@@ -55,7 +51,6 @@ class DonationsViewModel @Inject constructor(
     private val updateDonationUseCase: UpdateDonationUseCase,
     private val deleteDonationUseCase: DeleteDonationUseCase,
     private val listCampaignsUseCase: ListCampaignsUseCase,
-    private val listStatusTypesUseCase: ListStatusTypesUseCase,
     private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
 ) : ViewModel() {
 
@@ -72,11 +67,6 @@ class DonationsViewModel @Inject constructor(
             launch {
                 listCampaignsUseCase.execute(null, null).collect { res ->
                     if (res is ResultWrapper.Success) _uiState.update { it.copy(campaigns = res.data ?: emptyList()) }
-                }
-            }
-            launch {
-                listStatusTypesUseCase.execute().collect { res ->
-                    if (res is ResultWrapper.Success) _uiState.update { it.copy(statusTypes = res.data ?: emptyList()) }
                 }
             }
             loadDonations()
@@ -126,7 +116,7 @@ class DonationsViewModel @Inject constructor(
     }
 
     // ... (restantes métodos create/update/delete/form iguais)
-    fun clearForm() { _uiState.update { it.copy(donorName = "", donationDate = "", estimatedValue = "", donorContact = "", observations = "", selectedCampaignId = null, selectedStatusId = null, isEditMode = false, editingDonationId = null) } }
+    fun clearForm() { _uiState.update { it.copy(donorName = "", donationDate = "", estimatedValue = "", donorContact = "", observations = "", selectedCampaignId = null, isEditMode = false, editingDonationId = null) } }
     fun updateFormField(field: String, value: String) {
         when(field) {
             "name" -> _uiState.update { it.copy(donorName = value) }
@@ -135,7 +125,6 @@ class DonationsViewModel @Inject constructor(
             "obs" -> _uiState.update { it.copy(observations = value) }
             "date" -> _uiState.update { it.copy(donationDate = value) }
             "campaign" -> _uiState.update { it.copy(selectedCampaignId = value) }
-            "status" -> _uiState.update { it.copy(selectedStatusId = value) }
         }
     }
     fun startEdit(donation: Donation) {
@@ -147,8 +136,7 @@ class DonationsViewModel @Inject constructor(
                 estimatedValue = donation.estimatedValue.toString(),
                 donorContact = donation.donorContact ?: "",
                 observations = donation.observations ?: "",
-                donationDate = reverseFormat(donation.donationDate),
-                selectedStatusId = donation.status?.id
+                donationDate = reverseFormat(donation.donationDate)
             )
         }
     }
@@ -177,8 +165,7 @@ class DonationsViewModel @Inject constructor(
                 s.estimatedValue.toDoubleOrNull() ?: 0.0,
                 s.donorContact.ifBlank { null },
                 s.observations.ifBlank { null },
-                s.selectedCampaignId,
-                s.selectedStatusId
+                s.selectedCampaignId
             ).collect {
                 if (it is ResultWrapper.Success) {
                     loadDonations(); clearForm()
@@ -196,8 +183,7 @@ class DonationsViewModel @Inject constructor(
                 s.estimatedValue.toDoubleOrNull(),
                 s.donorContact,
                 s.observations,
-                s.selectedCampaignId,
-                s.selectedStatusId
+                s.selectedCampaignId
             ).collect {
                 if (it is ResultWrapper.Success) {
                     loadDonations(); clearForm()

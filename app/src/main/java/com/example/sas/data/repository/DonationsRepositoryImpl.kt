@@ -18,26 +18,18 @@ class DonationsRepositoryImpl @Inject constructor(
     private val dataSource: DonationsDataSource
 ) : DonationsRepository {
 
-    override fun createDonation(date: LocalDate, name: String, value: Double, contact: String?, obs: String?, campaignId: String?, statusId: String?) = flow {
+    override fun createDonation(date: LocalDate, name: String, value: Double, contact: String?, obs: String?, campaignId: String?) = flow {
         emit(ResultWrapper.Loading())
         try {
-            val id = dataSource.createDonation(date, name, value, contact, obs, campaignId, statusId)
+            val id = dataSource.createDonation(date, name, value, contact, obs, campaignId)
             emit(ResultWrapper.Success(id))
         } catch (e: Exception) { emit(ResultWrapper.Error(e.message ?: "Erro")) }
     }.flowOn(Dispatchers.IO)
 
-    override fun updateDonation(id: String, date: LocalDate?, name: String?, value: Double?, contact: String?, obs: String?, campaignId: String?, statusId: String?) = flow {
+    override fun updateDonation(id: String, date: LocalDate?, name: String?, value: Double?, contact: String?, obs: String?, campaignId: String?) = flow {
         emit(ResultWrapper.Loading())
         try {
-            dataSource.updateDonation(id, date, name, value, contact, obs, campaignId, statusId)
-            emit(ResultWrapper.Success(Unit))
-        } catch (e: Exception) { emit(ResultWrapper.Error(e.message ?: "Erro")) }
-    }.flowOn(Dispatchers.IO)
-
-    override fun updateDonationStatus(id: String, statusId: String) = flow {
-        emit(ResultWrapper.Loading())
-        try {
-            dataSource.updateDonationStatus(id, statusId)
+            dataSource.updateDonation(id, date, name, value, contact, obs, campaignId)
             emit(ResultWrapper.Success(Unit))
         } catch (e: Exception) { emit(ResultWrapper.Error(e.message ?: "Erro")) }
     }.flowOn(Dispatchers.IO)
@@ -63,7 +55,6 @@ class DonationsRepositoryImpl @Inject constructor(
                     donorContact = it.donorContact,
                     observations = it.observations,
                     campaignName = it.campaign?.campaignName,
-                    status = it.status?.let { s -> DonationStatus(s.id.toString(), s.code, s.description, s.color) },
                     createdAt = formatTimestamp(it.createdAt),
                     updatedAt = formatTimestamp(it.updatedAt)
                 )
@@ -88,18 +79,18 @@ class DonationsRepositoryImpl @Inject constructor(
         } catch (e: Exception) { emit(ResultWrapper.Error(e.message ?: "Erro")) }
     }.flowOn(Dispatchers.IO)
 
-    override fun createDonationItem(donationId: String, productId: String, quantity: Int, stateId: String?, obs: String?) = flow {
+    override fun createDonationItem(donationId: String, productId: String, quantity: Int, obs: String?) = flow {
         emit(ResultWrapper.Loading())
         try {
-            dataSource.createDonationItem(donationId, productId, quantity, stateId, obs)
+            dataSource.createDonationItem(donationId, productId, quantity, obs)
             emit(ResultWrapper.Success(Unit))
         } catch (e: Exception) { emit(ResultWrapper.Error(e.message ?: "Erro")) }
     }.flowOn(Dispatchers.IO)
 
-    override fun updateDonationItem(donationId: String, productId: String, quantity: Int?, stateId: String?, obs: String?) = flow {
+    override fun updateDonationItem(donationId: String, productId: String, quantity: Int?, obs: String?) = flow {
         emit(ResultWrapper.Loading())
         try {
-            dataSource.updateDonationItem(donationId, productId, quantity, stateId, obs)
+            dataSource.updateDonationItem(donationId, productId, quantity, obs)
             emit(ResultWrapper.Success(Unit))
         } catch (e: Exception) { emit(ResultWrapper.Error(e.message ?: "Erro")) }
     }.flowOn(Dispatchers.IO)
@@ -131,8 +122,7 @@ class DonationsRepositoryImpl @Inject constructor(
         estimatedValue = estimatedValue,
         donorContact = donorContact,
         observations = observations,
-        campaignName = null, // Nesta query o objeto campaign não vem no retorno (conforme o .generated fornecido)
-        status = status?.let { DonationStatus(it.id.toString(), it.code, it.description) },
+        campaignName = null,
         createdAt = formatTimestamp(createdAt),
         updatedAt = formatTimestamp(updatedAt)
     )
@@ -147,7 +137,6 @@ class DonationsRepositoryImpl @Inject constructor(
                     productId = it.product.id.toString(),
                     quantity = it.quantity,
                     categoryName = it.product.category?.name,
-                    state = it.state?.let { s -> StatusType(s.id.toString(), s.code, s.description) },
                     observations = it.observations,
                     createdAt = formatTimestamp(it.createdAt)
                 )
@@ -164,7 +153,6 @@ class DonationsRepositoryImpl @Inject constructor(
         donorContact = donorContact,
         observations = observations,
         campaignName = campaign?.campaignName,
-        status = status?.let { DonationStatus(it.id.toString(), it.code, it.description) },
         createdAt = formatTimestamp(createdAt),
         updatedAt = formatTimestamp(updatedAt)
     )
@@ -177,7 +165,6 @@ class DonationsRepositoryImpl @Inject constructor(
         donorContact = donorContact,
         observations = observations,
         campaignName = null,
-        status = status?.let { DonationStatus(it.id.toString(), it.code, it.description) },
         createdAt = formatTimestamp(createdAt),
         updatedAt = formatTimestamp(updatedAt)
     )
