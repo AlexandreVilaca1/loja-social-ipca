@@ -4,7 +4,7 @@
 
 # List all lots with pagination
 query ListLots($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
-  lots(limit: $limit, offset: $offset, orderBy: [{ entryDate: DESC }]) {
+  lots(limit: $limit, offset: $offset, orderBy: [{ expirationDate: ASC }]) {
     id
     initialQuantity
     currentQuantity
@@ -49,7 +49,7 @@ query SearchLots($lotCode: String, $limit: Int = 8, $offset: Int = 0) @auth(leve
     where: { lotCode: { contains: $lotCode } }
     limit: $limit
     offset: $offset
-    orderBy: [{ entryDate: DESC }]
+    orderBy: [{ expirationDate: ASC }]
   ) {
     id
     initialQuantity
@@ -73,7 +73,7 @@ query ListLotsByProduct($productId: UUID!, $limit: Int = 8, $offset: Int = 0) @a
     where: { product: { id: { eq: $productId } } }
     limit: $limit
     offset: $offset
-    orderBy: [{ entryDate: DESC }]
+    orderBy: [{ expirationDate: ASC }]
   ) {
     id
     initialQuantity
@@ -87,3 +87,80 @@ query ListLotsByProduct($productId: UUID!, $limit: Int = 8, $offset: Int = 0) @a
   }
 }
 
+# Search lots by product name
+query SearchLotsByProduct($productName: String, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  lots(
+    where: { product: { name: { contains: $productName } } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ expirationDate: ASC }]
+  ) {
+    id
+    initialQuantity
+    currentQuantity
+    entryDate
+    lotCode
+    expirationDate
+    observations
+    product {
+      id
+      name
+      unitOfMeasure
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# Search lots by expiration date (exact match)
+query SearchLotsByExpirationDate($expirationDate: Date, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  lots(
+    where: { expirationDate: { eq: $expirationDate } }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ expirationDate: ASC }]
+  ) {
+    id
+    initialQuantity
+    currentQuantity
+    entryDate
+    lotCode
+    expirationDate
+    observations
+    product {
+      id
+      name
+      unitOfMeasure
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+# List lots by product AND expiration date
+query ListLotsByProductAndExpirationDate($productId: UUID!, $expirationDate: Date, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+  lots(
+    where: {
+      product: { id: { eq: $productId } }
+      expirationDate: { eq: $expirationDate }
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ expirationDate: ASC }]
+  ) {
+    id
+    initialQuantity
+    currentQuantity
+    entryDate
+    lotCode
+    expirationDate
+    observations
+    product {
+      id
+      name
+      unitOfMeasure
+    }
+    createdAt
+    updatedAt
+  }
+}

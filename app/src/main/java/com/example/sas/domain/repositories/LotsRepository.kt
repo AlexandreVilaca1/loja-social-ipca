@@ -38,6 +38,25 @@ interface LotsRepository {
     ): Flow<ResultWrapper<List<Lot>>>
 
     /**
+     * Searches lots by expiration date.
+     */
+    fun searchLotsByExpirationDate(
+        expirationDate: String,
+        limit: Int,
+        offset: Int
+    ): Flow<ResultWrapper<List<Lot>>>
+
+    /**
+     * Lists lots by product AND expiration date.
+     */
+    fun listLotsByProductAndExpirationDate(
+        productId: String,
+        expirationDate: String,
+        limit: Int,
+        offset: Int
+    ): Flow<ResultWrapper<List<Lot>>>
+
+    /**
      * Gets a specific lot by ID.
      */
     fun getLotById(id: String): Flow<ResultWrapper<Lot>>

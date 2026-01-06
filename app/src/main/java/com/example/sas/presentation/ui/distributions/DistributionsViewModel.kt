@@ -155,13 +155,18 @@ class DistributionsViewModel @Inject constructor(
         }
     }
 
-    // --- LÓGICA DE CRIAÇÃO ---
 
     fun createDistribution(onSuccess: (String) -> Unit) {
         val state = _uiState.value
         if (state.beneficiaryId.isBlank() || state.distributionDate.isBlank() ||
             state.selectedResponsibleStaffId.isBlank() || state.selectedStatusId.isBlank()) {
             _uiState.update { it.copy(error = "Preencha os campos obrigatórios") }
+            return
+        }
+
+        // Validar que a data não seja anterior à data atual
+        if (!isDateValidForDistribution(state.distributionDate)) {
+            _uiState.update { it.copy(error = "A data da distribuição não pode ser anterior à data atual") }
             return
         }
 
@@ -203,10 +208,10 @@ class DistributionsViewModel @Inject constructor(
 
     fun updateDistribution(onSuccess: () -> Unit) {
         val state = _uiState.value
-        if (state.statusCode != "POR_ENTREGAR") {
-            _uiState.update { it.copy(error = "Apenas distribuições 'Por Entregar' podem ser editadas") }
-            return
-        }
+//        if (state.statusCode != "POR_ENTREGAR") {
+//            _uiState.update { it.copy(error = "Apenas distribuições 'Por Entregar' podem ser editadas") }
+//            return
+//        }
 
         if (state.distributionDate.isBlank() || state.selectedResponsibleStaffId.isBlank() || state.selectedStatusId.isBlank()) {
             _uiState.update { it.copy(error = "Campos obrigatórios em falta") }
@@ -262,5 +267,33 @@ class DistributionsViewModel @Inject constructor(
             }
         }
         return hasItems
+    }
+
+    /**
+     * Valida se a data é válida para distribuição (não pode ser anterior à data atual)
+     * @param dateString Data no formato "yyyy-MM-dd" ou "yyyy/MM/dd"
+     * @return true se a data for hoje ou futura, false se for passada
+     */
+    private fun isDateValidForDistribution(dateString: String): Boolean {
+        return try {
+            val sdf = java.text.SimpleDateFormat(
+                if (dateString.contains("/")) "yyyy/MM/dd" else "yyyy-MM-dd",
+                java.util.Locale.getDefault()
+            )
+            sdf.isLenient = false
+            val distributionDate = sdf.parse(dateString) ?: return false
+
+            val calendar = java.util.Calendar.getInstance()
+            calendar.set(java.util.Calendar.HOUR_OF_DAY, 0)
+            calendar.set(java.util.Calendar.MINUTE, 0)
+            calendar.set(java.util.Calendar.SECOND, 0)
+            calendar.set(java.util.Calendar.MILLISECOND, 0)
+            val today = calendar.time
+
+            !distributionDate.before(today)
+        } catch (e: Exception) {
+            Log.e(TAG, "Erro ao validar data: ${e.message}")
+            false
+        }
     }
 }
