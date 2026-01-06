@@ -30,6 +30,7 @@ import com.example.sas.domain.models.Category
 @Composable
 fun CategoryCard(
     category: Category,
+    canEdit: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -65,25 +66,27 @@ fun CategoryCard(
                         )
                     }
                 }
-
-                Row {
-                    IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Editar",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Apagar",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
+                if(canEdit){
+                    Row {
+                        IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Editar",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Apagar",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
+
             }
 
             if (!category.description.isNullOrBlank()) {

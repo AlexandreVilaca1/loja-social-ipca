@@ -37,6 +37,7 @@ fun ProductCard(
     product: Product,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    canEdit: Boolean,
     onClick: () -> Unit = {}
 ) {
     Card(
@@ -75,22 +76,24 @@ fun ProductCard(
                     }
                 }
 
-                Row {
-                    IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Editar",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Apagar",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
+                if(canEdit){
+                    Row {
+                        IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Editar",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Apagar",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }

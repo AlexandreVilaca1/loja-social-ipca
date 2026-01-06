@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,14 +40,19 @@ fun DrawerContent(
     val authState by authViewModel.uiState.collectAsState()
 
     // Mapeamento das suas DrawerRoutes para Labels e Ícones
-    val menuItems = listOf(
-        DrawerNavItem("Agendamentos", DrawerRoute.Agendamentos.route, Icons.Outlined.Event),
-        DrawerNavItem("Beneficiários", DrawerRoute.Beneficiarios.route, Icons.Outlined.People),
-        DrawerNavItem("Candidaturas", DrawerRoute.Candidaturas.route, Icons.Outlined.AssignmentInd),
-        DrawerNavItem("Doações", DrawerRoute.Doacoes.route, Icons.Outlined.FavoriteBorder),
-        DrawerNavItem("Stock", DrawerRoute.Produtos.route, Icons.Outlined.Inventory2),
-        DrawerNavItem("Relatórios", DrawerRoute.Relatorios.route, Icons.Outlined.Description)
-    )
+    val menuItems = remember(authState.currentUser?.role) {
+        buildList {
+            add(DrawerNavItem("Agendamentos", DrawerRoute.Agendamentos.route, Icons.Outlined.Event))
+            add(DrawerNavItem("Stock", DrawerRoute.Produtos.route, Icons.Outlined.Inventory2))
+            if (authState.currentUser?.role == "SAS") {
+                add(DrawerNavItem("Beneficiários", DrawerRoute.Beneficiarios.route, Icons.Outlined.People))
+                add(DrawerNavItem("Candidaturas", DrawerRoute.Candidaturas.route, Icons.Outlined.AssignmentInd))
+                add(DrawerNavItem("Doações", DrawerRoute.Doacoes.route, Icons.Outlined.FavoriteBorder))
+                add(DrawerNavItem("Relatórios", DrawerRoute.Relatorios.route, Icons.Outlined.Description))
+                add(DrawerNavItem("Novo Utilizador", "action_create_user", Icons.Outlined.PersonAdd))
+            }
+        }
+    }
 
     ModalDrawerSheet(
         drawerContainerColor = Color.White,

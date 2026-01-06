@@ -9,6 +9,7 @@ import com.example.sas.domain.usecase.beneficiaries.CreateBeneficiaryUseCase
 import com.example.sas.domain.usecase.beneficiaries.ListBeneficiariesUseCase
 import com.example.sas.domain.usecase.beneficiaries.SearchBeneficiariesUseCase
 import com.example.sas.domain.usecase.beneficiaries.UpdateBeneficiaryUseCase
+import com.example.sas.domain.usecase.users.ListUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -18,13 +19,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.sas.domain.models.User
 
 @HiltViewModel
 class BeneficiariesViewModel @Inject constructor(
     private val listBeneficiariesUseCase: ListBeneficiariesUseCase,
     private val createBeneficiaryUseCase: CreateBeneficiaryUseCase,
     private val updateBeneficiaryUseCase: UpdateBeneficiaryUseCase,
-    private val searchBeneficiariesUseCase: SearchBeneficiariesUseCase
+    private val searchBeneficiariesUseCase: SearchBeneficiariesUseCase,
+    private val listUsersUseCase: ListUsersUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BeneficiariesUiState())
@@ -44,7 +47,43 @@ class BeneficiariesViewModel @Inject constructor(
     fun setContactNumber(value: String) = _uiState.update { it.copy(contactNumber = value) }
     fun setAddress(value: String) = _uiState.update { it.copy(address = value) }
     fun setObservations(value: String) = _uiState.update { it.copy(observations = value) }
+    fun setSelectedUserUid(uid: String?) = _uiState.update { it.copy(selectedUserUid = uid) }
 
+    fun setUserSearchQuery(query: String) {
+        _uiState.update { it.copy(userSearchQuery = query) }
+    }
+
+    val filteredUsers: List<User>
+        get() {
+            val query = _uiState.value.userSearchQuery.lowercase()
+            val users = _uiState.value.availableUsers
+            return if (query.isBlank()) {
+                users
+            } else {
+                users.filter {
+                    it.name.lowercase().contains(query) ||
+                            it.email.lowercase().contains(query)
+                }
+            }
+        }
+
+    fun loadAvailableUsers() {
+        viewModelScope.launch {
+            // Carrega todos os users que são "Beneficiário" e não têm UID associado
+            listUsersUseCase.execute(limit = 200).collect { result ->
+                if (result is ResultWrapper.Success) {
+                    val allUsers = result.data ?: emptyList()
+                    val associatedUids = _uiState.value.beneficiaries.mapNotNull { it.uid }.toSet()
+
+                    val available = allUsers.filter { user ->
+                        user.role == "Beneficiário" && !associatedUids.contains(user.uid)
+                    }
+
+                    _uiState.update { it.copy(availableUsers = available) }
+                }
+            }
+        }
+    }
     fun setSearchQuery(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
 
@@ -147,7 +186,8 @@ class BeneficiariesViewModel @Inject constructor(
                 isActive = state.isActive,
                 contactNumber = state.contactNumber,
                 address = state.address.ifBlank { null },
-                observations = state.observations.ifBlank { null }
+                observations = state.observations.ifBlank { null },
+                uid = state.selectedUserUid
             ).collect { result ->
                 when (result) {
                     is ResultWrapper.Loading -> {
@@ -176,6 +216,7 @@ class BeneficiariesViewModel @Inject constructor(
     }
 
     fun startEditBeneficiary(beneficiary: Beneficiary) {
+        loadAvailableUsers()
         _uiState.update {
             it.copy(
                 isEditMode = true,
@@ -188,6 +229,7 @@ class BeneficiariesViewModel @Inject constructor(
                 contactNumber = beneficiary.contactNumber,
                 address = beneficiary.address ?: "",
                 observations = beneficiary.observations ?: "",
+                selectedUserUid = beneficiary.uid,
                 error = null
             )
         }
@@ -238,7 +280,8 @@ class BeneficiariesViewModel @Inject constructor(
                 isActive = state.isActive,
                 contactNumber = state.contactNumber,
                 address = state.address.ifBlank { null },
-                observations = state.observations.ifBlank { null }
+                observations = state.observations.ifBlank { null },
+                uid = state.selectedUserUid
             ).collect { result ->
                 when (result) {
                     is ResultWrapper.Loading -> {

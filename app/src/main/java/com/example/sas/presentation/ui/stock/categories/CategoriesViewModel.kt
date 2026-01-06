@@ -7,14 +7,17 @@ import com.example.sas.domain.models.Category
 import com.example.sas.domain.models.CreateCategoryRequest
 import com.example.sas.domain.models.UpdateCategoryRequest
 import com.example.sas.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
 import com.example.sas.domain.usecase.categories.*
 import com.example.sas.domain.usecase.logs.CreateLogUseCase
 import com.example.sas.domain.usecase.logs.GetLogTypeByCodeUseCase
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
+import com.example.sas.domain.usecase.users.GetUserByUidUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,6 +25,7 @@ data class CategoriesUiState(
     val categories: List<Category> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
+    val userRole: String? = null,
 
     // Form fields
     val name: String = "",
@@ -41,7 +45,8 @@ class CategoriesViewModel @Inject constructor(
     private val createCategoryUseCase: CreateCategoryUseCase,
     private val updateCategoryUseCase: UpdateCategoryUseCase,
     private val deleteCategoryUseCase: DeleteCategoryUseCase,
-    private val logActivityUseCase: LogActivityUseCase
+    private val logActivityUseCase: LogActivityUseCase,
+    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CategoriesUiState())
@@ -49,6 +54,17 @@ class CategoriesViewModel @Inject constructor(
 
     init {
         loadCategories()
+        fetchUserRole()
+    }
+
+    private fun fetchUserRole() {
+        viewModelScope.launch {
+            getLoggedUserRoleUseCase.execute().collect { result ->
+                if (result is ResultWrapper.Success) {
+                    _uiState.update { it.copy(userRole = result.data) }
+                }
+            }
+        }
     }
     fun loadCategories() {
         viewModelScope.launch {

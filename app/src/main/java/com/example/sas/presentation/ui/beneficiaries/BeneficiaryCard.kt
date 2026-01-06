@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.LocationOn
@@ -67,6 +69,16 @@ fun BeneficiaryCard(
                     color = Color(0xFF1C1C1C), // TextDark
                     modifier = Modifier.weight(1f)
                 )
+
+                if (!beneficiary.uid.isNullOrBlank()) {
+                    Spacer(Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Default.Link,
+                        contentDescription = "Conta vinculada",
+                        tint = GreenPrimary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
 
                 Row {
                     IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {

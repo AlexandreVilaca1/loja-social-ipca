@@ -33,6 +33,7 @@ import com.example.sas.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,14 +134,35 @@ fun LoginView(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-
                     Spacer(modifier = Modifier.height(12.dp))
+
+                    if (uiState.error != null) {
+                        Text(
+                            text = uiState.error!!,
+                            color = Color.Red,
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(60.dp))
 
                     Button(
                         onClick = {
-                            viewModel.login { navController.navigate("home") }
+                            viewModel.login { role ->
+                                if (role == "SAS") {
+                                    navController.navigate("SAS") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                } else {
+                                    navController.navigate("BEN") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                }
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -148,7 +170,11 @@ fun LoginView(
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = green)
                     ) {
-                        Text("Entrar", color = Color.White)
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+                        } else {
+                            Text("Entrar", color = Color.White)
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))

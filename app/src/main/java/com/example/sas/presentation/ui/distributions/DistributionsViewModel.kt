@@ -5,9 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
-import com.example.sas.domain.usecase.distributions.ListDistributionsByBeneficiaryAndStatusUseCase
-import com.example.sas.domain.usecase.distributions.ListDistributionsByBeneficiaryUseCase
+import com.example.sas.domain.models.Distribution
+import com.example.sas.domain.models.StatusType
+import com.example.sas.domain.repositories.DistributionItemsRepository
+import com.example.sas.domain.usecase.distributions.*
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
+import com.example.sas.domain.usecase.status.GetStatusTypeByCodeUseCase
+import com.example.sas.domain.usecase.users.ListUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +20,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class DistributionsViewModel @Inject constructor(
     private val listDistributionsUseCase: ListDistributionsByBeneficiaryUseCase,
     private val listDistributionsByStatusUseCase: ListDistributionsByBeneficiaryAndStatusUseCase,
+    private val createDistributionUseCase: CreateDistributionUseCase,
+    private val updateDistributionUseCase: UpdateDistributionUseCase,
+    private val completeDistributionUseCase: CompleteDistributionUseCase,
+    private val distributionItemsRepository: DistributionItemsRepository,
+    private val listUsersUseCase: ListUsersUseCase,
+    private val getStatusByCodeUseCase: GetStatusTypeByCodeUseCase,
+    private val getStatusTypeByCodeUseCase: GetStatusTypeByCodeUseCase, // Para manter compatibilidade com Edit
     private val logActivityUseCase: LogActivityUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -27,30 +39,29 @@ class DistributionsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(DistributionsUiState())
     val uiState: StateFlow<DistributionsUiState> = _uiState.asStateFlow()
 
-    private val beneficiaryId: String? = savedStateHandle["beneficiaryId"]
-    private val beneficiaryName: String? = savedStateHandle["beneficiaryName"]
+    private val beneficiaryIdFromNav: String? = savedStateHandle["beneficiaryId"]
+    private val beneficiaryNameFromNav: String? = savedStateHandle["beneficiaryName"]
 
-    // Expor o beneficiaryId para uso na navegação
-    val currentBeneficiaryId: String? get() = beneficiaryId
+    val currentBeneficiaryId: String? get() = beneficiaryIdFromNav
 
     private companion object {
-        const val TAG = "BeneficiaryDistributionsVM"
+        const val TAG = "DistributionsVM"
     }
 
     init {
-        beneficiaryName?.let { name ->
+        beneficiaryNameFromNav?.let { name ->
             _uiState.update { it.copy(beneficiaryName = name) }
         }
         loadDistributions()
+        loadUsers()
+        loadDefaultStatus()
+        loadStatusTypes()
     }
 
-    private fun loadDistributions() {
-        val id = beneficiaryId
-        if (id == null) {
-            _uiState.update { it.copy(error = "ID do beneficiário não encontrado") }
-            return
-        }
+    // --- LÓGICA DE LISTAGEM ---
 
+    private fun loadDistributions() {
+        val id = beneficiaryIdFromNav ?: return
         val statusFilter = _uiState.value.selectedStatusFilter
 
         viewModelScope.launch {
@@ -62,26 +73,9 @@ class DistributionsViewModel @Inject constructor(
 
             useCase.collect { result ->
                 when (result) {
-                    is ResultWrapper.Loading -> {
-                        _uiState.update { it.copy(isLoading = true, error = null) }
-                    }
-                    is ResultWrapper.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                distributions = result.data ?: emptyList()
-                            )
-                        }
-                    }
-                    is ResultWrapper.Error -> {
-                        Log.e(TAG, "Failed to load distributions: ${result.message}")
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = result.message ?: "Erro ao carregar distribuições"
-                            )
-                        }
-                    }
+                    is ResultWrapper.Loading -> _uiState.update { it.copy(isLoading = true, error = null) }
+                    is ResultWrapper.Success -> _uiState.update { it.copy(isLoading = false, distributions = result.data ?: emptyList()) }
+                    is ResultWrapper.Error -> _uiState.update { it.copy(isLoading = false, error = result.message) }
                 }
             }
         }
@@ -92,9 +86,181 @@ class DistributionsViewModel @Inject constructor(
         loadDistributions()
     }
 
-
     fun refreshDistributions() {
         loadDistributions()
     }
-}
 
+    // --- LÓGICA DE SUPORTE (USERS E STATUS) ---
+
+    private fun loadUsers() {
+        viewModelScope.launch {
+            listUsersUseCase.execute(limit = 100, offset = 0).collect { result ->
+                when (result) {
+                    is ResultWrapper.Loading -> _uiState.update { it.copy(isLoadingUsers = true) }
+                    is ResultWrapper.Success -> {
+                        val sasUsers = result.data?.filter { it.role == "SAS" } ?: emptyList()
+                        _uiState.update { it.copy(isLoadingUsers = false, availableUsers = sasUsers) }
+                    }
+                    is ResultWrapper.Error -> _uiState.update { it.copy(isLoadingUsers = false, error = result.message) }
+                }
+            }
+        }
+    }
+
+    private fun loadDefaultStatus() {
+        viewModelScope.launch {
+            getStatusByCodeUseCase.execute("POR_ENTREGAR").collect { result ->
+                if (result is ResultWrapper.Success) {
+                    _uiState.update { it.copy(selectedStatusId = result.data?.id ?: "") }
+                }
+            }
+        }
+    }
+
+    private fun loadStatusTypes() {
+        viewModelScope.launch {
+            val statusCodes = listOf("POR_ENTREGAR", "ENTREGUE", "NAO_COMPARECEU")
+            val statusTypes = mutableListOf<StatusType>()
+            statusCodes.forEach { code ->
+                getStatusTypeByCodeUseCase.execute(code).collect { result ->
+                    if (result is ResultWrapper.Success && result.data != null) statusTypes.add(result.data)
+                }
+            }
+            _uiState.update { it.copy(availableStatuses = statusTypes) }
+        }
+    }
+
+    // --- LÓGICA DE FORMULÁRIO (COMMONS) ---
+
+    fun onBeneficiaryIdChanged(id: String) = _uiState.update { it.copy(beneficiaryId = id) }
+
+    fun onDistributionDateChanged(date: String) = _uiState.update { it.copy(distributionDate = date) }
+
+    fun onResponsibleStaffSelected(userId: String) = _uiState.update { it.copy(selectedResponsibleStaffId = userId) }
+
+    fun onStatusSelected(statusId: String) = _uiState.update { it.copy(selectedStatusId = statusId) }
+
+    fun onObservationsChanged(observations: String) = _uiState.update { it.copy(observations = observations) }
+
+    fun clearError() = _uiState.update { it.copy(error = null) }
+
+    fun cancelEdit() {
+        _uiState.update {
+            it.copy(
+                distributionDate = "",
+                observations = "",
+                selectedResponsibleStaffId = "",
+                error = null
+            )
+        }
+    }
+
+    // --- LÓGICA DE CRIAÇÃO ---
+
+    fun createDistribution(onSuccess: (String) -> Unit) {
+        val state = _uiState.value
+        if (state.beneficiaryId.isBlank() || state.distributionDate.isBlank() ||
+            state.selectedResponsibleStaffId.isBlank() || state.selectedStatusId.isBlank()) {
+            _uiState.update { it.copy(error = "Preencha os campos obrigatórios") }
+            return
+        }
+
+        viewModelScope.launch {
+            createDistributionUseCase.execute(
+                beneficiaryId = state.beneficiaryId,
+                distributionDate = state.distributionDate,
+                responsibleStaffId = state.selectedResponsibleStaffId,
+                statusId = state.selectedStatusId,
+                observations = state.observations.ifBlank { null }
+            ).collect { result ->
+                when (result) {
+                    is ResultWrapper.Loading -> _uiState.update { it.copy(isCreating = true, error = null) }
+                    is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Criou distribuição: ${result.data}", "DISTRIBUTION")
+                        _uiState.update { it.copy(isCreating = false) }
+                        result.data?.let { onSuccess(it) }
+                    }
+                    is ResultWrapper.Error -> _uiState.update { it.copy(isCreating = false, error = result.message) }
+                }
+            }
+        }
+    }
+
+    // --- LÓGICA DE EDIÇÃO ---
+
+    fun initializeWithDistribution(distribution: Distribution) {
+        _uiState.update {
+            it.copy(
+                distributionId = distribution.id,
+                distributionDate = distribution.distributionDate,
+                observations = distribution.observations ?: "",
+                responsibleStaffName = distribution.responsibleStaffName,
+                statusDescription = distribution.statusDescription,
+                statusCode = distribution.statusCode
+            )
+        }
+    }
+
+    fun updateDistribution(onSuccess: () -> Unit) {
+        val state = _uiState.value
+        if (state.statusCode != "POR_ENTREGAR") {
+            _uiState.update { it.copy(error = "Apenas distribuições 'Por Entregar' podem ser editadas") }
+            return
+        }
+
+        if (state.distributionDate.isBlank() || state.selectedResponsibleStaffId.isBlank() || state.selectedStatusId.isBlank()) {
+            _uiState.update { it.copy(error = "Campos obrigatórios em falta") }
+            return
+        }
+
+        val formattedDate = state.distributionDate.replace("/", "-")
+        val newStatusCode = state.availableStatuses.find { it.id == state.selectedStatusId }?.code
+        val isCompleting = newStatusCode == "ENTREGUE"
+
+        viewModelScope.launch {
+            if (isCompleting && !checkDistributionHasItems(state.distributionId)) {
+                _uiState.update { it.copy(error = "Adicione produtos antes de marcar como entregue.") }
+                return@launch
+            }
+
+            updateDistributionUseCase.execute(
+                distributionId = state.distributionId,
+                distributionDate = formattedDate,
+                responsibleStaffId = state.selectedResponsibleStaffId,
+                statusId = state.selectedStatusId,
+                observations = state.observations.ifBlank { null }
+            ).collect { result ->
+                when (result) {
+                    is ResultWrapper.Loading -> _uiState.update { it.copy(isUpdating = true, error = null) }
+                    is ResultWrapper.Success -> {
+                        if (isCompleting) {
+                            launch {
+                                completeDistributionUseCase.execute(state.distributionId, state.selectedStatusId).collect { completeResult ->
+                                    if (completeResult is ResultWrapper.Success) {
+                                        logActivityUseCase.execute("Completou distribuição:${state.distributionId} (Status: ENTREGUE, quantidades reduzidas)", "DISTRIBUTION")
+                                    }
+                                }
+                            }
+                        } else {
+                            logActivityUseCase.execute("Editou distribuição:${state.distributionId}", "DISTRIBUTION")
+                        }
+                        _uiState.update { it.copy(isUpdating = false) }
+                        kotlinx.coroutines.delay(500)
+                        onSuccess()
+                    }
+                    is ResultWrapper.Error -> _uiState.update { it.copy(isUpdating = false, error = result.message) }
+                }
+            }
+        }
+    }
+
+    private suspend fun checkDistributionHasItems(distributionId: String): Boolean {
+        var hasItems = false
+        distributionItemsRepository.listItemsByDistribution(distributionId, 1, 0).collect { result ->
+            if (result is ResultWrapper.Success) {
+                hasItems = (result.data?.size ?: 0) > 0
+            }
+        }
+        return hasItems
+    }
+}

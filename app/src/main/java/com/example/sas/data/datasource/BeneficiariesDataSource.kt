@@ -1,10 +1,13 @@
 package com.example.sas.data.datasource
 
+import com.google.firebase.dataconnect.generated.GetBeneficiaryByIdQuery
+import com.google.firebase.dataconnect.generated.GetBeneficiaryByUserIdQuery
 import com.google.firebase.dataconnect.generated.ListBeneficiariesQuery
 import com.google.firebase.dataconnect.generated.SearchBeneficiariesQuery
 import com.google.firebase.dataconnect.generated.SasConnectorConnector
 import com.google.firebase.dataconnect.generated.execute
 import com.google.firebase.dataconnect.generated.instance
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,6 +20,16 @@ class BeneficiariesDataSource @Inject constructor() {
 
     private val connector: SasConnectorConnector
         get() = SasConnectorConnector.instance
+
+    suspend fun getBeneficiaryById(id: String): GetBeneficiaryByIdQuery.Data.Beneficiary? {
+        val result = connector.getBeneficiaryById.execute(id = UUID.fromString(id))
+        return result.data.beneficiary
+    }
+
+    suspend fun getBeneficiaryByUserId(uid: String): GetBeneficiaryByUserIdQuery.Data.BeneficiariesItem? {
+        val result = connector.getBeneficiaryByUserId.execute(uid = uid)
+        return result.data.beneficiaries.firstOrNull()
+    }
 
     /**
      * Lists beneficiaries from Firebase Data Connect.
@@ -60,7 +73,7 @@ class BeneficiariesDataSource @Inject constructor() {
         isActive: Boolean,
         contactNumber: String,
         address: String?,
-        observations: String?
+        observations: String?,
     ): String {
         val result = connector.createBeneficiary.execute(
             fullName = fullName,
@@ -68,10 +81,12 @@ class BeneficiariesDataSource @Inject constructor() {
             nif = nif,
             course = course,
             isActive = isActive,
-            contactNumber = contactNumber
+            contactNumber = contactNumber,
+
         ) {
             this.address = address
             this.observations = observations
+            this.uid = uid
         }
         return result.data.beneficiary_insert.id.toString()
     }
@@ -88,7 +103,8 @@ class BeneficiariesDataSource @Inject constructor() {
         isActive: Boolean,
         contactNumber: String,
         address: String?,
-        observations: String?
+        observations: String?,
+        uid: String?
     ) {
         connector.updateBeneficiary.execute(
             id = java.util.UUID.fromString(id)
@@ -101,6 +117,7 @@ class BeneficiariesDataSource @Inject constructor() {
             this.contactNumber = contactNumber
             this.address = address
             this.observations = observations
+            this.uid = uid
         }
     }
 }

@@ -1,46 +1,15 @@
 package com.example.sas.presentation.ui.distributions
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,21 +17,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.sas.presentation.ui.distributions.create.CreateDistributionViewModel
-import com.example.sas.presentation.ui.distributions.edit.EditDistributionViewModel
+import com.example.sas.presentation.ui.theme.BackgroundGreen
 import com.example.sas.presentation.ui.theme.GreenPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BeneficiaryDistributionsView(
     navController: NavController,
-    viewModel: DistributionsViewModel = hiltViewModel(),
-    createViewModel: CreateDistributionViewModel = hiltViewModel(),
-    editViewModel: EditDistributionViewModel = hiltViewModel()
+    viewModel: DistributionsViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    val createState by createViewModel.uiState.collectAsState()
-    val editState by editViewModel.uiState.collectAsState()
 
     var showCreateSheet by remember { mutableStateOf(false) }
     var showEditSheet by remember { mutableStateOf(false) }
@@ -72,14 +36,14 @@ fun BeneficiaryDistributionsView(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(BackgroundGreen)
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
-            // Filtros de status - sempre visíveis
+            // Filtros de status
             item {
                 StatusFilterChips(
                     selectedStatus = state.selectedStatusFilter,
@@ -89,47 +53,28 @@ fun BeneficiaryDistributionsView(
                 )
             }
 
-            // Conteúdo baseado no estado
+            // Estados da UI baseados no ViewModel Unificado
             if (state.isLoading) {
                 item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(top = 32.dp), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = GreenPrimary)
                     }
                 }
-            } else if (state.error != null) {
+            } else if (state.error != null && !showCreateSheet && !showEditSheet) {
                 item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = state.error!!,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(16.dp),
-                            textAlign = TextAlign.Center
-                        )
+                    Box(modifier = Modifier.fillMaxWidth().padding(top = 32.dp), contentAlignment = Alignment.Center) {
+                        Text(text = state.error!!, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
                     }
                 }
             } else if (state.distributions.isEmpty()) {
                 item {
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Text(
                             text = "Nenhuma distribuição encontrada",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
+                            modifier = Modifier.fillMaxWidth().padding(32.dp),
                             textAlign = TextAlign.Center,
                             color = Color.Gray
                         )
@@ -145,44 +90,26 @@ fun BeneficiaryDistributionsView(
                     )
                 }
 
-                if (state.distributions.isEmpty()) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Nenhuma distribuição encontrada",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Gray
-                            )
+                items(state.distributions) { distribution ->
+                    DistributionCard(
+                        distribution = distribution,
+                        onViewItems = { dist ->
+                            navController.navigate("distribution/${dist.id}/items?date=${dist.distributionDate}")
+                        },
+                        onEdit = { dist ->
+                            selectedDistribution = dist
+                            showEditSheet = true
                         }
-                    }
-                } else {
-                    items(state.distributions) { distribution ->
-                        DistributionCard(
-                            distribution = distribution,
-                            onViewItems = { dist ->
-                                navController.navigate(
-                                    "distribution/${dist.id}/items?date=${dist.distributionDate}"
-                                )
-                            },
-                            onEdit = { dist ->
-                                selectedDistribution = dist
-                                showEditSheet = true
-                            }
-                        )
-                    }
+                    )
                 }
             }
         }
 
+        // Botão Criar
         viewModel.currentBeneficiaryId?.let { beneficiaryId ->
             FloatingActionButton(
                 onClick = {
-                    createViewModel.onBeneficiaryIdChanged(beneficiaryId)
+                    viewModel.onBeneficiaryIdChanged(beneficiaryId)
                     showCreateSheet = true
                 },
                 modifier = Modifier
@@ -190,43 +117,40 @@ fun BeneficiaryDistributionsView(
                     .padding(16.dp),
                 containerColor = GreenPrimary
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Criar Distribuição",
-                    tint = Color.White
-                )
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Criar", tint = Color.White)
             }
         }
     }
 
+    // BottomSheet de Criação (Usa as funções create do ViewModel unificado)
     if (showCreateSheet) {
         CreateDistributionBottomSheet(
             sheetState = sheetState,
-            createState = createState,
-            createViewModel = createViewModel,
+            state = state,
+            viewModel = viewModel,
             onDismiss = {
                 showCreateSheet = false
-                createViewModel.clearError()
+                viewModel.clearError()
             },
             onSuccess = { distributionId ->
                 showCreateSheet = false
                 viewModel.refreshDistributions()
-                navController.navigate("distribution/$distributionId/items?date=${createState.distributionDate}")
+                navController.navigate("distribution/$distributionId/items?date=${state.distributionDate}")
             }
         )
     }
 
-    // ModalBottomSheet para editar distribuição
+    // BottomSheet de Edição (Usa as funções update do ViewModel unificado)
     if (showEditSheet && selectedDistribution != null) {
         EditDistributionBottomSheet(
             sheetState = sheetState,
             distribution = selectedDistribution!!,
-            editState = editState,
-            editViewModel = editViewModel,
+            state = state,
+            viewModel = viewModel,
             onDismiss = {
                 showEditSheet = false
                 selectedDistribution = null
-                editViewModel.clearError()
+                viewModel.clearError()
             },
             onSuccess = {
                 showEditSheet = false
@@ -250,9 +174,7 @@ private fun StatusFilterChips(
     )
 
     LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(statusOptions) { (code, label) ->
@@ -275,8 +197,8 @@ private fun StatusFilterChips(
 @Composable
 private fun CreateDistributionBottomSheet(
     sheetState: SheetState,
-    createState: com.example.sas.presentation.ui.distributions.create.CreateDistributionUiState,
-    createViewModel: CreateDistributionViewModel,
+    state: DistributionsUiState,
+    viewModel: DistributionsViewModel,
     onDismiss: () -> Unit,
     onSuccess: (String) -> Unit
 ) {
@@ -284,53 +206,32 @@ private fun CreateDistributionBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = sheetState
+        sheetState = sheetState,
     ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Text(
-                    text = "Nova Distribuição",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = GreenPrimary
-                )
+                Text(text = "Nova Distribuição", style = MaterialTheme.typography.titleLarge, color = GreenPrimary)
             }
 
-            // Mensagem de erro
-            if (createState.error != null) {
+            if (state.error != null) {
                 item {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = createState.error!!,
-                            modifier = Modifier.padding(16.dp),
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
+                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                        Text(text = state.error, modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onErrorContainer)
                     }
                 }
             }
 
             item {
                 OutlinedTextField(
-                    value = createState.distributionDate,
-                    onValueChange = { createViewModel.onDistributionDateChanged(it) },
-                    label = { Text("Data da Distribuição (YYYY-MM-DD)") },
+                    value = state.distributionDate,
+                    onValueChange = { viewModel.onDistributionDateChanged(it) },
+                    label = { Text("Data (YYYY-MM-DD)") },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("2025-01-03") },
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = GreenPrimary,
-                        focusedLabelColor = GreenPrimary
-                    )
+                    colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White)
                 )
             }
 
@@ -340,50 +241,24 @@ private fun CreateDistributionBottomSheet(
                     onExpandedChange = { showUserDropdown = !showUserDropdown }
                 ) {
                     OutlinedTextField(
-                        value = createState.availableUsers.find { it.id == createState.selectedResponsibleStaffId }?.name
-                            ?: "Selecionar utilizador",
+                        value = state.availableUsers.find { it.id == state.selectedResponsibleStaffId }?.name ?: "Selecionar SAS",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Funcionário Responsável") },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "Dropdown"
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = GreenPrimary,
-                            focusedLabelColor = GreenPrimary
-                        )
+                        label = { Text("Responsável") },
+                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor(),
+                        colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White)
                     )
 
-                    ExposedDropdownMenu(
-                        expanded = showUserDropdown,
-                        onDismissRequest = { showUserDropdown = false }
-                    ) {
-                        if (createState.isLoadingUsers) {
+                    ExposedDropdownMenu(expanded = showUserDropdown, onDismissRequest = { showUserDropdown = false }) {
+                        state.availableUsers.forEach { user ->
                             DropdownMenuItem(
-                                text = { Text("Carregando...") },
-                                onClick = {}
+                                text = { Text(user.name) },
+                                onClick = {
+                                    viewModel.onResponsibleStaffSelected(user.id)
+                                    showUserDropdown = false
+                                }
                             )
-                        } else {
-                            createState.availableUsers.forEach { user ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Column {
-                                            Text(user.name, style = MaterialTheme.typography.bodyMedium)
-                                            Text(user.email, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-                                        }
-                                    },
-                                    onClick = {
-                                        createViewModel.onResponsibleStaffSelected(user.id)
-                                        showUserDropdown = false
-                                    }
-                                )
-                            }
                         }
                     }
                 }
@@ -391,75 +266,28 @@ private fun CreateDistributionBottomSheet(
 
             item {
                 OutlinedTextField(
-                    value = "Não Entregue",
-                    onValueChange = {},
-                    readOnly = true,
-                    enabled = false,
-                    label = { Text("Status") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        disabledBorderColor = Color.Gray,
-                        disabledLabelColor = Color.Gray,
-                        disabledTextColor = Color.Gray
-                    )
+                    value = state.observations,
+                    onValueChange = { viewModel.onObservationsChanged(it) },
+                    label = { Text("Observações") },
+                    modifier = Modifier.fillMaxWidth().height(120.dp),
+                    colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White)
                 )
             }
 
-            item {
-                OutlinedTextField(
-                    value = createState.observations,
-                    onValueChange = { createViewModel.onObservationsChanged(it) },
-                    label = { Text("Observações (opcional)") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    maxLines = 4,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = GreenPrimary,
-                        focusedLabelColor = GreenPrimary
-                    )
-                )
-            }
-
-            // Botão de Criar
             item {
                 Button(
-                    onClick = {
-                        createViewModel.createDistribution { distributionId ->
-                            onSuccess(distributionId)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    enabled = !createState.isCreating,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = GreenPrimary
-                    )
+                    onClick = { viewModel.createDistribution { onSuccess(it) } },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    enabled = !state.isCreating,
+                    colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary)
                 ) {
-                    if (createState.isCreating) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.padding(8.dp),
-                            color = Color.White
-                        )
-                    } else {
-                        Text("Criar Distribuição")
-                    }
-                }
-            }
-
-            // Botão Cancelar
-            item {
-                TextButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onDismiss
-                ) {
-                    Text("Cancelar")
+                    if (state.isCreating) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+                    else Text("Criar Distribuição")
                 }
             }
 
             item {
-                Spacer(Modifier.height(8.dp))
+                TextButton(modifier = Modifier.fillMaxWidth(), onClick = onDismiss) { Text("Cancelar") }
             }
         }
     }
@@ -470,90 +298,63 @@ private fun CreateDistributionBottomSheet(
 private fun EditDistributionBottomSheet(
     sheetState: SheetState,
     distribution: com.example.sas.domain.models.Distribution,
-    editState: com.example.sas.presentation.ui.distributions.edit.EditDistributionUiState,
-    editViewModel: EditDistributionViewModel,
+    state: DistributionsUiState,
+    viewModel: DistributionsViewModel,
     onDismiss: () -> Unit,
     onSuccess: () -> Unit
 ) {
     var showUserDropdown by remember { mutableStateOf(false) }
     var showStatusDropdown by remember { mutableStateOf(false) }
 
-    // Initialize ViewModel with distribution data
     LaunchedEffect(distribution.id) {
-        editViewModel.initializeWithDistribution(distribution)
+        viewModel.initializeWithDistribution(distribution)
     }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color.White
     ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Título
             item {
-                Text(
-                    text = "Editar Distribuição",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color(0xFF1C1C1C)
-                )
+                Text(text = "Editar Distribuição", style = MaterialTheme.typography.titleLarge)
             }
 
-
-            // Campo de Data
             item {
                 OutlinedTextField(
-                    value = editState.distributionDate,
-                    onValueChange = { editViewModel.onDistributionDateChanged(it) },
-                    label = { Text("Data da Distribuição (YYYY/MM/DD)") },
+                    value = state.distributionDate,
+                    onValueChange = { viewModel.onDistributionDateChanged(it) },
+                    label = { Text("Data (YYYY-MM-DD)") },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = GreenPrimary,
-                        focusedLabelColor = GreenPrimary
-                    )
+                    colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White)
                 )
             }
 
-            // Dropdown para selecionar funcionário responsável
             item {
                 ExposedDropdownMenuBox(
                     expanded = showUserDropdown,
                     onExpandedChange = { showUserDropdown = !showUserDropdown }
                 ) {
                     OutlinedTextField(
-                        value = editState.availableUsers.find { it.id == editState.selectedResponsibleStaffId }?.name
-                            ?: editState.responsibleStaffName ?: "Selecionar funcionário",
+                        value = state.availableUsers.find { it.id == state.selectedResponsibleStaffId }?.name
+                            ?: state.responsibleStaffName ?: "Selecionar responsável",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Funcionário Responsável") },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = GreenPrimary,
-                            focusedLabelColor = GreenPrimary
-                        )
+                        label = { Text("Responsável") },
+                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor(),
+                        colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White)
                     )
 
-                    ExposedDropdownMenu(
-                        expanded = showUserDropdown,
-                        onDismissRequest = { showUserDropdown = false }
-                    ) {
-                        editState.availableUsers.forEach { user ->
+                    ExposedDropdownMenu(expanded = showUserDropdown, onDismissRequest = { showUserDropdown = false }) {
+                        state.availableUsers.forEach { user ->
                             DropdownMenuItem(
                                 text = { Text(user.name) },
                                 onClick = {
-                                    editViewModel.onResponsibleStaffSelected(user.id)
+                                    viewModel.onResponsibleStaffSelected(user.id)
                                     showUserDropdown = false
                                 }
                             )
@@ -562,42 +363,28 @@ private fun EditDistributionBottomSheet(
                 }
             }
 
-            // Dropdown para selecionar status
             item {
                 ExposedDropdownMenuBox(
                     expanded = showStatusDropdown,
                     onExpandedChange = { showStatusDropdown = !showStatusDropdown }
                 ) {
                     OutlinedTextField(
-                        value = editState.availableStatuses.find { it.id == editState.selectedStatusId }?.description
-                            ?: editState.statusDescription ?: "Selecionar status",
+                        value = state.availableStatuses.find { it.id == state.selectedStatusId }?.description
+                            ?: state.statusDescription ?: "Selecionar status",
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Status") },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = GreenPrimary,
-                            focusedLabelColor = GreenPrimary
-                        )
+                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor(),
+                        colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White)
                     )
 
-                    ExposedDropdownMenu(
-                        expanded = showStatusDropdown,
-                        onDismissRequest = { showStatusDropdown = false }
-                    ) {
-                        editState.availableStatuses.forEach { status ->
+                    ExposedDropdownMenu(expanded = showStatusDropdown, onDismissRequest = { showStatusDropdown = false }) {
+                        state.availableStatuses.forEach { status ->
                             DropdownMenuItem(
                                 text = { Text(status.description) },
                                 onClick = {
-                                    editViewModel.onStatusSelected(status.id)
+                                    viewModel.onStatusSelected(status.id)
                                     showStatusDropdown = false
                                 }
                             )
@@ -606,75 +393,35 @@ private fun EditDistributionBottomSheet(
                 }
             }
 
-            // Campo de Observações
             item {
                 OutlinedTextField(
-                    value = editState.observations,
-                    onValueChange = { editViewModel.onObservationsChanged(it) },
-                    label = { Text("Observações (opcional)") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    maxLines = 4,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = GreenPrimary,
-                        focusedLabelColor = GreenPrimary
-                    )
+                    value = state.observations,
+                    onValueChange = { viewModel.onObservationsChanged(it) },
+                    label = { Text("Observações") },
+                    modifier = Modifier.fillMaxWidth().height(120.dp),
+                    colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White)
                 )
             }
 
-            // Mensagem de erro
-            editState.error?.let { errorMsg ->
-                item {
-                    Text(
-                        text = errorMsg,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
+            if (state.error != null) {
+                item { Text(text = state.error, color = Color.Red, style = MaterialTheme.typography.bodySmall) }
             }
 
-            // Botão Salvar
             item {
                 Button(
-                    onClick = {
-                        editViewModel.updateDistribution {
-                            onSuccess()
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    enabled = !editState.isUpdating,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = GreenPrimary
-                    )
+                    onClick = { viewModel.updateDistribution { onSuccess() } },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    enabled = !state.isUpdating,
+                    colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary)
                 ) {
-                    if (editState.isUpdating) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.padding(8.dp),
-                            color = Color.White
-                        )
-                    } else {
-                        Text("Salvar Alterações")
-                    }
-                }
-            }
-
-            // Botão Cancelar
-            item {
-                TextButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onDismiss
-                ) {
-                    Text("Cancelar")
+                    if (state.isUpdating) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+                    else Text("Salvar Alterações")
                 }
             }
 
             item {
-                Spacer(Modifier.height(8.dp))
+                TextButton(modifier = Modifier.fillMaxWidth(), onClick = onDismiss) { Text("Cancelar") }
             }
         }
     }
 }
-

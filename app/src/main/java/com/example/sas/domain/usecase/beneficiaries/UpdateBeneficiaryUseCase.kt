@@ -27,7 +27,8 @@ class UpdateBeneficiaryUseCase @Inject constructor(
         isActive: Boolean,
         contactNumber: String,
         address: String? = null,
-        observations: String? = null
+        observations: String? = null,
+        uid: String? = null
     ): Flow<ResultWrapper<Unit>> {
         // Business validation
         require(id.isNotBlank()) { "ID é obrigatório" }
@@ -46,7 +47,8 @@ class UpdateBeneficiaryUseCase @Inject constructor(
             isActive = isActive,
             contactNumber = contactNumber,
             address = address,
-            observations = observations
+            observations = observations,
+            uid = uid
         )
     }
 }

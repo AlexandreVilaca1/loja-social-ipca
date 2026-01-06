@@ -7,12 +7,16 @@ import com.example.sas.domain.models.CreateLotRequest
 import com.example.sas.domain.models.Lot
 import com.example.sas.domain.models.UpdateLotRequest
 import com.example.sas.domain.models.Product
+import com.example.sas.domain.usecase.auth.GetCurrentUserUseCase
+import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
 import com.example.sas.domain.usecase.lots.*
 import com.example.sas.domain.usecase.products.ListProductsUseCase
+import com.example.sas.domain.usecase.users.GetUserByUidUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -24,6 +28,7 @@ data class LotsUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val searchQuery: String = "",
+    val userRole: String? = null,
 
     // Form fields
     val lotCode: String = "",
@@ -53,7 +58,9 @@ class LotsViewModel @Inject constructor(
     private val updateLotUseCase: UpdateLotUseCase,
     private val updateLotQuantityUseCase: UpdateLotQuantityUseCase,
     private val deleteLotUseCase: DeleteLotUseCase,
-    private val listProductsUseCase: ListProductsUseCase
+    private val listProductsUseCase: ListProductsUseCase,
+    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LotsUiState())
@@ -62,8 +69,18 @@ class LotsViewModel @Inject constructor(
     init {
         loadLots()
         loadProducts()
+        fetchUserRole()
     }
 
+    private fun fetchUserRole() {
+        viewModelScope.launch {
+            getLoggedUserRoleUseCase.execute().collect { result ->
+                if (result is ResultWrapper.Success) {
+                    _uiState.update { it.copy(userRole = result.data) }
+                }
+            }
+        }
+    }
     fun loadLots() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
