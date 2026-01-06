@@ -100,7 +100,7 @@ public interface ListLotsByProductQuery :
     val currentQuantity: Int,
     val entryDate: com.google.firebase.dataconnect.LocalDate,
     val lotCode: String,
-    val expirationDate: com.google.firebase.dataconnect.LocalDate,
+    val expirationDate: com.google.firebase.dataconnect.LocalDate?,
     val observations: String?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp,
     val updatedAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp

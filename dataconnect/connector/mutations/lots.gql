@@ -8,7 +8,7 @@ mutation CreateLot(
   $currentQuantity: Int!,
   $entryDate: Date!,
   $lotCode: String!,
-  $expirationDate: Date!,
+  $expirationDate: Date,
   $observations: String,
   $productId: Product_Key
 ) @auth(level: USER) {

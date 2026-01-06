@@ -6,7 +6,7 @@ data class Lot(
     val currentQuantity: Int,
     val entryDate: String,
     val lotCode: String,
-    val expirationDate: String,
+    val expirationDate: String?, // Optional - can be null for products without expiration
     val observations: String?,
     val productId: String?,
     val createdAt: String?,

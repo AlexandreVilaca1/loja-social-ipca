@@ -135,7 +135,7 @@ fun BeneficiaryDistributionsView(
             onSuccess = { distributionId ->
                 showCreateSheet = false
                 viewModel.refreshDistributions()
-                navController.navigate("distribution/$distributionId/items?date=${state.distributionDate}")
+                // Mantém na mesma página - não navega
             }
         )
     }

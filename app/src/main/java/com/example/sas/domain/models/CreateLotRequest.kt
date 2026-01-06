@@ -5,7 +5,7 @@ data class CreateLotRequest(
     val currentQuantity: Int,
     val entryDate: String, // Format: "yyyy-MM-dd"
     val lotCode: String,
-    val expirationDate: String, // Format: "yyyy-MM-dd"
+    val expirationDate: String? = null, // Format: "yyyy-MM-dd" - Optional
     val observations: String? = null,
     val productId: String? = null
 )

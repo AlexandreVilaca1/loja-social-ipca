@@ -570,12 +570,12 @@ private fun LotFormSheet(
             placeholder = { Text("yyyy-MM-dd") }
         )
 
-        // Expiration Date
+        // Expiration Date (Optional)
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.expirationDate,
             onValueChange = viewModel::setExpirationDate,
-            label = { Text("Data de validade *") },
+            label = { Text("Data de validade (opcional)") },
             placeholder = { Text("yyyy-MM-dd") }
         )
 

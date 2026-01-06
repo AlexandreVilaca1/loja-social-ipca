@@ -51,8 +51,8 @@ fun LotCard(
     onDelete: () -> Unit,
     onUpdateQuantity: () -> Unit
 ) {
-    val isExpiringSoon = isExpiringSoon(lot.expirationDate)
-    val isExpired = isExpired(lot.expirationDate)
+    val isExpiringSoon = lot.expirationDate?.let { isExpiringSoon(it) } ?: false
+    val isExpired = lot.expirationDate?.let { isExpired(it) } ?: false
     val isLowStock = lot.currentQuantity < (lot.initialQuantity * 0.2) // Less than 20%
 
     Card(
@@ -198,7 +198,8 @@ fun LotCard(
             // Expiration date
             InfoRow(
                 icon = Icons.Outlined.EventAvailable,
-                text = "Validade: ${formatDateForDisplay(lot.expirationDate)}",
+                text = lot.expirationDate?.let { "Validade: ${formatDateForDisplay(it)}" }
+                    ?: "Validade: Sem data de validade",
                 textColor = when {
                     isExpired -> Color(0xFFDC3545)
                     isExpiringSoon -> Color(0xFFFFC107)

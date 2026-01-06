@@ -66,11 +66,11 @@ class StockHomeViewModel @Inject constructor(
                         val lots = result.data
 
                         val expiringSoon = lots!!.count { lot ->
-                            isExpiringSoon(lot.expirationDate)
+                            lot.expirationDate?.let { isExpiringSoon(it) } ?: false
                         }
 
                         val expired = lots.count { lot ->
-                            isExpired(lot.expirationDate)
+                            lot.expirationDate?.let { isExpired(it) } ?: false
                         }
 
                         _uiState.value = _uiState.value.copy(
