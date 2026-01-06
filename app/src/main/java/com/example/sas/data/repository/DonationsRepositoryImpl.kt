@@ -144,13 +144,10 @@ class DonationsRepositoryImpl @Inject constructor(
             emit(ResultWrapper.Success(items.map {
                 DonationItem(
                     donationId = it.donation.id.toString(),
-                    donorName = it.donation.donorName,
                     productId = it.product.id.toString(),
-                    productName = it.product.name,
                     quantity = it.quantity,
-                    unitOfMeasure = it.product.unitOfMeasure,
                     categoryName = it.product.category?.name,
-                    state = it.state?.let { s -> DonationStatus(s.id.toString(), s.code, s.description) },
+                    state = it.state?.let { s -> StatusType(s.id.toString(), s.code, s.description) },
                     observations = it.observations,
                     createdAt = formatTimestamp(it.createdAt)
                 )

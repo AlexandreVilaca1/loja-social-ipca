@@ -33,6 +33,8 @@ import com.example.sas.presentation.ui.appointments.TotalAppointmentsView
 import com.example.sas.presentation.ui.Drawer.DrawerRoute
 import com.example.sas.presentation.ui.auth.AuthViewModel
 import com.example.sas.presentation.ui.beneficiaries.BeneficiariesView
+import com.example.sas.presentation.ui.campaigns.list.CampaignsView
+import com.example.sas.presentation.ui.campaigns.summary.CampaignDashboardView
 import com.example.sas.presentation.ui.distributionItems.DistributionItemsView
 import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsView
 import com.example.sas.presentation.ui.reports.ReportsView
@@ -45,6 +47,8 @@ import com.example.sas.presentation.ui.stock.products.ProductsView
 import com.example.sas.presentation.ui.theme.GreenPrimary
 import kotlinx.coroutines.launch
 import com.example.sas.presentation.ui.candidacies.CandidaciesView
+import com.example.sas.presentation.ui.donations.items.DonationItemsView
+import com.example.sas.presentation.ui.donations.list.DonationsView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +65,10 @@ fun HomeView(onSignOut : () -> Unit) {
 
     val shouldShowBackButton = currentRoute == "agendamentos/todos" ||
                                 currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") ||
-                                currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items")
+                                currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items") ||
+                                currentRoute == "donations/campaigns" || // Voltar para o Dashboard
+                                currentRoute == "donations/list" ||      // Voltar para o Dashboard
+                                currentRoute?.startsWith("donation/items/") == true // Voltar para a Lista de Doações
 
     val currentTitle = when {
         currentRoute == "agendamentos/home" -> "Agendamentos"
@@ -210,7 +217,19 @@ fun HomeView(onSignOut : () -> Unit) {
                     }
 
                     composable(DrawerRoute.Doacoes.route) {
-                        Text("Tela Doações")
+                        CampaignDashboardView(navController)
+                    }
+
+                    composable("donations/campaigns") {
+                        CampaignsView(navController)
+                    }
+
+                    composable("donations/list") {
+                        DonationsView(navController)
+                    }
+
+                    composable("donation/items/{donationId}") {
+                        DonationItemsView()
                     }
 
                     composable(DrawerRoute.Relatorios.route) {
