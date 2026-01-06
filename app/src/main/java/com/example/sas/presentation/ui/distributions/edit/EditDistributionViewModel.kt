@@ -60,7 +60,9 @@ class EditDistributionViewModel @Inject constructor(
             listUsersUseCase.execute(limit = 100, offset = 0).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
-                        _uiState.update { it.copy(availableUsers = result.data ?: emptyList()) }
+                        val sasUsers = result.data?.filter { it.role == "SAS" } ?: emptyList()
+
+                        _uiState.update { it.copy(availableUsers = sasUsers) }
                     }
                     is ResultWrapper.Error -> {
                         Log.e(TAG, "Failed to load users: ${result.message}")

@@ -305,6 +305,7 @@ fun BeneficiariesView(
                         value = state.userSearchQuery,
                         onValueChange = {
                             viewModel.setUserSearchQuery(it)
+                            // Continua carregando os usuários em segundo plano para o filtro local funcionar
                             if (state.availableUsers.isEmpty()) viewModel.loadAvailableUsers()
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -321,14 +322,14 @@ fun BeneficiariesView(
                         colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent)
                     )
 
-                    // BOX DE RESULTADOS (Apenas aparece se houver pesquisa ou lista carregada)
-                    if (state.userSearchQuery.isNotEmpty() || state.availableUsers.isNotEmpty()) {
+                    // BOX DE RESULTADOS - ALTERADO: Agora só aparece se houver texto digitado
+                    if (state.userSearchQuery.isNotBlank()) { // <--- Mudança aqui
                         val results = viewModel.filteredUsers
 
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(max = 200.dp) // Limita a altura para não quebrar o scroll do pai
+                                .heightIn(max = 200.dp)
                                 .background(Color(0xFFF8F8F8), RoundedCornerShape(8.dp))
                                 .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
                         ) {
@@ -344,7 +345,7 @@ fun BeneficiariesView(
                                         ListItem(
                                             modifier = Modifier.clickable {
                                                 viewModel.setSelectedUserUid(user.uid)
-                                                viewModel.setUserSearchQuery("") // Limpa pesquisa após selecionar
+                                                viewModel.setUserSearchQuery("")
                                             },
                                             headlineContent = { Text(user.name) },
                                             supportingContent = { Text(user.email) },

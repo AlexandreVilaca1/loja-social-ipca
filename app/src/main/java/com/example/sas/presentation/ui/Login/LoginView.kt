@@ -33,6 +33,7 @@ import com.example.sas.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,8 +134,19 @@ fun LoginView(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-
                     Spacer(modifier = Modifier.height(12.dp))
+
+                    if (uiState.error != null) {
+                        Text(
+                            text = uiState.error!!,
+                            color = Color.Red,
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(60.dp))
 

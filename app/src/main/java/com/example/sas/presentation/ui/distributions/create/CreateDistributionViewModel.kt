@@ -80,11 +80,15 @@ class CreateDistributionViewModel @Inject constructor(
                             _uiState.update { it.copy(isLoadingUsers = true) }
                         }
                         is ResultWrapper.Success -> {
-                            Log.d(TAG, "Loaded ${result.data?.size ?: 0} users")
+                            // FILTRO APLICADO AQUI:
+                            // Filtramos a lista para conter apenas utilizadores com role "SAS"
+                            val sasUsers = result.data?.filter { it.role == "SAS" } ?: emptyList()
+
+                            Log.d(TAG, "Loaded ${sasUsers.size} SAS users")
                             _uiState.update {
                                 it.copy(
                                     isLoadingUsers = false,
-                                    availableUsers = result.data ?: emptyList()
+                                    availableUsers = sasUsers
                                 )
                             }
                         }
