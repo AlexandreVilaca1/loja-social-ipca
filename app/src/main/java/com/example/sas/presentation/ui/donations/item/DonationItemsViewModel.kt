@@ -7,6 +7,8 @@ import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.*
 import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
 import com.example.sas.domain.usecase.donations.*
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
+import com.example.sas.domain.usecase.products.GetProductByIdUseCase
 import com.example.sas.domain.usecase.products.ListProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +42,10 @@ class DonationItemsViewModel @Inject constructor(
     private val updateDonationItemUseCase: UpdateDonationItemUseCase,
     private val deleteDonationItemUseCase: DeleteDonationItemUseCase,
     private val listProductsUseCase: ListProductsUseCase,
-    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
+    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase,
+    private val logActivityUseCase: LogActivityUseCase,
+    private val getProductByIdUseCase: GetProductByIdUseCase,
+    private val getDonationByIdUseCase: GetDonationByIdUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DonationItemsUiState())
@@ -59,8 +64,6 @@ class DonationItemsViewModel @Inject constructor(
     private fun loadInitialData(donationId: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-
-            // Carregar produtos
             launch {
                 listProductsUseCase.execute(limit = 500, offset = 0).collect { res ->
                     if (res is ResultWrapper.Success) _uiState.update { it.copy(products = res.data ?: emptyList()) }
@@ -73,12 +76,10 @@ class DonationItemsViewModel @Inject constructor(
 
     fun loadItems(donationId: String) {
         viewModelScope.launch {
-            // Log para depuração
             listDonationItemsUseCase.execute(donationId, 100).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
                         val items = result.data ?: emptyList()
-                        android.util.Log.d("DonationVM", "Itens carregados: ${items.size}")
                         _uiState.update { it.copy(items = items, isLoading = false) }
                     }
                     is ResultWrapper.Error -> {
@@ -92,22 +93,40 @@ class DonationItemsViewModel @Inject constructor(
         }
     }
 
-    // --- CRUD ---
-
     fun saveItem() {
         val s = _uiState.value
         val productId = s.selectedProductId ?: return
         val qty = s.quantity.toIntOrNull() ?: 0
+        var productName = "Produto Desconhecido"
+        var donorName = "Doador Desconhecido"
 
         viewModelScope.launch {
+
+            getProductByIdUseCase.execute(productId).collect { res ->
+                if(res is ResultWrapper.Success){
+                    productName = res.data?.name ?: "Produto Desconhecido"
+                }
+            }
+            getDonationByIdUseCase.execute(s.donationId).collect { res ->
+                if(res is ResultWrapper.Success){
+                    donorName = res.data?.donorName ?: "Doador Desconhecido"
+                }
+            }
             if (s.isEditMode) {
-                updateDonationItemUseCase.execute(s.donationId, productId, qty, s.observations)
+                updateDonationItemUseCase.execute(s.donationId, productId, qty, s.observations).collect { res ->
+                    if (res is ResultWrapper.Success) {
+                        logActivityUseCase.execute("Editou produto: ${productName} da doação ${donorName}", "DONATION_ITEM")
+                        loadItems(s.donationId)
+                        clearForm()
+                    }
+                }
             } else {
-                createDonationItemUseCase.execute(s.donationId, productId, qty, s.observations)
-            }.collect { res ->
-                if (res is ResultWrapper.Success) {
-                    loadItems(s.donationId)
-                    clearForm()
+                createDonationItemUseCase.execute(s.donationId, productId, qty, s.observations).collect { res ->
+                    if (res is ResultWrapper.Success) {
+                        logActivityUseCase.execute("Criou produto: ${productName} da doação ${donorName}", "DONATION_ITEM")
+                        loadItems(s.donationId)
+                        clearForm()
+                    }
                 }
             }
         }
@@ -115,14 +134,28 @@ class DonationItemsViewModel @Inject constructor(
 
     fun deleteItem(productId: String) {
         val donationId = _uiState.value.donationId
+        var productName = "Produto Desconhecido"
+        var donorName = "Doador Desconhecido"
+
         viewModelScope.launch {
+            getProductByIdUseCase.execute(productId).collect { res ->
+                if(res is ResultWrapper.Success){
+                    productName = res.data?.name ?: "Produto Desconhecido"
+                }
+            }
+            getDonationByIdUseCase.execute(donationId).collect { res ->
+                if(res is ResultWrapper.Success){
+                    donorName = res.data?.donorName ?: "Doador Desconhecido"
+                }
+            }
             deleteDonationItemUseCase.execute(donationId, productId).collect { res ->
-                if (res is ResultWrapper.Success<*>) loadItems(donationId)
+                if (res is ResultWrapper.Success<*>){
+                    logActivityUseCase.execute("Removeu produto: ${productName} da doação ${donorName}", "DONATION_ITEM")
+                    loadItems(donationId)
+                }
             }
         }
     }
-
-    // --- Helpers ---
 
     fun startEdit(item: DonationItem) {
         _uiState.update { it.copy(

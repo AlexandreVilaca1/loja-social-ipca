@@ -7,6 +7,7 @@ import com.example.sas.domain.models.Campaign
 import com.example.sas.domain.models.StatusType
 import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
 import com.example.sas.domain.usecase.campaigns.*
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.status.ListStatusTypesUseCase
 import com.google.firebase.dataconnect.LocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,7 +50,8 @@ class CampaignsViewModel @Inject constructor(
     private val updateCampaignUseCase: UpdateCampaignUseCase,
     private val deleteCampaignUseCase: DeleteCampaignUseCase,
     private val listStatusTypesUseCase: ListStatusTypesUseCase,
-    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
+    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase,
+    private val logActivityUseCase: LogActivityUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CampaignsUiState())
@@ -139,8 +141,19 @@ class CampaignsViewModel @Inject constructor(
             val statusId = state.statusTypes.find { it.code == statusCode }?.id
 
             createCampaignUseCase.execute(
-                state.name, start, end, state.address, state.campaignType, state.observations.ifBlank { null }, null, statusId
-            ).collect { if (it is ResultWrapper.Success) { loadCampaigns(); clearForm() } }
+                state.name,
+                start,
+                end,
+                state.address,
+                state.campaignType,
+                state.observations.ifBlank { null },
+                null, statusId
+            ).collect {
+                if (it is ResultWrapper.Success) {
+                    logActivityUseCase.execute("Criou Campanha: ${state.name}", "CAMPAIGN")
+                    loadCampaigns(); clearForm()
+                }
+            }
         }
     }
 
@@ -148,15 +161,31 @@ class CampaignsViewModel @Inject constructor(
         val state = _uiState.value
         viewModelScope.launch {
             updateCampaignUseCase.execute(
-                state.editingCampaignId!!, state.name, parseDate(state.startDate),
-                parseDate(state.endDate), state.address, state.campaignType, state.observations, null, state.statusId
-            ).collect { if (it is ResultWrapper.Success) { loadCampaigns(); clearForm() } }
+                state.editingCampaignId!!,
+                state.name,
+                parseDate(state.startDate),
+                parseDate(state.endDate),
+                state.address, state.campaignType,
+                state.observations,
+                null,
+                state.statusId
+            ).collect {
+                if (it is ResultWrapper.Success) {
+                    logActivityUseCase.execute("Editou Campanha: ${state.name}", "CAMPAIGN")
+                    loadCampaigns(); clearForm()
+                }
+            }
         }
     }
 
-    fun deleteCampaign(id: String) {
+    fun deleteCampaign(id: String, name: String) {
         viewModelScope.launch {
-            deleteCampaignUseCase.execute(id).collect { if (it is ResultWrapper.Success<*>) loadCampaigns() }
+            deleteCampaignUseCase.execute(id).collect {
+                if (it is ResultWrapper.Success<*>){
+                    logActivityUseCase.execute("Removeu Campanha: ${name}", "CAMPAIGN")
+                    loadCampaigns()
+                }
+            }
         }
     }
 

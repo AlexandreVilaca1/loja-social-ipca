@@ -61,7 +61,7 @@ fun BottomBar(
     val selectedRoute = when {
         currentRoute?.startsWith("agendamentos") == true -> DrawerRoute.Agendamentos.route
         currentRoute?.startsWith("beneficiarios") == true -> DrawerRoute.Beneficiarios.route
-        currentRoute?.startsWith("doacoes") == true -> DrawerRoute.Doacoes.route
+        currentRoute?.startsWith("donations") == true -> DrawerRoute.Doacoes.route
         currentRoute?.startsWith("stock") == true -> DrawerRoute.Produtos.route
         currentRoute == DrawerRoute.Relatorios.route -> DrawerRoute.Relatorios.route
         else -> null

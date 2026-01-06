@@ -139,7 +139,7 @@ fun DonationsView(
                             donation = donation,
                             canEdit = isSAS,
                             onEdit = { viewModel.startEdit(donation); showSheet = true },
-                            onDelete = { viewModel.deleteDonation(donation.id) }
+                            onDelete = { viewModel.deleteDonation(donation.id, donation.donorName) }
                         )
                     }
                 }

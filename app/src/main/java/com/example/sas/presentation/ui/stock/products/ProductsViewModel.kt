@@ -51,7 +51,8 @@ class ProductsViewModel @Inject constructor(
     private val updateProductUseCase: UpdateProductUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
     private val listActiveCategoriesUseCase: ListActiveCategoriesUseCase,
-    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
+    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase,
+    private val logActivityUseCase: LogActivityUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductsUiState())
@@ -199,6 +200,7 @@ class ProductsViewModel @Inject constructor(
             createProductUseCase.execute(request).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Criou produto: ${state.name}", "STOCK_PRODUCT")
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             createdProductId = result.data
@@ -239,6 +241,7 @@ class ProductsViewModel @Inject constructor(
             updateProductUseCase.execute(request).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Editou produto: ${state.name}", "STOCK_PRODUCT")
                         _uiState.value = _uiState.value.copy(isLoading = false)
                         clearForm()
                         loadProducts()
@@ -269,11 +272,12 @@ class ProductsViewModel @Inject constructor(
         )
     }
 
-    fun deleteProduct(productId: String) {
+    fun deleteProduct(productId: String, productName : String) {
         viewModelScope.launch {
             deleteProductUseCase.execute(productId).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Removeu produto: ${productName}", "STOCK_PRODUCT")
                         loadProducts()
                     }
                     is ResultWrapper.Error -> {

@@ -9,6 +9,7 @@ import com.example.sas.domain.models.UpdateLotRequest
 import com.example.sas.domain.models.Product
 import com.example.sas.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.lots.*
 import com.example.sas.domain.usecase.products.ListProductsUseCase
 import com.example.sas.domain.usecase.users.GetUserByUidUseCase
@@ -64,7 +65,8 @@ class LotsViewModel @Inject constructor(
     private val updateLotQuantityUseCase: UpdateLotQuantityUseCase,
     private val deleteLotUseCase: DeleteLotUseCase,
     private val listProductsUseCase: ListProductsUseCase,
-    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
+    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase,
+    private val logActivityUseCase: LogActivityUseCase
 
 ) : ViewModel() {
 
@@ -400,6 +402,7 @@ class LotsViewModel @Inject constructor(
             createLotUseCase.execute(request).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Criou lote: ${state.lotCode}", "STOCK_LOT")
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             createdLotId = result.data
@@ -446,6 +449,7 @@ class LotsViewModel @Inject constructor(
             updateLotUseCase.execute(request).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Editou lote: ${state.lotCode}", "STOCK_LOT")
                         _uiState.value = _uiState.value.copy(isLoading = false)
                         clearForm()
                         if (state.filterProductId != null) {
@@ -503,11 +507,12 @@ class LotsViewModel @Inject constructor(
         )
     }
 
-    fun deleteLot(lotId: String) {
+    fun deleteLot(lotId: String, lotCode: String) {
         viewModelScope.launch {
             deleteLotUseCase.execute(lotId).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
+                        logActivityUseCase.execute("Removeu lote: ${lotCode}", "STOCK_LOT")
                         if (_uiState.value.filterProductId != null) {
                             loadLotsByProduct(_uiState.value.filterProductId!!)
                         } else {

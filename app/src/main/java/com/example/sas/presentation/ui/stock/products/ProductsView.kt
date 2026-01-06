@@ -135,7 +135,7 @@ fun ProductsView(
                                 viewModel.startEditProduct(product)
                             },
                             onDelete = {
-                                viewModel.deleteProduct(product.id)
+                                viewModel.deleteProduct(product.id, product.name)
                             },
                             canEdit = isSAS,
                             onClick = {}

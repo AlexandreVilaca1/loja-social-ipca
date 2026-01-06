@@ -8,6 +8,7 @@ import com.example.sas.domain.models.Campaign
 import com.example.sas.domain.usecase.campaigns.ListCampaignsUseCase
 import com.example.sas.domain.usecase.donations.*
 import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
+import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.google.firebase.dataconnect.LocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +51,8 @@ class DonationsViewModel @Inject constructor(
     private val updateDonationUseCase: UpdateDonationUseCase,
     private val deleteDonationUseCase: DeleteDonationUseCase,
     private val listCampaignsUseCase: ListCampaignsUseCase,
-    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
+    private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase,
+    private val logActivityUseCase: LogActivityUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DonationsUiState())
@@ -167,6 +169,7 @@ class DonationsViewModel @Inject constructor(
                 s.selectedCampaignId
             ).collect {
                 if (it is ResultWrapper.Success) {
+                    logActivityUseCase.execute("Criou doação: ${s.donorName}", "DONATION")
                     loadDonations(); clearForm()
                 }
             }
@@ -185,15 +188,19 @@ class DonationsViewModel @Inject constructor(
                 s.selectedCampaignId
             ).collect {
                 if (it is ResultWrapper.Success) {
+                    logActivityUseCase.execute("Editou doação: ${s.donorName}", "DONATION")
                     loadDonations(); clearForm()
                 }
             }
         }
     }
-    fun deleteDonation(id: String) {
+    fun deleteDonation(id: String, donorName: String) {
         viewModelScope.launch {
             deleteDonationUseCase.execute(id).collect {
-                if (it is ResultWrapper.Success<*>) loadDonations()
+                if (it is ResultWrapper.Success<*>){
+                    logActivityUseCase.execute("Removeu doação: ${donorName}", "DONATION")
+                    loadDonations()
+                }
             }
         }
     }

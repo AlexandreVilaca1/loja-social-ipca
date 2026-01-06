@@ -77,7 +77,7 @@ fun CampaignsView(
                             campaign = campaign,
                             canEdit = isSAS,
                             onEdit = { viewModel.startEdit(campaign); showSheet = true },
-                            onDelete = { viewModel.deleteCampaign(campaign.id) }
+                            onDelete = { viewModel.deleteCampaign(campaign.id, campaign.name) }
                         )
                     }
                 }

@@ -371,7 +371,7 @@ fun LotsView(
                                 viewModel.startEditLot(lot)
                             },
                             onDelete = {
-                                viewModel.deleteLot(lot.id)
+                                viewModel.deleteLot(lot.id, lot.lotCode)
                             },
                             onUpdateQuantity = {
                                 selectedLotForQuantity = lot
