@@ -34,6 +34,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -54,7 +55,11 @@ android {
     }
 }
 
+
 dependencies {
+
+    // Core library desugaring for Java 8+ APIs support (LocalDate, etc)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -94,21 +99,14 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Import the Firebase BoM
-
     implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
 
-
-    // TODO: Add the dependencies for Firebase products you want to use
-
-    // When using the BoM, don't specify versions in Firebase dependencies
-
+    // Firebase dependencies (versions managed by BoM)
     implementation("com.google.firebase:firebase-analytics")
-
-
-    // Add the dependencies for any other desired Firebase products
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-functions")
 
-    // Firebase Data Connect + required runtime deps for generated SDK
+    // Firebase Data Connect
     implementation("com.google.firebase:firebase-dataconnect")
 
     // Kotlin Serialization (used by generated Data Connect code)
@@ -116,6 +114,7 @@ dependencies {
 
     // Coroutines (Data Connect execute() is suspend-friendly)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
 
     // https://firebase.google.com/docs/android/setup#available-libraries
 

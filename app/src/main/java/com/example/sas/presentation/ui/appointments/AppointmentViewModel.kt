@@ -13,6 +13,9 @@ import com.example.sas.domain.usecase.distributions.ListDistributionsByStatusUse
 import com.example.sas.domain.usecase.distributions.UpdateDistributionStatusUseCase
 import com.example.sas.domain.usecase.status.GetStatusTypeByCodeUseCase
 import com.example.sas.domain.usecase.users.GetUserByUidUseCase
+import com.google.firebase.Firebase
+import com.google.firebase.functions.functions
+import kotlinx.coroutines.tasks.await
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -63,6 +66,9 @@ class AppointmentViewModel @Inject constructor(
 
     private val _userRole = MutableStateFlow<String?>(null)
     val userRole: StateFlow<String?> = _userRole.asStateFlow()
+
+    // Configure Firebase Functions para a região europe-west1
+    private val functions = Firebase.functions("europe-west1")
 
     init {
         refresh()
@@ -238,29 +244,25 @@ class AppointmentViewModel @Inject constructor(
             _isLoading.value = true
             _errorMessage.value = null
 
-            // First, get the status ID by code
             getStatusByCodeUseCase.execute(statusCode).collect { statusResult ->
                 when (statusResult) {
                     is ResultWrapper.Success -> {
                         val statusId = statusResult.data?.id
                         if (statusId != null) {
-                            // Se o status for ENTREGUE, usar CompleteDistributionUseCase
                             if (statusCode == "ENTREGUE") {
-                                completeDistributionUseCase.execute(distributionId, statusId)
-                                    .collect { updateResult ->
-                                        when (updateResult) {
-                                            is ResultWrapper.Success -> {
-                                                loadDistributionsByStatus("POR_ENTREGAR")
-                                            }
-                                            is ResultWrapper.Error -> {
-                                                _isLoading.value = false
-                                                _errorMessage.value = updateResult.message
-                                            }
-                                            is ResultWrapper.Loading -> {
-                                                // Keep loading state
-                                            }
-                                        }
-                                    }
+                                // Chamar Cloud Function em vez do use case local
+                                try {
+                                    val data = hashMapOf("distributionId" to distributionId)
+                                    val result = functions
+                                        .getHttpsCallable("completeDistribution")
+                                        .call(data)
+                                        .await()
+                                    // Sucesso: recarregar distribuições
+                                    loadDistributionsByStatus("POR_ENTREGAR")
+                                } catch (e: Exception) {
+                                    _isLoading.value = false
+                                    _errorMessage.value = e.message ?: "Erro ao completar distribuição"
+                                }
                             } else {
                                 // Para outros status, usar UpdateDistributionStatusUseCase normal
                                 updateDistributionStatusUseCase.execute(distributionId, statusId)
