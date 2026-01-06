@@ -9,6 +9,6 @@ import javax.inject.Inject
 class ListDonationsByCampaignUseCase @Inject constructor(
     private val repository: DonationsRepository
 ) {
-    fun execute(campaignId: String, limit: Int? = null, offset: Int? = null) =
+    fun execute(campaignId: String, limit: Int? = 0, offset: Int? = 0) =
         repository.listDonationsByCampaign(campaignId, limit, offset)
 }

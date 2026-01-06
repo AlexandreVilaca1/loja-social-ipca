@@ -52,6 +52,7 @@ class DonationItemsViewModel @Inject constructor(
             _uiState.update { it.copy(donationId = id) }
             loadInitialData(id)
         }
+
         fetchUserRole()
     }
 
@@ -72,11 +73,20 @@ class DonationItemsViewModel @Inject constructor(
 
     fun loadItems(donationId: String) {
         viewModelScope.launch {
-            listDonationItemsUseCase.execute(donationId).collect { result ->
+            // Log para depuração
+            listDonationItemsUseCase.execute(donationId, 100).collect { result ->
                 when (result) {
-                    is ResultWrapper.Success -> _uiState.update { it.copy(items = result.data ?: emptyList(), isLoading = false) }
-                    is ResultWrapper.Error -> _uiState.update { it.copy(error = result.message, isLoading = false) }
-                    is ResultWrapper.Loading -> _uiState.update { it.copy(isLoading = true) }
+                    is ResultWrapper.Success -> {
+                        val items = result.data ?: emptyList()
+                        android.util.Log.d("DonationVM", "Itens carregados: ${items.size}")
+                        _uiState.update { it.copy(items = items, isLoading = false) }
+                    }
+                    is ResultWrapper.Error -> {
+                        _uiState.update { it.copy(error = result.message, isLoading = false) }
+                    }
+                    is ResultWrapper.Loading -> {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }
                 }
             }
         }

@@ -205,13 +205,28 @@ fun DonationFormSheet(state: DonationsUiState, viewModel: DonationsViewModel, on
         OutlinedTextField(value = state.donorName, onValueChange = { viewModel.updateFormField("name", it) }, label = { Text("Nome do Doador *") }, modifier = Modifier.fillMaxWidth())
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(value = state.donationDate, onValueChange = { viewModel.updateFormField("date", it) }, label = { Text("Data (yyyy-mm-dd) *") }, modifier = Modifier.weight(1f))
-            OutlinedTextField(value = state.estimatedValue, onValueChange = { viewModel.updateFormField("value", it) }, label = { Text("Valor Est. (€)") }, modifier = Modifier.weight(1f))
+            OutlinedTextField(
+                value = state.donationDate,
+                onValueChange = { viewModel.updateFormField("date", it) },
+                label = { Text("Data *") },
+                placeholder = { Text("yyyy-mm-dd") },
+                modifier = Modifier.weight(1f)
+            )
+            OutlinedTextField(
+                value = state.estimatedValue,
+                onValueChange = { viewModel.updateFormField("value", it) },
+                label = { Text("Valor Est. (€)") },
+                modifier = Modifier.weight(1f)
+            )
         }
 
-        OutlinedTextField(value = state.donorContact, onValueChange = { viewModel.updateFormField("contact", it) }, label = { Text("Contacto") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            value = state.donorContact,
+            onValueChange = { viewModel.updateFormField("contact", it) },
+            label = { Text("Contacto") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        // Dropdown Campanha
         ExposedDropdownMenuBox(expanded = expC, onExpandedChange = { expC = !expC }) {
             OutlinedTextField(
                 value = state.campaigns.find { it.id == state.selectedCampaignId }?.name ?: "Vincular a Campanha (Opcional)",
