@@ -29,7 +29,7 @@ public interface CreateLotMutation :
     val currentQuantity: Int,
     val entryDate: com.google.firebase.dataconnect.LocalDate,
     val lotCode: String,
-    val expirationDate: com.google.firebase.dataconnect.LocalDate,
+    val expirationDate: com.google.firebase.dataconnect.OptionalVariable<com.google.firebase.dataconnect.LocalDate?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val productId: com.google.firebase.dataconnect.OptionalVariable<ProductKey?>
   ) {
@@ -44,7 +44,7 @@ public interface CreateLotMutation :
         public var currentQuantity: Int
         public var entryDate: com.google.firebase.dataconnect.LocalDate
         public var lotCode: String
-        public var expirationDate: com.google.firebase.dataconnect.LocalDate
+        public var expirationDate: com.google.firebase.dataconnect.LocalDate?
         public var observations: String?
         public var productId: ProductKey?
         
@@ -53,14 +53,15 @@ public interface CreateLotMutation :
       public companion object {
         @Suppress("NAME_SHADOWING")
         public fun build(
-          initialQuantity: Int,currentQuantity: Int,entryDate: com.google.firebase.dataconnect.LocalDate,lotCode: String,expirationDate: com.google.firebase.dataconnect.LocalDate,
+          initialQuantity: Int,currentQuantity: Int,entryDate: com.google.firebase.dataconnect.LocalDate,lotCode: String,
           block_: Builder.() -> Unit
         ): Variables {
           var initialQuantity= initialQuantity
             var currentQuantity= currentQuantity
             var entryDate= entryDate
             var lotCode= lotCode
-            var expirationDate= expirationDate
+            var expirationDate: com.google.firebase.dataconnect.OptionalVariable<com.google.firebase.dataconnect.LocalDate?> =
+                com.google.firebase.dataconnect.OptionalVariable.Undefined
             var observations: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var productId: com.google.firebase.dataconnect.OptionalVariable<ProductKey?> =
@@ -84,9 +85,9 @@ public interface CreateLotMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { lotCode = value_ }
               
-            override var expirationDate: com.google.firebase.dataconnect.LocalDate
+            override var expirationDate: com.google.firebase.dataconnect.LocalDate?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { expirationDate = value_ }
+              set(value_) { expirationDate = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
               
             override var observations: String?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
@@ -133,7 +134,7 @@ public interface CreateLotMutation :
 
 public fun CreateLotMutation.ref(
   
-    initialQuantity: Int,currentQuantity: Int,entryDate: com.google.firebase.dataconnect.LocalDate,lotCode: String,expirationDate: com.google.firebase.dataconnect.LocalDate,
+    initialQuantity: Int,currentQuantity: Int,entryDate: com.google.firebase.dataconnect.LocalDate,lotCode: String,
   
     block_: CreateLotMutation.Variables.Builder.() -> Unit = {}
   
@@ -144,7 +145,7 @@ public fun CreateLotMutation.ref(
   ref(
     
       CreateLotMutation.Variables.build(
-        initialQuantity=initialQuantity,currentQuantity=currentQuantity,entryDate=entryDate,lotCode=lotCode,expirationDate=expirationDate,
+        initialQuantity=initialQuantity,currentQuantity=currentQuantity,entryDate=entryDate,lotCode=lotCode,
   
     block_
       )
@@ -153,7 +154,7 @@ public fun CreateLotMutation.ref(
 
 public suspend fun CreateLotMutation.execute(
   
-    initialQuantity: Int,currentQuantity: Int,entryDate: com.google.firebase.dataconnect.LocalDate,lotCode: String,expirationDate: com.google.firebase.dataconnect.LocalDate,
+    initialQuantity: Int,currentQuantity: Int,entryDate: com.google.firebase.dataconnect.LocalDate,lotCode: String,
   
     block_: CreateLotMutation.Variables.Builder.() -> Unit = {}
   
@@ -163,7 +164,7 @@ public suspend fun CreateLotMutation.execute(
   > =
   ref(
     
-      initialQuantity=initialQuantity,currentQuantity=currentQuantity,entryDate=entryDate,lotCode=lotCode,expirationDate=expirationDate,
+      initialQuantity=initialQuantity,currentQuantity=currentQuantity,entryDate=entryDate,lotCode=lotCode,
   
     block_
     

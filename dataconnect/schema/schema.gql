@@ -31,7 +31,7 @@ type Lot @table {
   currentQuantity: Int!
   entryDate: Date!
   lotCode: String!
-  expirationDate: Date!
+  expirationDate: Date
   observations: String
   product: Product
   createdAt: Timestamp! @default(expr: "request.time")

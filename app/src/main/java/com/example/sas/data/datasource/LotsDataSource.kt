@@ -150,7 +150,7 @@ class LotsDataSource @Inject constructor() {
      * @param currentQuantity Current quantity of the lot
      * @param entryDate Date the lot entered the inventory
      * @param lotCode Unique code for the lot
-     * @param expirationDate Expiration date of the lot
+     * @param expirationDate Expiration date of the lot (optional - for products without expiration)
      * @param observations Optional observations about the lot
      * @param productId Optional UUID of the associated product
      * @return The UUID of the created lot
@@ -160,7 +160,7 @@ class LotsDataSource @Inject constructor() {
         currentQuantity: Int,
         entryDate: LocalDate,
         lotCode: String,
-        expirationDate: LocalDate,
+        expirationDate: LocalDate? = null,
         observations: String?,
         productId: String?
     ): String {
@@ -168,9 +168,9 @@ class LotsDataSource @Inject constructor() {
             initialQuantity = initialQuantity,
             currentQuantity = currentQuantity,
             entryDate = entryDate,
-            lotCode = lotCode,
-            expirationDate = expirationDate
+            lotCode = lotCode
         ) {
+            this.expirationDate = expirationDate
             this.observations = observations
             this.productId = productId?.let { ProductKey(UUID.fromString(it)) }
         }

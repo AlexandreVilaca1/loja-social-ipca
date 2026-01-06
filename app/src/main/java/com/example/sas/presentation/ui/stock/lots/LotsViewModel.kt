@@ -58,9 +58,7 @@ class LotsViewModel @Inject constructor(
     private val listLotsUseCase: ListLotsUseCase,
     private val listLotsByProductUseCase: ListLotsByProductUseCase,
     private val searchLotsUseCase: SearchLotsUseCase,
-    private val searchLotsByExpirationDateUseCase: SearchLotsByExpirationDateUseCase,
     private val listLotsByProductAndExpirationDateUseCase: ListLotsByProductAndExpirationDateUseCase,
-    private val getLotByIdUseCase: GetLotByIdUseCase,
     private val createLotUseCase: CreateLotUseCase,
     private val updateLotUseCase: UpdateLotUseCase,
     private val updateLotQuantityUseCase: UpdateLotQuantityUseCase,
@@ -273,15 +271,20 @@ class LotsViewModel @Inject constructor(
 
     /**
      * Generates lot code automatically in format: 'Lote $productName $expirationDate'
+     * If no expiration date, format: 'Lote $productName'
      */
     private fun generateLotCode() {
         val state = _uiState.value
 
-        // Only generate if we have both product and expiration date
-        if (state.productId != null && state.expirationDate.isNotBlank()) {
+        // Only generate if we have product
+        if (state.productId != null) {
             val product = state.products.find { it.id == state.productId }
             if (product != null) {
-                val lotCode = "Lote ${product.name} ${state.expirationDate}"
+                val lotCode = if (state.expirationDate.isNotBlank()) {
+                    "Lote ${product.name} ${state.expirationDate}"
+                } else {
+                    "Lote ${product.name}"
+                }
                 _uiState.value = state.copy(lotCode = lotCode)
             }
         }
@@ -373,10 +376,7 @@ class LotsViewModel @Inject constructor(
             return
         }
 
-        if (state.expirationDate.isBlank()) {
-            _uiState.value = state.copy(error = "Data de validade é obrigatória")
-            return
-        }
+        // expirationDate is now optional - no validation needed
 
         // Ensure lotCode is generated
         if (state.lotCode.isBlank()) {
@@ -392,7 +392,7 @@ class LotsViewModel @Inject constructor(
                 initialQuantity = initialQty,
                 currentQuantity = currentQty,
                 entryDate = state.entryDate,
-                expirationDate = state.expirationDate,
+                expirationDate = state.expirationDate.ifBlank { null },
                 observations = state.observations.ifBlank { null },
                 productId = state.productId
             )
@@ -497,7 +497,7 @@ class LotsViewModel @Inject constructor(
             initialQuantity = lot.initialQuantity.toString(),
             currentQuantity = lot.currentQuantity.toString(),
             entryDate = lot.entryDate,
-            expirationDate = lot.expirationDate,
+            expirationDate = lot.expirationDate ?: "",
             observations = lot.observations ?: "",
             productId = lot.productId
         )

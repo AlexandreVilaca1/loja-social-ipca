@@ -138,7 +138,6 @@ fun DistributionItemsView(
                     }
                 }
             }
-
             // FAB para adicionar produto - apenas se status for POR_ENTREGAR
             if (!state.isLoading && state.error == null && state.distributionStatusCode == "POR_ENTREGAR") {
                 FloatingActionButton(
@@ -187,7 +186,10 @@ private fun AddItemBottomSheet(
     var showLotDropdown by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            viewModel.clearLotSearch() // Limpar pesquisa ao fechar
+            onDismiss()
+        },
         sheetState = sheetState,
         containerColor = Color.White
     ) {
@@ -203,7 +205,7 @@ private fun AddItemBottomSheet(
                 color = Color(0xFF1C1C1C)
             )
 
-            // Dropdown para selecionar lote
+            // Dropdown para selecionar lote com pesquisa
             ExposedDropdownMenuBox(
                 expanded = showLotDropdown,
                 onExpandedChange = { showLotDropdown = !showLotDropdown }
@@ -225,17 +227,83 @@ private fun AddItemBottomSheet(
 
                 ExposedDropdownMenu(
                     expanded = showLotDropdown,
-                    onDismissRequest = { showLotDropdown = false }
+                    onDismissRequest = {
+                        showLotDropdown = false
+                        viewModel.clearLotSearch()
+                    }
                 ) {
-                    state.availableLots.forEach { lot ->
-                        DropdownMenuItem(
-                            text = { Text(lot.lotCode) },
-                            onClick = {
-                                selectedLotId = lot.id
-                                selectedLotName = lot.lotCode
-                                showLotDropdown = false
-                            }
+                    // Campo de pesquisa dentro do dropdown
+                    OutlinedTextField(
+                        value = state.lotSearchQuery,
+                        onValueChange = { viewModel.setLotSearchQuery(it) }, // Usar ViewModel
+                        placeholder = { Text("Pesquisar lote...", style = MaterialTheme.typography.bodySmall) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = GreenPrimary,
+                            focusedLabelColor = GreenPrimary
                         )
+                    )
+
+                    // Lógica de exibição baseada na pesquisa
+                    when {
+                        // Campo de pesquisa vazio - mostrar mensagem
+                        state.lotSearchQuery.isBlank() -> {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        "Digite para pesquisar lotes...",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray,
+                                        textAlign = TextAlign.Center
+                                    )
+                                },
+                                onClick = { },
+                                enabled = false
+                            )
+                        }
+                        // Pesquisa feita mas sem resultados
+                        state.availableLots.isEmpty() -> {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        "Nenhum lote encontrado",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                },
+                                onClick = { },
+                                enabled = false
+                            )
+                        }
+                        // Mostrar resultados da pesquisa
+                        else -> {
+                            state.availableLots.forEach { lot ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Column {
+                                            Text(
+                                                text = lot.lotCode,
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                            Text(
+                                                text = "Quantidade disponível: ${lot.currentQuantity}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = Color.Gray
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        selectedLotId = lot.id
+                                        selectedLotName = lot.lotCode
+                                        showLotDropdown = false
+                                        viewModel.clearLotSearch() // Limpar pesquisa após seleção
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -309,4 +377,5 @@ private fun AddItemBottomSheet(
         }
     }
 }
+
 

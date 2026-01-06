@@ -11,6 +11,7 @@ import com.example.sas.domain.usecase.distributionItems.ListDistributionItemsUse
 import com.example.sas.domain.usecase.distributions.GetDistributionByIdUseCase
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.lots.ListLotsUseCase
+import com.example.sas.domain.usecase.lots.SearchLotsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,7 @@ class DistributionItemsViewModel @Inject constructor(
     private val createDistributionItemUseCase: CreateDistributionItemUseCase,
     private val deleteDistributionItemUseCase: DeleteDistributionItemUseCase,
     private val listLotsUseCase: ListLotsUseCase,
+    private val searchLotsUseCase: SearchLotsUseCase,
     private val getDistributionByIdUseCase: GetDistributionByIdUseCase,
     private val logActivityUseCase: LogActivityUseCase,
     savedStateHandle: SavedStateHandle
@@ -232,6 +234,56 @@ class DistributionItemsViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(error = null) }
+    }
+
+    /**
+     * Atualiza a query de pesquisa de lotes e executa a busca
+     */
+    fun setLotSearchQuery(query: String) {
+        _uiState.update { it.copy(lotSearchQuery = query) }
+
+        if (query.isBlank()) {
+            // Se a query está vazia, carrega todos os lotes
+            loadLots()
+        } else {
+            // Pesquisa lotes usando o UseCase
+            searchLots(query)
+        }
+    }
+
+    /**
+     * Pesquisa lotes usando SearchLotsUseCase
+     */
+    private fun searchLots(query: String) {
+        viewModelScope.launch {
+            Log.d(TAG, "Searching lots with query: $query")
+
+            searchLotsUseCase.execute(lotCode = query, limit = 100, offset = 0)
+                .collect { result ->
+                    when (result) {
+                        is ResultWrapper.Loading -> {
+                            // Loading search results
+                        }
+                        is ResultWrapper.Success -> {
+                            Log.d(TAG, "Found ${result.data?.size ?: 0} lots")
+                            _uiState.update {
+                                it.copy(availableLots = result.data ?: emptyList())
+                            }
+                        }
+                        is ResultWrapper.Error -> {
+                            Log.e(TAG, "Failed to search lots: ${result.message}")
+                        }
+                    }
+                }
+        }
+    }
+
+    /**
+     * Limpa a pesquisa de lotes
+     */
+    fun clearLotSearch() {
+        _uiState.update { it.copy(lotSearchQuery = "") }
+        loadLots() // Recarrega todos os lotes
     }
 }
 

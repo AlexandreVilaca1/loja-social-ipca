@@ -11,6 +11,7 @@ data class DistributionItemsUiState(
     val distributionStatusCode: String? = null,
     val items: List<DistributionItem> = emptyList(),
     val availableLots: List<Lot> = emptyList(),
+    val lotSearchQuery: String = "", // Query para pesquisa de lotes
     val isLoading: Boolean = false,
     val isCreating: Boolean = false,
     val error: String? = null

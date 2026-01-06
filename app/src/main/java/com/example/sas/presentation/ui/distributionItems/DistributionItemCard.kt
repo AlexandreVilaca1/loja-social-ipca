@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.RemoveCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -111,7 +111,7 @@ fun DistributionItemCard(
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.RemoveCircle,
+                        imageVector = Icons.Default.Delete,
                         contentDescription = "Remover produto",
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(24.dp)
