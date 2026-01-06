@@ -105,6 +105,63 @@ class LotsRepositoryImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
+    override fun searchLotsByExpirationDate(
+        expirationDate: String,
+        limit: Int,
+        offset: Int
+    ): Flow<ResultWrapper<List<Lot>>> = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            val items = dataSource.searchLotsByExpirationDate(expirationDate, limit, offset)
+            val lots = items.map { item ->
+                Lot(
+                    id = item.id.toString(),
+                    initialQuantity = item.initialQuantity,
+                    currentQuantity = item.currentQuantity,
+                    entryDate = formatDate(item.entryDate),
+                    lotCode = item.lotCode,
+                    expirationDate = formatDate(item.expirationDate),
+                    observations = item.observations,
+                    productId = item.product?.id?.toString(),
+                    createdAt = item.createdAt?.toString(),
+                    updatedAt = item.updatedAt?.toString()
+                )
+            }
+            emit(ResultWrapper.Success(lots))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao pesquisar lotes por data de validade"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override fun listLotsByProductAndExpirationDate(
+        productId: String,
+        expirationDate: String,
+        limit: Int,
+        offset: Int
+    ): Flow<ResultWrapper<List<Lot>>> = flow {
+        emit(ResultWrapper.Loading())
+        try {
+            val items = dataSource.listLotsByProductAndExpirationDate(productId, expirationDate, limit, offset)
+            val lots = items.map { item ->
+                Lot(
+                    id = item.id.toString(),
+                    initialQuantity = item.initialQuantity,
+                    currentQuantity = item.currentQuantity,
+                    entryDate = formatDate(item.entryDate),
+                    lotCode = item.lotCode,
+                    expirationDate = formatDate(item.expirationDate),
+                    observations = item.observations,
+                    productId = item.product?.id?.toString(),
+                    createdAt = item.createdAt?.toString(),
+                    updatedAt = item.updatedAt?.toString()
+                )
+            }
+            emit(ResultWrapper.Success(lots))
+        } catch (e: Exception) {
+            emit(ResultWrapper.Error(e.message ?: "Erro ao listar lotes por produto e data de validade"))
+        }
+    }.flowOn(Dispatchers.IO)
+
     override fun getLotById(id: String): Flow<ResultWrapper<Lot>> = flow {
         emit(ResultWrapper.Loading())
         try {

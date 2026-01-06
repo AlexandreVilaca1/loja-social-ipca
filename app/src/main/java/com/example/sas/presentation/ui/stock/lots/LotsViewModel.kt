@@ -30,6 +30,11 @@ data class LotsUiState(
     val searchQuery: String = "",
     val userRole: String? = null,
 
+    // Search filters
+    val selectedProductForSearch: Product? = null,
+    val expirationDateSearch: String = "",
+    val productSearchQuery: String = "",
+
     // Form fields
     val lotCode: String = "",
     val initialQuantity: String = "",
@@ -53,6 +58,8 @@ class LotsViewModel @Inject constructor(
     private val listLotsUseCase: ListLotsUseCase,
     private val listLotsByProductUseCase: ListLotsByProductUseCase,
     private val searchLotsUseCase: SearchLotsUseCase,
+    private val searchLotsByExpirationDateUseCase: SearchLotsByExpirationDateUseCase,
+    private val listLotsByProductAndExpirationDateUseCase: ListLotsByProductAndExpirationDateUseCase,
     private val getLotByIdUseCase: GetLotByIdUseCase,
     private val createLotUseCase: CreateLotUseCase,
     private val updateLotUseCase: UpdateLotUseCase,
@@ -196,6 +203,42 @@ class LotsViewModel @Inject constructor(
         }
     }
 
+    private fun searchLotsByExpirationDate(date: String, productId: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+
+            // Usar a nova query que filtra por produto E data simultaneamente no backend
+            listLotsByProductAndExpirationDateUseCase.execute(
+                productId = productId,
+                expirationDate = date,
+                limit = 100,
+                offset = 0
+            ).collect { result ->
+                when (result) {
+                    is ResultWrapper.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                lots = result.data ?: emptyList(),
+                                isLoading = false
+                            )
+                        }
+                    }
+                    is ResultWrapper.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                error = result.message,
+                                isLoading = false
+                            )
+                        }
+                    }
+                    is ResultWrapper.Loading -> {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }
+                }
+            }
+        }
+    }
+
     fun setLotCode(value: String) {
         _uiState.value = _uiState.value.copy(lotCode = value)
     }
@@ -214,6 +257,8 @@ class LotsViewModel @Inject constructor(
 
     fun setExpirationDate(value: String) {
         _uiState.value = _uiState.value.copy(expirationDate = value)
+        // Auto-generate lotCode when expiration date changes
+        generateLotCode()
     }
 
     fun setObservations(value: String) {
@@ -222,14 +267,92 @@ class LotsViewModel @Inject constructor(
 
     fun setProductId(value: String?) {
         _uiState.value = _uiState.value.copy(productId = value)
+        // Auto-generate lotCode when product changes
+        generateLotCode()
     }
+
+    /**
+     * Generates lot code automatically in format: 'Lote $productName $expirationDate'
+     */
+    private fun generateLotCode() {
+        val state = _uiState.value
+
+        // Only generate if we have both product and expiration date
+        if (state.productId != null && state.expirationDate.isNotBlank()) {
+            val product = state.products.find { it.id == state.productId }
+            if (product != null) {
+                val lotCode = "Lote ${product.name} ${state.expirationDate}"
+                _uiState.value = state.copy(lotCode = lotCode)
+            }
+        }
+    }
+
+    // Search filter methods
+    fun setProductSearchQuery(query: String) {
+        _uiState.update { it.copy(productSearchQuery = query) }
+    }
+
+    fun selectProductForSearch(product: Product?) {
+        _uiState.update {
+            it.copy(
+                selectedProductForSearch = product,
+                expirationDateSearch = "", // Reset date search when product changes
+                productSearchQuery = ""
+            )
+        }
+
+        // Load lots for selected product or all lots if null
+        if (product != null) {
+            loadLotsByProduct(product.id)
+        } else {
+            loadLots()
+        }
+    }
+
+    fun setExpirationDateSearch(date: String) {
+        _uiState.update { it.copy(expirationDateSearch = date) }
+
+        val selectedProduct = _uiState.value.selectedProductForSearch
+        if (date.isNotBlank() && selectedProduct != null) {
+            // Pesquisar por data E filtrar pelo produto selecionado
+            searchLotsByExpirationDate(date, selectedProduct.id)
+        } else if (selectedProduct != null) {
+            loadLotsByProduct(selectedProduct.id)
+        } else {
+            loadLots()
+        }
+    }
+
+    fun clearSearchFilters() {
+        _uiState.update {
+            it.copy(
+                selectedProductForSearch = null,
+                expirationDateSearch = "",
+                productSearchQuery = ""
+            )
+        }
+        loadLots()
+    }
+
+    val filteredProducts: List<Product>
+        get() {
+            val query = _uiState.value.productSearchQuery.lowercase()
+            val products = _uiState.value.products
+            return if (query.isBlank()) {
+                products
+            } else {
+                products.filter {
+                    it.name.lowercase().contains(query)
+                }
+            }
+        }
 
     fun createLot() {
         val state = _uiState.value
 
         // Validations
-        if (state.lotCode.isBlank()) {
-            _uiState.value = state.copy(error = "Código do lote é obrigatório")
+        if (state.productId == null) {
+            _uiState.value = state.copy(error = "Selecione um produto")
             return
         }
 
@@ -252,6 +375,12 @@ class LotsViewModel @Inject constructor(
 
         if (state.expirationDate.isBlank()) {
             _uiState.value = state.copy(error = "Data de validade é obrigatória")
+            return
+        }
+
+        // Ensure lotCode is generated
+        if (state.lotCode.isBlank()) {
+            _uiState.value = state.copy(error = "Erro ao gerar código do lote")
             return
         }
 

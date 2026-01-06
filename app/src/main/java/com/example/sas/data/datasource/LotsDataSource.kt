@@ -75,6 +75,64 @@ class LotsDataSource @Inject constructor() {
     }
 
     /**
+     * Searches lots by expiration date.
+     * @param expirationDate Expiration date to search for (format: yyyy-MM-dd)
+     * @param limit Maximum number of results to return
+     * @param offset Number of results to skip (for pagination)
+     * @return List of lots matching the expiration date
+     */
+    suspend fun searchLotsByExpirationDate(
+        expirationDate: String,
+        limit: Int,
+        offset: Int
+    ): List<SearchLotsByExpirationDateQuery.Data.LotsItem> {
+        // Convert String (yyyy-MM-dd) to LocalDate
+        val dateParts = expirationDate.split("-")
+        val year = dateParts[0].toInt()
+        val month = dateParts[1].toInt()
+        val day = dateParts[2].toInt()
+        val localDate = LocalDate(year, month, day)
+
+        val result = connector.searchLotsByExpirationDate.execute {
+            this.expirationDate = localDate
+            this.limit = limit
+            this.offset = offset
+        }
+        return result.data.lots
+    }
+
+    /**
+     * Lists lots by product AND expiration date.
+     * @param productId UUID of the product
+     * @param expirationDate Expiration date to filter (format: yyyy-MM-dd)
+     * @param limit Maximum number of results to return
+     * @param offset Number of results to skip (for pagination)
+     * @return List of lots for the specified product and expiration date
+     */
+    suspend fun listLotsByProductAndExpirationDate(
+        productId: String,
+        expirationDate: String,
+        limit: Int,
+        offset: Int
+    ): List<ListLotsByProductAndExpirationDateQuery.Data.LotsItem> {
+        // Convert String (yyyy-MM-dd) to LocalDate
+        val dateParts = expirationDate.split("-")
+        val year = dateParts[0].toInt()
+        val month = dateParts[1].toInt()
+        val day = dateParts[2].toInt()
+        val localDate = LocalDate(year, month, day)
+
+        val result = connector.listLotsByProductAndExpirationDate.execute(
+            productId = UUID.fromString(productId)
+        ) {
+            this.expirationDate = localDate
+            this.limit = limit
+            this.offset = offset
+        }
+        return result.data.lots
+    }
+
+    /**
      * Gets a specific lot by ID.
      * @param id UUID of the lot
      * @return Lot details with product information, or null if not found

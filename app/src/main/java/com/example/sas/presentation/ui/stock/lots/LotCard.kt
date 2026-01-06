@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,6 +41,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LotCard(
     lot: Lot,
@@ -55,7 +57,7 @@ fun LotCard(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(12.dp),
         border = BorderStroke(1.dp, Color(0xFFD6F5E3)),
         colors = CardDefaults.cardColors(
             containerColor = when {
@@ -68,7 +70,7 @@ fun LotCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(12.dp)
         ) {
             // Header
             Row(
@@ -81,13 +83,13 @@ fun LotCard(
                         text = lot.lotCode,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF1C1C1C),
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleMedium
                     )
 
                     if (productName != null) {
                         Text(
                             text = productName,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             color = GreenPrimary,
                             fontWeight = FontWeight.Medium
                         )
@@ -95,7 +97,7 @@ fun LotCard(
 
                     // Status badges
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
                         if (isExpired) {
@@ -105,34 +107,34 @@ fun LotCard(
                         }
 
                         if (isLowStock) {
-                            StatusBadge("ESTOQUE BAIXO", Color(0xFFFF9800))
+                            StatusBadge("BAIXO", Color(0xFFFF9800))
                         }
                     }
                 }
 
                 if(canEdit){
                     Row {
-                        IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                        IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Editar",
                                 tint = Color.Gray,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(18.dp)
                             )
                         }
-                        IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                        IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Apagar",
                                 tint = Color.Gray,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Quantities
             Row(
@@ -147,7 +149,7 @@ fun LotCard(
                     )
                     Text(
                         text = lot.initialQuantity.toString(),
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF1C1C1C)
                     )
@@ -161,7 +163,7 @@ fun LotCard(
                     )
                     Text(
                         text = lot.currentQuantity.toString(),
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = if (isLowStock) Color(0xFFFF9800) else GreenPrimary
                     )
@@ -169,21 +171,21 @@ fun LotCard(
 
                 Column {
                     Text(
-                        text = "Utilizado",
+                        text = "Usado",
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.Gray
                     )
                     val used = lot.initialQuantity - lot.currentQuantity
                     Text(
-                        text = "$used (${(used * 100 / lot.initialQuantity)}%)",
-                        style = MaterialTheme.typography.titleMedium,
+                        text = "${(used * 100 / lot.initialQuantity)}%",
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFF1C1C1C)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Entry date
             InfoRow(
@@ -191,7 +193,7 @@ fun LotCard(
                 text = "Entrada: ${formatDateForDisplay(lot.entryDate)}"
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             // Expiration date
             InfoRow(
@@ -204,31 +206,22 @@ fun LotCard(
                 }
             )
 
-            // Observations
-            if (!lot.observations.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = lot.observations,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-            }
-
-            // Quick quantity update button
+            // Quick quantity update button (apenas se canEdit)
             if(canEdit){
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 TextButton(
                     onClick = onUpdateQuantity,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(vertical = 6.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.TrendingDown,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(16.dp),
                         tint = GreenPrimary
                     )
-                    Spacer(modifier = Modifier.size(8.dp))
-                    Text("Atualizar quantidade", color = GreenPrimary)
+                    Spacer(modifier = Modifier.size(6.dp))
+                    Text("Atualizar", color = GreenPrimary, style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
@@ -243,7 +236,7 @@ private fun StatusBadge(text: String, color: Color) {
                 color = color.copy(alpha = 0.2f),
                 shape = RoundedCornerShape(4.dp)
             )
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 6.dp, vertical = 2.dp)
     ) {
         Text(
             text = text,
@@ -268,12 +261,12 @@ private fun InfoRow(
             imageVector = icon,
             contentDescription = null,
             tint = GreenPrimary,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(14.dp)
         )
-        Spacer(modifier = Modifier.size(6.dp))
+        Spacer(modifier = Modifier.size(4.dp))
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             color = textColor
         )
     }
