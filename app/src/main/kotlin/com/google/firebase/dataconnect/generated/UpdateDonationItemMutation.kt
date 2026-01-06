@@ -27,6 +27,7 @@ public interface UpdateDonationItemMutation :
   
     val donationId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val productId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
+    val expirationDate: com.google.firebase.dataconnect.OptionalVariable<com.google.firebase.dataconnect.LocalDate?>,
     val quantity: com.google.firebase.dataconnect.OptionalVariable<Int?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>
   ) {
@@ -39,6 +40,7 @@ public interface UpdateDonationItemMutation :
       public interface Builder {
         public var donationId: java.util.UUID
         public var productId: java.util.UUID
+        public var expirationDate: com.google.firebase.dataconnect.LocalDate?
         public var quantity: Int?
         public var observations: String?
         
@@ -52,6 +54,8 @@ public interface UpdateDonationItemMutation :
         ): Variables {
           var donationId= donationId
             var productId= productId
+            var expirationDate: com.google.firebase.dataconnect.OptionalVariable<com.google.firebase.dataconnect.LocalDate?> =
+                com.google.firebase.dataconnect.OptionalVariable.Undefined
             var quantity: com.google.firebase.dataconnect.OptionalVariable<Int?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var observations: com.google.firebase.dataconnect.OptionalVariable<String?> =
@@ -67,6 +71,10 @@ public interface UpdateDonationItemMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { productId = value_ }
               
+            override var expirationDate: com.google.firebase.dataconnect.LocalDate?
+              get() = throw UnsupportedOperationException("getting builder values is not supported")
+              set(value_) { expirationDate = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
+              
             override var quantity: Int?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { quantity = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
@@ -79,7 +87,7 @@ public interface UpdateDonationItemMutation :
           }.apply(block_)
           .let {
             Variables(
-              donationId=donationId,productId=productId,quantity=quantity,observations=observations,
+              donationId=donationId,productId=productId,expirationDate=expirationDate,quantity=quantity,observations=observations,
             )
           }
         }
