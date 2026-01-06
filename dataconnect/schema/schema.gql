@@ -54,7 +54,6 @@ type Donation @table {
   donorContact: String
   observations: String
   campaign: Campaign
-  status: StatusType
   createdAt: Timestamp! @default(expr: "request.time")
   updatedAt: Timestamp! @default(expr: "request.time")
 }
@@ -99,7 +98,6 @@ type DonationItem @table(key: ["donation", "product"]) {
   donation: Donation!
   product: Product!
   quantity: Int!
-  state: StatusType
   observations: String
   createdAt: Timestamp! @default(expr: "request.time")
 }

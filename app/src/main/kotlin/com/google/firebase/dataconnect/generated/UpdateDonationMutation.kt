@@ -31,8 +31,7 @@ public interface UpdateDonationMutation :
     val estimatedValue: com.google.firebase.dataconnect.OptionalVariable<Double?>,
     val donorContact: com.google.firebase.dataconnect.OptionalVariable<String?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>,
-    val campaignId: com.google.firebase.dataconnect.OptionalVariable<CampaignKey?>,
-    val statusId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?>
+    val campaignId: com.google.firebase.dataconnect.OptionalVariable<CampaignKey?>
   ) {
     
     
@@ -48,7 +47,6 @@ public interface UpdateDonationMutation :
         public var donorContact: String?
         public var observations: String?
         public var campaignId: CampaignKey?
-        public var statusId: StatusTypeKey?
         
       }
 
@@ -70,8 +68,6 @@ public interface UpdateDonationMutation :
             var observations: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var campaignId: com.google.firebase.dataconnect.OptionalVariable<CampaignKey?> =
-                com.google.firebase.dataconnect.OptionalVariable.Undefined
-            var statusId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             
 
@@ -104,15 +100,11 @@ public interface UpdateDonationMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { campaignId = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
               
-            override var statusId: StatusTypeKey?
-              get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { statusId = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
-              
             
           }.apply(block_)
           .let {
             Variables(
-              id=id,donationDate=donationDate,donorName=donorName,estimatedValue=estimatedValue,donorContact=donorContact,observations=observations,campaignId=campaignId,statusId=statusId,
+              id=id,donationDate=donationDate,donorName=donorName,estimatedValue=estimatedValue,donorContact=donorContact,observations=observations,campaignId=campaignId,
             )
           }
         }

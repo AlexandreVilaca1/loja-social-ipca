@@ -23,11 +23,6 @@ query ListDonationItemsByDonation($donationId: UUID!, $limit: Int = 8, $offset: 
       }
     }
     quantity
-    state {
-      id
-      code
-      description
-    }
     observations
     createdAt
   }
@@ -51,11 +46,6 @@ query ListDonationItemsByProduct($productId: UUID!, $limit: Int = 8, $offset: In
       unitOfMeasure
     }
     quantity
-    state {
-      id
-      code
-      description
-    }
     observations
     createdAt
   }

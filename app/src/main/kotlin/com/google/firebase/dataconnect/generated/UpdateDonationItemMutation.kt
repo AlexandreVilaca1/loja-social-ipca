@@ -28,7 +28,6 @@ public interface UpdateDonationItemMutation :
     val donationId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val productId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val quantity: com.google.firebase.dataconnect.OptionalVariable<Int?>,
-    val stateId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>
   ) {
     
@@ -41,7 +40,6 @@ public interface UpdateDonationItemMutation :
         public var donationId: java.util.UUID
         public var productId: java.util.UUID
         public var quantity: Int?
-        public var stateId: StatusTypeKey?
         public var observations: String?
         
       }
@@ -55,8 +53,6 @@ public interface UpdateDonationItemMutation :
           var donationId= donationId
             var productId= productId
             var quantity: com.google.firebase.dataconnect.OptionalVariable<Int?> =
-                com.google.firebase.dataconnect.OptionalVariable.Undefined
-            var stateId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var observations: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
@@ -75,10 +71,6 @@ public interface UpdateDonationItemMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { quantity = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
               
-            override var stateId: StatusTypeKey?
-              get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { stateId = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
-              
             override var observations: String?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { observations = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
@@ -87,7 +79,7 @@ public interface UpdateDonationItemMutation :
           }.apply(block_)
           .let {
             Variables(
-              donationId=donationId,productId=productId,quantity=quantity,stateId=stateId,observations=observations,
+              donationId=donationId,productId=productId,quantity=quantity,observations=observations,
             )
           }
         }

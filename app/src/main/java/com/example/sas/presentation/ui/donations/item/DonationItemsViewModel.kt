@@ -8,7 +8,6 @@ import com.example.sas.domain.models.*
 import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
 import com.example.sas.domain.usecase.donations.*
 import com.example.sas.domain.usecase.products.ListProductsUseCase
-import com.example.sas.domain.usecase.status.ListStatusTypesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +20,6 @@ data class DonationItemsUiState(
     val donationId: String = "",
     val items: List<DonationItem> = emptyList(),
     val products: List<Product> = emptyList(),
-    val statusTypes: List<StatusType> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val userRole: String? = null,
@@ -29,7 +27,6 @@ data class DonationItemsUiState(
     // Campos do Formulário
     val selectedProductId: String? = null,
     val quantity: String = "",
-    val selectedStateId: String? = null,
     val observations: String = "",
 
     val isEditMode: Boolean = false
@@ -43,7 +40,6 @@ class DonationItemsViewModel @Inject constructor(
     private val updateDonationItemUseCase: UpdateDonationItemUseCase,
     private val deleteDonationItemUseCase: DeleteDonationItemUseCase,
     private val listProductsUseCase: ListProductsUseCase,
-    private val listStatusTypesUseCase: ListStatusTypesUseCase,
     private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase
 ) : ViewModel() {
 
@@ -64,15 +60,10 @@ class DonationItemsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            // Carregar produtos e status em paralelo
+            // Carregar produtos
             launch {
                 listProductsUseCase.execute(limit = 500, offset = 0).collect { res ->
                     if (res is ResultWrapper.Success) _uiState.update { it.copy(products = res.data ?: emptyList()) }
-                }
-            }
-            launch {
-                listStatusTypesUseCase.execute().collect { res ->
-                    if (res is ResultWrapper.Success) _uiState.update { it.copy(statusTypes = res.data ?: emptyList()) }
                 }
             }
 
@@ -110,9 +101,9 @@ class DonationItemsViewModel @Inject constructor(
 
         viewModelScope.launch {
             if (s.isEditMode) {
-                updateDonationItemUseCase.execute(s.donationId, productId, qty, s.selectedStateId, s.observations)
+                updateDonationItemUseCase.execute(s.donationId, productId, qty, s.observations)
             } else {
-                createDonationItemUseCase.execute(s.donationId, productId, qty, s.selectedStateId, s.observations)
+                createDonationItemUseCase.execute(s.donationId, productId, qty, s.observations)
             }.collect { res ->
                 if (res is ResultWrapper.Success) {
                     loadItems(s.donationId)
@@ -138,7 +129,6 @@ class DonationItemsViewModel @Inject constructor(
             isEditMode = true,
             selectedProductId = item.productId,
             quantity = item.quantity.toString(),
-            selectedStateId = item.state?.id,
             observations = item.observations ?: ""
         )}
     }
@@ -147,7 +137,6 @@ class DonationItemsViewModel @Inject constructor(
         when(field) {
             "product" -> _uiState.update { it.copy(selectedProductId = value) }
             "quantity" -> _uiState.update { it.copy(quantity = value ?: "") }
-            "state" -> _uiState.update { it.copy(selectedStateId = value) }
             "obs" -> _uiState.update { it.copy(observations = value ?: "") }
         }
     }
@@ -161,6 +150,6 @@ class DonationItemsViewModel @Inject constructor(
     }
 
     fun clearForm() {
-        _uiState.update { it.copy(selectedProductId = null, quantity = "", selectedStateId = null, observations = "", isEditMode = false) }
+        _uiState.update { it.copy(selectedProductId = null, quantity = "", observations = "", isEditMode = false) }
     }
 }

@@ -28,7 +28,6 @@ public interface CreateDonationItemMutation :
     val donationId: DonationKey,
     val productId: ProductKey,
     val quantity: Int,
-    val stateId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>
   ) {
     
@@ -41,7 +40,6 @@ public interface CreateDonationItemMutation :
         public var donationId: DonationKey
         public var productId: ProductKey
         public var quantity: Int
-        public var stateId: StatusTypeKey?
         public var observations: String?
         
       }
@@ -55,8 +53,6 @@ public interface CreateDonationItemMutation :
           var donationId= donationId
             var productId= productId
             var quantity= quantity
-            var stateId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?> =
-                com.google.firebase.dataconnect.OptionalVariable.Undefined
             var observations: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             
@@ -74,10 +70,6 @@ public interface CreateDonationItemMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { quantity = value_ }
               
-            override var stateId: StatusTypeKey?
-              get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { stateId = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
-              
             override var observations: String?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { observations = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
@@ -86,7 +78,7 @@ public interface CreateDonationItemMutation :
           }.apply(block_)
           .let {
             Variables(
-              donationId=donationId,productId=productId,quantity=quantity,stateId=stateId,observations=observations,
+              donationId=donationId,productId=productId,quantity=quantity,observations=observations,
             )
           }
         }

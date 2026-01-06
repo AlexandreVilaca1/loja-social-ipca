@@ -5,7 +5,6 @@ data class DonationItem(
     val productId: String,
     val quantity: Int,
     val categoryName: String?,
-    val state: StatusType?,
     val observations: String?,
     val createdAt: String?
 )

@@ -15,19 +15,18 @@ class DonationsDataSource @Inject constructor() {
     // --- Donations ---
 
     suspend fun createDonation(
-        date: LocalDate, name: String, value: Double, contact: String?, obs: String?, campaignId: String?, statusId: String?
+        date: LocalDate, name: String, value: Double, contact: String?, obs: String?, campaignId: String?
     ): String {
         val result = connector.createDonation.execute(date, name, value) {
             this.donorContact = contact
             this.observations = obs
             this.campaignId = campaignId?.let { CampaignKey(UUID.fromString(it)) }
-            this.statusId = statusId?.let { StatusTypeKey(UUID.fromString(it)) }
         }
         return result.data.donation_insert.id.toString()
     }
 
     suspend fun updateDonation(
-        id: String, date: LocalDate?, name: String?, value: Double?, contact: String?, obs: String?, campaignId: String?, statusId: String?
+        id: String, date: LocalDate?, name: String?, value: Double?, contact: String?, obs: String?, campaignId: String?
     ) = connector.updateDonation.execute(UUID.fromString(id)) {
         this.donationDate = date
         this.donorName = name
@@ -35,11 +34,7 @@ class DonationsDataSource @Inject constructor() {
         this.donorContact = contact
         this.observations = obs
         this.campaignId = campaignId?.let { CampaignKey(UUID.fromString(it)) }
-        this.statusId = statusId?.let { StatusTypeKey(UUID.fromString(it)) }
     }
-
-    suspend fun updateDonationStatus(id: String, statusId: String) =
-        connector.updateDonationStatus.execute(UUID.fromString(id), StatusTypeKey(UUID.fromString(statusId)))
 
     suspend fun deleteDonation(id: String) = connector.deleteDonation.execute(UUID.fromString(id))
 
@@ -60,16 +55,14 @@ class DonationsDataSource @Inject constructor() {
 
     // --- Donation Items ---
 
-    suspend fun createDonationItem(donationId: String, productId: String, quantity: Int, stateId: String?, obs: String?) =
+    suspend fun createDonationItem(donationId: String, productId: String, quantity: Int, obs: String?) =
         connector.createDonationItem.execute(DonationKey(UUID.fromString(donationId)), ProductKey(UUID.fromString(productId)), quantity) {
-            this.stateId = stateId?.let { StatusTypeKey(UUID.fromString(it)) }
             this.observations = obs
         }
 
-    suspend fun updateDonationItem(donationId: String, productId: String, quantity: Int?, stateId: String?, obs: String?) =
+    suspend fun updateDonationItem(donationId: String, productId: String, quantity: Int?, obs: String?) =
         connector.updateDonationItem.execute(UUID.fromString(donationId), UUID.fromString(productId)) {
             this.quantity = quantity
-            this.stateId = stateId?.let { StatusTypeKey(UUID.fromString(it)) }
             this.observations = obs
         }
 

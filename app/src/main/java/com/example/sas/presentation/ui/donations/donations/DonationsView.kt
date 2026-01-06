@@ -169,7 +169,7 @@ fun DonationItemCard(navController: NavController,donation: Donation, canEdit: B
                     Text("Valor Estimado: ${donation.estimatedValue}€", color = GreenPrimary, style = MaterialTheme.typography.bodySmall)
                 }
                 Surface(color = GreenPrimary.copy(0.1f), shape = RoundedCornerShape(8.dp)) {
-                    Text(donation.status?.description ?: "Recebida", Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = GreenPrimary, style = MaterialTheme.typography.labelSmall)
+                    Text("Recebida", Modifier.padding(horizontal = 8.dp, vertical = 4.dp), color = GreenPrimary, style = MaterialTheme.typography.labelSmall)
                 }
             }
             Spacer(Modifier.height(8.dp))
@@ -198,7 +198,6 @@ fun DonationItemCard(navController: NavController,donation: Donation, canEdit: B
 @Composable
 fun DonationFormSheet(state: DonationsUiState, viewModel: DonationsViewModel, onDismiss: () -> Unit) {
     var expC by remember { mutableStateOf(false) }
-    var expS by remember { mutableStateOf(false) }
 
     Column(Modifier.padding(16.dp).fillMaxWidth().padding(bottom = 32.dp), Arrangement.spacedBy(12.dp)) {
         Text(if(state.isEditMode) "Editar Doação" else "Nova Doação", style = MaterialTheme.typography.headlineSmall)
@@ -243,21 +242,6 @@ fun DonationFormSheet(state: DonationsUiState, viewModel: DonationsViewModel, on
             }
         }
 
-        // Dropdown Status
-        ExposedDropdownMenuBox(expanded = expS, onExpandedChange = { expS = !expS }) {
-            OutlinedTextField(
-                value = state.statusTypes.find { it.id == state.selectedStatusId }?.description ?: "Status da Doação",
-                onValueChange = {}, readOnly = true, label = { Text("Status") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expS) },
-                modifier = Modifier.menuAnchor().fillMaxWidth()
-            )
-            ExposedDropdownMenu(expanded = expS, onDismissRequest = { expS = false }) {
-                // Aqui você pode filtrar os status de doação se necessário
-                state.statusTypes.forEach { s ->
-                    DropdownMenuItem(text = { Text(s.description) }, onClick = { viewModel.updateFormField("status", s.id); expS = false })
-                }
-            }
-        }
 
         OutlinedTextField(value = state.observations, onValueChange = { viewModel.updateFormField("obs", it) }, label = { Text("Observações") }, modifier = Modifier.fillMaxWidth(), minLines = 2)
 

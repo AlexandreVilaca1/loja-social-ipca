@@ -17,11 +17,6 @@ query ListDonations($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
       campaignStartDate
       campaignEndDate
     }
-    status {
-      id
-      code
-      description
-    }
     createdAt
     updatedAt
   }
@@ -42,12 +37,6 @@ query GetDonationById($id: UUID!) @auth(level: USER) {
       campaignStartDate
       campaignEndDate
     }
-    status {
-      id
-      code
-      description
-      color
-    }
     createdAt
     updatedAt
   }
@@ -67,11 +56,6 @@ query SearchDonations($donorName: String, $limit: Int = 8, $offset: Int = 0) @au
     estimatedValue
     donorContact
     observations
-    status {
-      id
-      code
-      description
-    }
     createdAt
     updatedAt
   }
@@ -91,11 +75,6 @@ query ListDonationsByCampaign($campaignId: UUID!, $limit: Int = 8, $offset: Int 
     estimatedValue
     donorContact
     observations
-    status {
-      id
-      code
-      description
-    }
     createdAt
     updatedAt
   }

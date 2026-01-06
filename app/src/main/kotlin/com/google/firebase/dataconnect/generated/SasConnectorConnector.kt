@@ -246,8 +246,6 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val updateDonationItem: UpdateDonationItemMutation
   
-    public val updateDonationStatus: UpdateDonationStatusMutation
-  
     public val updateLog: UpdateLogMutation
   
     public val updateLogType: UpdateLogTypeMutation
@@ -763,10 +761,6 @@ private class SasConnectorConnectorImpl(
       UpdateDonationItemMutationImpl(this)
     }
   
-    override val updateDonationStatus by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      UpdateDonationStatusMutationImpl(this)
-    }
-  
     override val updateLog by lazy(LazyThreadSafetyMode.PUBLICATION) {
       UpdateLogMutationImpl(this)
     }
@@ -863,7 +857,6 @@ private class SasConnectorConnectorImpl(
         updateDistributionStatus,
         updateDonation,
         updateDonationItem,
-        updateDonationStatus,
         updateLog,
         updateLogType,
         updateLot,
@@ -2788,21 +2781,6 @@ private class UpdateDonationItemMutationImpl(
     UpdateDonationItemMutation.Companion.operationName,
     UpdateDonationItemMutation.Companion.dataDeserializer,
     UpdateDonationItemMutation.Companion.variablesSerializer,
-  )
-
-
-private class UpdateDonationStatusMutationImpl(
-  connector: SasConnectorConnector
-):
-  UpdateDonationStatusMutation,
-  SasConnectorConnectorGeneratedMutationImpl<
-      UpdateDonationStatusMutation.Data,
-      UpdateDonationStatusMutation.Variables
-  >(
-    connector,
-    UpdateDonationStatusMutation.Companion.operationName,
-    UpdateDonationStatusMutation.Companion.dataDeserializer,
-    UpdateDonationStatusMutation.Companion.variablesSerializer,
   )
 
 
