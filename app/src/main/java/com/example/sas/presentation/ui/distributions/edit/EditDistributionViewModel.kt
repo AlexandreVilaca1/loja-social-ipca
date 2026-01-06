@@ -44,9 +44,9 @@ class EditDistributionViewModel @Inject constructor(
                 distributionId = distribution.id,
                 distributionDate = distribution.distributionDate,
                 observations = distribution.observations ?: "",
-                responsibleStaffName = distribution.responsibleStaffName,
-                statusDescription = distribution.statusDescription,
-                statusCode = distribution.statusCode
+                responsibleStaffName = distribution.responsibleStaffName ?: "",
+                statusDescription = distribution.statusDescription ?: "",
+                statusCode = distribution.statusCode ?: ""
             )
         }
     }

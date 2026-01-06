@@ -158,7 +158,7 @@ public interface SasConnectorConnector : com.google.firebase.dataconnect.generat
   
     public val listDonationItemsByDonation: ListDonationItemsByDonationQuery
   
-    public val listDonationItemsByLot: ListDonationItemsByLotQuery
+    public val listDonationItemsByProduct: ListDonationItemsByProductQuery
   
     public val listDonations: ListDonationsQuery
   
@@ -581,8 +581,8 @@ private class SasConnectorConnectorImpl(
       ListDonationItemsByDonationQueryImpl(this)
     }
   
-    override val listDonationItemsByLot by lazy(LazyThreadSafetyMode.PUBLICATION) {
-      ListDonationItemsByLotQueryImpl(this)
+    override val listDonationItemsByProduct by lazy(LazyThreadSafetyMode.PUBLICATION) {
+      ListDonationItemsByProductQueryImpl(this)
     }
   
     override val listDonations by lazy(LazyThreadSafetyMode.PUBLICATION) {
@@ -897,7 +897,7 @@ private class SasConnectorConnectorImpl(
         listDistributionsByBeneficiaryAndStatus,
         listDistributionsByStatus,
         listDonationItemsByDonation,
-        listDonationItemsByLot,
+        listDonationItemsByProduct,
         listDonations,
         listDonationsByCampaign,
         listLogTypes,
@@ -2110,18 +2110,18 @@ private class ListDonationItemsByDonationQueryImpl(
   )
 
 
-private class ListDonationItemsByLotQueryImpl(
+private class ListDonationItemsByProductQueryImpl(
   connector: SasConnectorConnector
 ):
-  ListDonationItemsByLotQuery,
+  ListDonationItemsByProductQuery,
   SasConnectorConnectorGeneratedQueryImpl<
-      ListDonationItemsByLotQuery.Data,
-      ListDonationItemsByLotQuery.Variables
+      ListDonationItemsByProductQuery.Data,
+      ListDonationItemsByProductQuery.Variables
   >(
     connector,
-    ListDonationItemsByLotQuery.Companion.operationName,
-    ListDonationItemsByLotQuery.Companion.dataDeserializer,
-    ListDonationItemsByLotQuery.Companion.variablesSerializer,
+    ListDonationItemsByProductQuery.Companion.operationName,
+    ListDonationItemsByProductQuery.Companion.dataDeserializer,
+    ListDonationItemsByProductQuery.Companion.variablesSerializer,
   )
 
 
