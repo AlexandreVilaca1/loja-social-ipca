@@ -49,7 +49,6 @@ data class DonationsUiState(
 @HiltViewModel
 class DonationsViewModel @Inject constructor(
     private val listDonationsUseCase: ListDonationsUseCase,
-    // searchDonationsUseCase removido da lógica reativa para evitar conflitos de filtros
     private val listDonationsByCampaignUseCase: ListDonationsByCampaignUseCase,
     private val createDonationUseCase: CreateDonationUseCase,
     private val updateDonationUseCase: UpdateDonationUseCase,
@@ -90,7 +89,7 @@ class DonationsViewModel @Inject constructor(
 
             val campaignId = _uiState.value.filterCampaignId
             val flow = if (campaignId != null) {
-                listDonationsByCampaignUseCase.execute(campaignId)
+                listDonationsByCampaignUseCase.execute(campaignId, 200, 0)
             } else {
                 listDonationsUseCase.execute(limit = 200, offset = 0)
             }

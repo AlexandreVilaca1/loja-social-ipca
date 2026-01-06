@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -110,21 +112,40 @@ fun DonationItemFormSheet(state: DonationItemsUiState, viewModel: DonationItemsV
     var expP by remember { mutableStateOf(false) }
     var expS by remember { mutableStateOf(false) }
 
-    Column(Modifier.padding(16.dp).fillMaxWidth().padding(bottom = 32.dp), Arrangement.spacedBy(12.dp)) {
-        Text(if(state.isEditMode) "Editar Item" else "Adicionar Item", style = MaterialTheme.typography.headlineSmall)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .imePadding()
+            .navigationBarsPadding()
+            .padding(bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(32.dp)
+    ) {
+        Text(
+            if(state.isEditMode) "Editar Item" else "Adicionar Item",
+            style = MaterialTheme.typography.headlineSmall
+        )
 
-        // Seleção de Produto (Apenas na criação, ou apenas leitura na edição se preferir)
-        ExposedDropdownMenuBox(expanded = expP, onExpandedChange = { if(!state.isEditMode) expP = !expP }) {
+        // Seleção de Produto
+        ExposedDropdownMenuBox(
+            expanded = expP,
+            onExpandedChange = { if(!state.isEditMode) expP = !expP }
+        ) {
             OutlinedTextField(
                 value = state.products.find { it.id == state.selectedProductId }?.name ?: "Selecionar Produto *",
-                onValueChange = {}, readOnly = true, label = { Text("Produto") },
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Produto") },
                 trailingIcon = { if(!state.isEditMode) ExposedDropdownMenuDefaults.TrailingIcon(expanded = expP) },
                 modifier = Modifier.menuAnchor().fillMaxWidth(),
-                enabled = !state.isEditMode // Geralmente não se muda o produto de um item, apaga-se e cria-se novo
+                enabled = !state.isEditMode
             )
             ExposedDropdownMenu(expanded = expP, onDismissRequest = { expP = false }) {
                 state.products.forEach { p ->
-                    DropdownMenuItem(text = { Text(p.name) }, onClick = { viewModel.updateFormField("product", p.id); expP = false })
+                    DropdownMenuItem(
+                        text = { Text(p.name) },
+                        onClick = { viewModel.updateFormField("product", p.id); expP = false }
+                    )
                 }
             }
         }
@@ -133,20 +154,28 @@ fun DonationItemFormSheet(state: DonationItemsUiState, viewModel: DonationItemsV
             value = state.quantity,
             onValueChange = { viewModel.updateFormField("quantity", it) },
             label = { Text("Quantidade *") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+            )
         )
 
-        // Seleção de Estado (StatusType)
+        // Seleção de Estado
         ExposedDropdownMenuBox(expanded = expS, onExpandedChange = { expS = !expS }) {
             OutlinedTextField(
                 value = state.statusTypes.find { it.id == state.selectedStateId }?.description ?: "Estado do Item",
-                onValueChange = {}, readOnly = true, label = { Text("Estado") },
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Estado") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expS) },
                 modifier = Modifier.menuAnchor().fillMaxWidth()
             )
             ExposedDropdownMenu(expanded = expS, onDismissRequest = { expS = false }) {
                 state.statusTypes.forEach { s ->
-                    DropdownMenuItem(text = { Text(s.description) }, onClick = { viewModel.updateFormField("state", s.id); expS = false })
+                    DropdownMenuItem(
+                        text = { Text(s.description) },
+                        onClick = { viewModel.updateFormField("state", s.id); expS = false }
+                    )
                 }
             }
         }
@@ -163,6 +192,8 @@ fun DonationItemFormSheet(state: DonationItemsUiState, viewModel: DonationItemsV
             onClick = { viewModel.saveItem(); onDismiss() },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary)
-        ) { Text("Guardar Item", color = Color.White) }
+        ) {
+            Text("Guardar Item", color = Color.White)
+        }
     }
 }

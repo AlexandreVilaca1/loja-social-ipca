@@ -78,7 +78,8 @@ class DonationsDataSource @Inject constructor() {
 
     suspend fun listDonationItemsByDonation(donationId: String, limit: Int?, offset: Int?) =
         connector.listDonationItemsByDonation.execute(UUID.fromString(donationId)) {
-            this.limit = limit; this.offset = offset
+            this.limit = limit ?: 50
+            this.offset = offset ?: 0
         }.data.donationItems
 
     suspend fun listDonationItemsByProduct(productId: String, limit: Int?, offset: Int?) =
