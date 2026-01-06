@@ -17,18 +17,18 @@ import kotlinx.coroutines.flow.filterNotNull as _flow_filterNotNull
 import kotlinx.coroutines.flow.map as _flow_map
 
 
-public interface ListDonationItemsByLotQuery :
+public interface ListDonationItemsByProductQuery :
     com.google.firebase.dataconnect.generated.GeneratedQuery<
       SasConnectorConnector,
-      ListDonationItemsByLotQuery.Data,
-      ListDonationItemsByLotQuery.Variables
+      ListDonationItemsByProductQuery.Data,
+      ListDonationItemsByProductQuery.Variables
     >
 {
   
     @kotlinx.serialization.Serializable
   public data class Variables(
   
-    val lotId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
+    val productId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val limit: com.google.firebase.dataconnect.OptionalVariable<Int?>,
     val offset: com.google.firebase.dataconnect.OptionalVariable<Int?>
   ) {
@@ -39,7 +39,7 @@ public interface ListDonationItemsByLotQuery :
 
       @BuilderDsl
       public interface Builder {
-        public var lotId: java.util.UUID
+        public var productId: java.util.UUID
         public var limit: Int?
         public var offset: Int?
         
@@ -48,10 +48,10 @@ public interface ListDonationItemsByLotQuery :
       public companion object {
         @Suppress("NAME_SHADOWING")
         public fun build(
-          lotId: java.util.UUID,
+          productId: java.util.UUID,
           block_: Builder.() -> Unit
         ): Variables {
-          var lotId= lotId
+          var productId= productId
             var limit: com.google.firebase.dataconnect.OptionalVariable<Int?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var offset: com.google.firebase.dataconnect.OptionalVariable<Int?> =
@@ -59,9 +59,9 @@ public interface ListDonationItemsByLotQuery :
             
 
           return object : Builder {
-            override var lotId: java.util.UUID
+            override var productId: java.util.UUID
               get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { lotId = value_ }
+              set(value_) { productId = value_ }
               
             override var limit: Int?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
@@ -75,7 +75,7 @@ public interface ListDonationItemsByLotQuery :
           }.apply(block_)
           .let {
             Variables(
-              lotId=lotId,limit=limit,offset=offset,
+              productId=productId,limit=limit,offset=offset,
             )
           }
         }
@@ -96,7 +96,7 @@ public interface ListDonationItemsByLotQuery :
   public data class DonationItemsItem(
   
     val donation: Donation,
-    val lot: Lot,
+    val product: Product,
     val quantity: Int,
     val state: State?,
     val observations: String?,
@@ -116,10 +116,11 @@ public interface ListDonationItemsByLotQuery :
   }
       
         @kotlinx.serialization.Serializable
-  public data class Lot(
+  public data class Product(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val lotCode: String
+    val name: String,
+    val unitOfMeasure: String
   ) {
     
     
@@ -146,7 +147,7 @@ public interface ListDonationItemsByLotQuery :
   
 
   public companion object {
-    public val operationName: String = "ListDonationItemsByLot"
+    public val operationName: String = "ListDonationItemsByProduct"
 
     public val dataDeserializer: kotlinx.serialization.DeserializationStrategy<Data> =
       kotlinx.serialization.serializer()
@@ -156,55 +157,55 @@ public interface ListDonationItemsByLotQuery :
   }
 }
 
-public fun ListDonationItemsByLotQuery.ref(
+public fun ListDonationItemsByProductQuery.ref(
   
-    lotId: java.util.UUID,
+    productId: java.util.UUID,
   
-    block_: ListDonationItemsByLotQuery.Variables.Builder.() -> Unit = {}
+    block_: ListDonationItemsByProductQuery.Variables.Builder.() -> Unit = {}
   
 ): com.google.firebase.dataconnect.QueryRef<
-    ListDonationItemsByLotQuery.Data,
-    ListDonationItemsByLotQuery.Variables
+    ListDonationItemsByProductQuery.Data,
+    ListDonationItemsByProductQuery.Variables
   > =
   ref(
     
-      ListDonationItemsByLotQuery.Variables.build(
-        lotId=lotId,
+      ListDonationItemsByProductQuery.Variables.build(
+        productId=productId,
   
     block_
       )
     
   )
 
-public suspend fun ListDonationItemsByLotQuery.execute(
+public suspend fun ListDonationItemsByProductQuery.execute(
   
-    lotId: java.util.UUID,
+    productId: java.util.UUID,
   
-    block_: ListDonationItemsByLotQuery.Variables.Builder.() -> Unit = {}
+    block_: ListDonationItemsByProductQuery.Variables.Builder.() -> Unit = {}
   
   ): com.google.firebase.dataconnect.QueryResult<
-    ListDonationItemsByLotQuery.Data,
-    ListDonationItemsByLotQuery.Variables
+    ListDonationItemsByProductQuery.Data,
+    ListDonationItemsByProductQuery.Variables
   > =
   ref(
     
-      lotId=lotId,
+      productId=productId,
   
     block_
     
   ).execute()
 
 
-  public fun ListDonationItemsByLotQuery.flow(
+  public fun ListDonationItemsByProductQuery.flow(
     
-      lotId: java.util.UUID,
+      productId: java.util.UUID,
   
-    block_: ListDonationItemsByLotQuery.Variables.Builder.() -> Unit = {}
+    block_: ListDonationItemsByProductQuery.Variables.Builder.() -> Unit = {}
     
-    ): kotlinx.coroutines.flow.Flow<ListDonationItemsByLotQuery.Data> =
+    ): kotlinx.coroutines.flow.Flow<ListDonationItemsByProductQuery.Data> =
     ref(
         
-          lotId=lotId,
+          productId=productId,
   
     block_
         

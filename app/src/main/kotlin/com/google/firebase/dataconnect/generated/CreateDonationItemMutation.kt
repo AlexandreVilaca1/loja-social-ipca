@@ -26,7 +26,7 @@ public interface CreateDonationItemMutation :
   public data class Variables(
   
     val donationId: DonationKey,
-    val lotId: LotKey,
+    val productId: ProductKey,
     val quantity: Int,
     val stateId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>
@@ -39,7 +39,7 @@ public interface CreateDonationItemMutation :
       @BuilderDsl
       public interface Builder {
         public var donationId: DonationKey
-        public var lotId: LotKey
+        public var productId: ProductKey
         public var quantity: Int
         public var stateId: StatusTypeKey?
         public var observations: String?
@@ -49,11 +49,11 @@ public interface CreateDonationItemMutation :
       public companion object {
         @Suppress("NAME_SHADOWING")
         public fun build(
-          donationId: DonationKey,lotId: LotKey,quantity: Int,
+          donationId: DonationKey,productId: ProductKey,quantity: Int,
           block_: Builder.() -> Unit
         ): Variables {
           var donationId= donationId
-            var lotId= lotId
+            var productId= productId
             var quantity= quantity
             var stateId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
@@ -66,9 +66,9 @@ public interface CreateDonationItemMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { donationId = value_ }
               
-            override var lotId: LotKey
+            override var productId: ProductKey
               get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { lotId = value_ }
+              set(value_) { productId = value_ }
               
             override var quantity: Int
               get() = throw UnsupportedOperationException("getting builder values is not supported")
@@ -86,7 +86,7 @@ public interface CreateDonationItemMutation :
           }.apply(block_)
           .let {
             Variables(
-              donationId=donationId,lotId=lotId,quantity=quantity,stateId=stateId,observations=observations,
+              donationId=donationId,productId=productId,quantity=quantity,stateId=stateId,observations=observations,
             )
           }
         }
@@ -119,7 +119,7 @@ public interface CreateDonationItemMutation :
 
 public fun CreateDonationItemMutation.ref(
   
-    donationId: DonationKey,lotId: LotKey,quantity: Int,
+    donationId: DonationKey,productId: ProductKey,quantity: Int,
   
     block_: CreateDonationItemMutation.Variables.Builder.() -> Unit = {}
   
@@ -130,7 +130,7 @@ public fun CreateDonationItemMutation.ref(
   ref(
     
       CreateDonationItemMutation.Variables.build(
-        donationId=donationId,lotId=lotId,quantity=quantity,
+        donationId=donationId,productId=productId,quantity=quantity,
   
     block_
       )
@@ -139,7 +139,7 @@ public fun CreateDonationItemMutation.ref(
 
 public suspend fun CreateDonationItemMutation.execute(
   
-    donationId: DonationKey,lotId: LotKey,quantity: Int,
+    donationId: DonationKey,productId: ProductKey,quantity: Int,
   
     block_: CreateDonationItemMutation.Variables.Builder.() -> Unit = {}
   
@@ -149,7 +149,7 @@ public suspend fun CreateDonationItemMutation.execute(
   > =
   ref(
     
-      donationId=donationId,lotId=lotId,quantity=quantity,
+      donationId=donationId,productId=productId,quantity=quantity,
   
     block_
     

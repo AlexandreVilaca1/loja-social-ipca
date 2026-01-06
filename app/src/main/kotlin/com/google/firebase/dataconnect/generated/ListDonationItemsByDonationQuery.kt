@@ -96,7 +96,7 @@ public interface ListDonationItemsByDonationQuery :
   public data class DonationItemsItem(
   
     val donation: Donation,
-    val lot: Lot,
+    val product: Product,
     val quantity: Int,
     val state: State?,
     val observations: String?,
@@ -115,20 +115,20 @@ public interface ListDonationItemsByDonationQuery :
   }
       
         @kotlinx.serialization.Serializable
-  public data class Lot(
-  
-    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val lotCode: String,
-    val product: Product?
-  ) {
-    
-      
-        @kotlinx.serialization.Serializable
   public data class Product(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val name: String,
-    val unitOfMeasure: String
+    val unitOfMeasure: String,
+    val category: Category?
+  ) {
+    
+      
+        @kotlinx.serialization.Serializable
+  public data class Category(
+  
+    val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
+    val name: String
   ) {
     
     

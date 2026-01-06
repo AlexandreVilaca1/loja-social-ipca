@@ -13,13 +13,13 @@ query ListDonationItemsByDonation($donationId: UUID!, $limit: Int = 8, $offset: 
       id
       donorName
     }
-    lot {
+    product {
       id
-      lotCode
-      product {
+      name
+      unitOfMeasure
+      category {
         id
         name
-        unitOfMeasure
       }
     }
     quantity
@@ -33,10 +33,10 @@ query ListDonationItemsByDonation($donationId: UUID!, $limit: Int = 8, $offset: 
   }
 }
 
-# List donation items by lot
-query ListDonationItemsByLot($lotId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
+# List donation items by product
+query ListDonationItemsByProduct($productId: UUID!, $limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   donationItems(
-    where: { lot: { id: { eq: $lotId } } }
+    where: { product: { id: { eq: $productId } } }
     limit: $limit
     offset: $offset
   ) {
@@ -45,9 +45,10 @@ query ListDonationItemsByLot($lotId: UUID!, $limit: Int = 8, $offset: Int = 0) @
       donorName
       donationDate
     }
-    lot {
+    product {
       id
-      lotCode
+      name
+      unitOfMeasure
     }
     quantity
     state {

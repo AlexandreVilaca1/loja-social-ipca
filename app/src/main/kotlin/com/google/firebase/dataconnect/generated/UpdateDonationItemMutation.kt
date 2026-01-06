@@ -26,7 +26,7 @@ public interface UpdateDonationItemMutation :
   public data class Variables(
   
     val donationId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val lotId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
+    val productId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
     val quantity: com.google.firebase.dataconnect.OptionalVariable<Int?>,
     val stateId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?>,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>
@@ -39,7 +39,7 @@ public interface UpdateDonationItemMutation :
       @BuilderDsl
       public interface Builder {
         public var donationId: java.util.UUID
-        public var lotId: java.util.UUID
+        public var productId: java.util.UUID
         public var quantity: Int?
         public var stateId: StatusTypeKey?
         public var observations: String?
@@ -49,11 +49,11 @@ public interface UpdateDonationItemMutation :
       public companion object {
         @Suppress("NAME_SHADOWING")
         public fun build(
-          donationId: java.util.UUID,lotId: java.util.UUID,
+          donationId: java.util.UUID,productId: java.util.UUID,
           block_: Builder.() -> Unit
         ): Variables {
           var donationId= donationId
-            var lotId= lotId
+            var productId= productId
             var quantity: com.google.firebase.dataconnect.OptionalVariable<Int?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var stateId: com.google.firebase.dataconnect.OptionalVariable<StatusTypeKey?> =
@@ -67,9 +67,9 @@ public interface UpdateDonationItemMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { donationId = value_ }
               
-            override var lotId: java.util.UUID
+            override var productId: java.util.UUID
               get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { lotId = value_ }
+              set(value_) { productId = value_ }
               
             override var quantity: Int?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
@@ -87,7 +87,7 @@ public interface UpdateDonationItemMutation :
           }.apply(block_)
           .let {
             Variables(
-              donationId=donationId,lotId=lotId,quantity=quantity,stateId=stateId,observations=observations,
+              donationId=donationId,productId=productId,quantity=quantity,stateId=stateId,observations=observations,
             )
           }
         }
@@ -120,7 +120,7 @@ public interface UpdateDonationItemMutation :
 
 public fun UpdateDonationItemMutation.ref(
   
-    donationId: java.util.UUID,lotId: java.util.UUID,
+    donationId: java.util.UUID,productId: java.util.UUID,
   
     block_: UpdateDonationItemMutation.Variables.Builder.() -> Unit = {}
   
@@ -131,7 +131,7 @@ public fun UpdateDonationItemMutation.ref(
   ref(
     
       UpdateDonationItemMutation.Variables.build(
-        donationId=donationId,lotId=lotId,
+        donationId=donationId,productId=productId,
   
     block_
       )
@@ -140,7 +140,7 @@ public fun UpdateDonationItemMutation.ref(
 
 public suspend fun UpdateDonationItemMutation.execute(
   
-    donationId: java.util.UUID,lotId: java.util.UUID,
+    donationId: java.util.UUID,productId: java.util.UUID,
   
     block_: UpdateDonationItemMutation.Variables.Builder.() -> Unit = {}
   
@@ -150,7 +150,7 @@ public suspend fun UpdateDonationItemMutation.execute(
   > =
   ref(
     
-      donationId=donationId,lotId=lotId,
+      donationId=donationId,productId=productId,
   
     block_
     

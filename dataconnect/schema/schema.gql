@@ -95,9 +95,9 @@ type Campaign @table {
   updatedAt: Timestamp! @default(expr: "request.time")
 }
 
-type DonationItem @table(key: ["donation", "lot"]) {
+type DonationItem @table(key: ["donation", "product"]) {
   donation: Donation!
-  lot: Lot!
+  product: Product!
   quantity: Int!
   state: StatusType
   observations: String

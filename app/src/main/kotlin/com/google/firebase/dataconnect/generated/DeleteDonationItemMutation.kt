@@ -26,7 +26,7 @@ public interface DeleteDonationItemMutation :
   public data class Variables(
   
     val donationId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val lotId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
+    val productId: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID
   ) {
     
     
@@ -57,7 +57,7 @@ public interface DeleteDonationItemMutation :
 
 public fun DeleteDonationItemMutation.ref(
   
-    donationId: java.util.UUID,lotId: java.util.UUID,
+    donationId: java.util.UUID,productId: java.util.UUID,
   
   
 ): com.google.firebase.dataconnect.MutationRef<
@@ -67,7 +67,7 @@ public fun DeleteDonationItemMutation.ref(
   ref(
     
       DeleteDonationItemMutation.Variables(
-        donationId=donationId,lotId=lotId,
+        donationId=donationId,productId=productId,
   
       )
     
@@ -75,7 +75,7 @@ public fun DeleteDonationItemMutation.ref(
 
 public suspend fun DeleteDonationItemMutation.execute(
   
-    donationId: java.util.UUID,lotId: java.util.UUID,
+    donationId: java.util.UUID,productId: java.util.UUID,
   
   
   ): com.google.firebase.dataconnect.MutationResult<
@@ -84,7 +84,7 @@ public suspend fun DeleteDonationItemMutation.execute(
   > =
   ref(
     
-      donationId=donationId,lotId=lotId,
+      donationId=donationId,productId=productId,
   
     
   ).execute()

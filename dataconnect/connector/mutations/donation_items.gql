@@ -5,7 +5,7 @@
 # Create a new donation item
 mutation CreateDonationItem(
   $donationId: Donation_Key!,
-  $lotId: Lot_Key!,
+  $productId: Product_Key!,
   $quantity: Int!,
   $stateId: StatusType_Key,
   $observations: String
@@ -13,7 +13,7 @@ mutation CreateDonationItem(
   donationItem_insert(
     data: {
       donation: $donationId,
-      lot: $lotId,
+      product: $productId,
       quantity: $quantity,
       state: $stateId,
       observations: $observations
@@ -24,7 +24,7 @@ mutation CreateDonationItem(
 # Update donation item
 mutation UpdateDonationItem(
   $donationId: UUID!,
-  $lotId: UUID!,
+  $productId: UUID!,
   $quantity: Int,
   $stateId: StatusType_Key,
   $observations: String
@@ -32,7 +32,7 @@ mutation UpdateDonationItem(
   donationItem_update(
     key: {
       donationId: $donationId,
-      lotId: $lotId
+      productId: $productId
     },
     data: {
       quantity: $quantity,
@@ -43,10 +43,10 @@ mutation UpdateDonationItem(
 }
 
 # Delete donation item
-mutation DeleteDonationItem($donationId: UUID!, $lotId: UUID!) @auth(level: USER) {
+mutation DeleteDonationItem($donationId: UUID!, $productId: UUID!) @auth(level: USER) {
   donationItem_delete(key: {
     donationId: $donationId,
-    lotId: $lotId
+    productId: $productId
   })
 }
 
