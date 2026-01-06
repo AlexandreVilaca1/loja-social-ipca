@@ -208,10 +208,6 @@ class DistributionsViewModel @Inject constructor(
 
     fun updateDistribution(onSuccess: () -> Unit) {
         val state = _uiState.value
-//        if (state.statusCode != "POR_ENTREGAR") {
-//            _uiState.update { it.copy(error = "Apenas distribuições 'Por Entregar' podem ser editadas") }
-//            return
-//        }
 
         if (state.distributionDate.isBlank() || state.selectedResponsibleStaffId.isBlank() || state.selectedStatusId.isBlank()) {
             _uiState.update { it.copy(error = "Campos obrigatórios em falta") }

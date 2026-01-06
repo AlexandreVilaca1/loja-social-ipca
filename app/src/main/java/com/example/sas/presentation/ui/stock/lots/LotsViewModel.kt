@@ -37,7 +37,6 @@ data class LotsUiState(
 
     // Form fields
     val lotCode: String = "",
-    val initialQuantity: String = "",
     val currentQuantity: String = "",
     val entryDate: String = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
     val expirationDate: String = "",
@@ -241,10 +240,6 @@ class LotsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(lotCode = value)
     }
 
-    fun setInitialQuantity(value: String) {
-        _uiState.value = _uiState.value.copy(initialQuantity = value)
-    }
-
     fun setCurrentQuantity(value: String) {
         _uiState.value = _uiState.value.copy(currentQuantity = value)
     }
@@ -359,12 +354,6 @@ class LotsViewModel @Inject constructor(
             return
         }
 
-        val initialQty = state.initialQuantity.toIntOrNull()
-        if (initialQty == null || initialQty <= 0) {
-            _uiState.value = state.copy(error = "Quantidade inicial deve ser maior que 0")
-            return
-        }
-
         val currentQty = state.currentQuantity.toIntOrNull()
         if (currentQty == null || currentQty < 0) {
             _uiState.value = state.copy(error = "Quantidade atual não pode ser negativa")
@@ -376,7 +365,6 @@ class LotsViewModel @Inject constructor(
             return
         }
 
-        // expirationDate is now optional - no validation needed
 
         // Ensure lotCode is generated
         if (state.lotCode.isBlank()) {
@@ -389,7 +377,6 @@ class LotsViewModel @Inject constructor(
 
             val request = CreateLotRequest(
                 lotCode = state.lotCode,
-                initialQuantity = initialQty,
                 currentQuantity = currentQty,
                 entryDate = state.entryDate,
                 expirationDate = state.expirationDate.ifBlank { null },
@@ -435,7 +422,6 @@ class LotsViewModel @Inject constructor(
             val request = UpdateLotRequest(
                 id = lotId,
                 lotCode = state.lotCode.ifBlank { null },
-                initialQuantity = state.initialQuantity.toIntOrNull(),
                 currentQuantity = state.currentQuantity.toIntOrNull(),
                 entryDate = state.entryDate.ifBlank { null },
                 expirationDate = state.expirationDate.ifBlank { null },
@@ -494,7 +480,6 @@ class LotsViewModel @Inject constructor(
             isEditMode = true,
             editingLotId = lot.id,
             lotCode = lot.lotCode,
-            initialQuantity = lot.initialQuantity.toString(),
             currentQuantity = lot.currentQuantity.toString(),
             entryDate = lot.entryDate,
             expirationDate = lot.expirationDate ?: "",
@@ -531,7 +516,6 @@ class LotsViewModel @Inject constructor(
         val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         _uiState.value = _uiState.value.copy(
             lotCode = "",
-            initialQuantity = "",
             currentQuantity = "",
             entryDate = today,
             expirationDate = "",

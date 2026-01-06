@@ -543,14 +543,6 @@ private fun LotFormSheet(
             }
         }
 
-        // Initial Quantity
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = state.initialQuantity,
-            onValueChange = viewModel::setInitialQuantity,
-            label = { Text("Quantidade inicial *") },
-            placeholder = { Text("Ex: 100") }
-        )
 
         // Current Quantity
         OutlinedTextField(

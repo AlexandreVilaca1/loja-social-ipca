@@ -32,7 +32,6 @@ class LotsRepositoryImpl @Inject constructor(
             val lots = items.map { item ->
                 Lot(
                     id = item.id.toString(),
-                    initialQuantity = item.initialQuantity,
                     currentQuantity = item.currentQuantity,
                     entryDate = formatDate(item.entryDate),
                     lotCode = item.lotCode,
@@ -60,7 +59,6 @@ class LotsRepositoryImpl @Inject constructor(
             val lots = items.map { item ->
                 Lot(
                     id = item.id.toString(),
-                    initialQuantity = item.initialQuantity,
                     currentQuantity = item.currentQuantity,
                     entryDate = formatDate(item.entryDate),
                     lotCode = item.lotCode,
@@ -88,7 +86,6 @@ class LotsRepositoryImpl @Inject constructor(
             val lots = items.map { item ->
                 Lot(
                     id = item.id.toString(),
-                    initialQuantity = item.initialQuantity,
                     currentQuantity = item.currentQuantity,
                     entryDate = formatDate(item.entryDate),
                     lotCode = item.lotCode,
@@ -116,7 +113,6 @@ class LotsRepositoryImpl @Inject constructor(
             val lots = items.map { item ->
                 Lot(
                     id = item.id.toString(),
-                    initialQuantity = item.initialQuantity,
                     currentQuantity = item.currentQuantity,
                     entryDate = formatDate(item.entryDate),
                     lotCode = item.lotCode,
@@ -145,7 +141,6 @@ class LotsRepositoryImpl @Inject constructor(
             val lots = items.map { item ->
                 Lot(
                     id = item.id.toString(),
-                    initialQuantity = item.initialQuantity,
                     currentQuantity = item.currentQuantity,
                     entryDate = formatDate(item.entryDate),
                     lotCode = item.lotCode,
@@ -169,7 +164,6 @@ class LotsRepositoryImpl @Inject constructor(
             if (item != null) {
                 val lot = Lot(
                     id = item.id.toString(),
-                    initialQuantity = item.initialQuantity,
                     currentQuantity = item.currentQuantity,
                     entryDate = formatDate(item.entryDate),
                     lotCode = item.lotCode,
@@ -192,7 +186,6 @@ class LotsRepositoryImpl @Inject constructor(
         emit(ResultWrapper.Loading())
         try {
             val lotId = dataSource.createLot(
-                initialQuantity = request.initialQuantity,
                 currentQuantity = request.currentQuantity,
                 entryDate = parseDate(request.entryDate),
                 lotCode = request.lotCode,
@@ -211,7 +204,6 @@ class LotsRepositoryImpl @Inject constructor(
         try {
             dataSource.updateLot(
                 id = request.id,
-                initialQuantity = request.initialQuantity,
                 currentQuantity = request.currentQuantity,
                 entryDate = request.entryDate?.let { parseDate(it) },
                 lotCode = request.lotCode,

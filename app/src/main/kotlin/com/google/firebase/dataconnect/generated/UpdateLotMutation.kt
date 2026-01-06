@@ -26,7 +26,6 @@ public interface UpdateLotMutation :
   public data class Variables(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val initialQuantity: com.google.firebase.dataconnect.OptionalVariable<Int?>,
     val currentQuantity: com.google.firebase.dataconnect.OptionalVariable<Int?>,
     val entryDate: com.google.firebase.dataconnect.OptionalVariable<com.google.firebase.dataconnect.LocalDate?>,
     val lotCode: com.google.firebase.dataconnect.OptionalVariable<String?>,
@@ -42,7 +41,6 @@ public interface UpdateLotMutation :
       @BuilderDsl
       public interface Builder {
         public var id: java.util.UUID
-        public var initialQuantity: Int?
         public var currentQuantity: Int?
         public var entryDate: com.google.firebase.dataconnect.LocalDate?
         public var lotCode: String?
@@ -59,8 +57,6 @@ public interface UpdateLotMutation :
           block_: Builder.() -> Unit
         ): Variables {
           var id= id
-            var initialQuantity: com.google.firebase.dataconnect.OptionalVariable<Int?> =
-                com.google.firebase.dataconnect.OptionalVariable.Undefined
             var currentQuantity: com.google.firebase.dataconnect.OptionalVariable<Int?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
             var entryDate: com.google.firebase.dataconnect.OptionalVariable<com.google.firebase.dataconnect.LocalDate?> =
@@ -79,10 +75,6 @@ public interface UpdateLotMutation :
             override var id: java.util.UUID
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { id = value_ }
-              
-            override var initialQuantity: Int?
-              get() = throw UnsupportedOperationException("getting builder values is not supported")
-              set(value_) { initialQuantity = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
               
             override var currentQuantity: Int?
               get() = throw UnsupportedOperationException("getting builder values is not supported")
@@ -112,7 +104,7 @@ public interface UpdateLotMutation :
           }.apply(block_)
           .let {
             Variables(
-              id=id,initialQuantity=initialQuantity,currentQuantity=currentQuantity,entryDate=entryDate,lotCode=lotCode,expirationDate=expirationDate,observations=observations,productId=productId,
+              id=id,currentQuantity=currentQuantity,entryDate=entryDate,lotCode=lotCode,expirationDate=expirationDate,observations=observations,productId=productId,
             )
           }
         }

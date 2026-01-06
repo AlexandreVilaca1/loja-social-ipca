@@ -27,7 +27,6 @@ type Product @table {
 }
 
 type Lot @table {
-  initialQuantity: Int!
   currentQuantity: Int!
   entryDate: Date!
   lotCode: String!

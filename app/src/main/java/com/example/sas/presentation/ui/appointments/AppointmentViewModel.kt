@@ -6,9 +6,7 @@ import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.Distribution
 import com.example.sas.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.sas.domain.usecase.beneficiaries.GetBeneficiaryByUserIdUseCase
-import com.example.sas.domain.usecase.distributions.CompleteDistributionUseCase
 import com.example.sas.domain.usecase.distributions.ListDistributionsByBeneficiaryUseCase
-import com.example.sas.domain.usecase.distributions.ListDistributionsUseCase
 import com.example.sas.domain.usecase.distributions.ListDistributionsByStatusUseCase
 import com.example.sas.domain.usecase.distributions.UpdateDistributionStatusUseCase
 import com.example.sas.domain.usecase.status.GetStatusTypeByCodeUseCase
@@ -22,8 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
@@ -33,11 +29,9 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AppointmentViewModel @Inject constructor(
-    private val listDistributionsUseCase: ListDistributionsUseCase,
     private val listDistributionsByStatusUseCase: ListDistributionsByStatusUseCase,
     private val listDistributionsByBeneficiaryUseCase: ListDistributionsByBeneficiaryUseCase,
     private val updateDistributionStatusUseCase: UpdateDistributionStatusUseCase,
-    private val completeDistributionUseCase: CompleteDistributionUseCase,
     private val getStatusByCodeUseCase: GetStatusTypeByCodeUseCase,
     private val getBeneficiaryByUserIdUseCase: GetBeneficiaryByUserIdUseCase,
     private val getUserByUidUseCase: GetUserByUidUseCase,

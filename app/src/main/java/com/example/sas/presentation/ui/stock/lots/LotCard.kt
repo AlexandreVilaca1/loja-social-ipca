@@ -53,7 +53,6 @@ fun LotCard(
 ) {
     val isExpiringSoon = lot.expirationDate?.let { isExpiringSoon(it) } ?: false
     val isExpired = lot.expirationDate?.let { isExpired(it) } ?: false
-    val isLowStock = lot.currentQuantity < (lot.initialQuantity * 0.2) // Less than 20%
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -105,10 +104,6 @@ fun LotCard(
                         } else if (isExpiringSoon) {
                             StatusBadge("A VENCER", Color(0xFFFFC107))
                         }
-
-                        if (isLowStock) {
-                            StatusBadge("BAIXO", Color(0xFFFF9800))
-                        }
                     }
                 }
 
@@ -147,12 +142,6 @@ fun LotCard(
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.Gray
                     )
-                    Text(
-                        text = lot.initialQuantity.toString(),
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF1C1C1C)
-                    )
                 }
 
                 Column {
@@ -165,22 +154,7 @@ fun LotCard(
                         text = lot.currentQuantity.toString(),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
-                        color = if (isLowStock) Color(0xFFFF9800) else GreenPrimary
-                    )
-                }
-
-                Column {
-                    Text(
-                        text = "Usado",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.Gray
-                    )
-                    val used = lot.initialQuantity - lot.currentQuantity
-                    Text(
-                        text = "${(used * 100 / lot.initialQuantity)}%",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF1C1C1C)
+                        color = GreenPrimary
                     )
                 }
             }
