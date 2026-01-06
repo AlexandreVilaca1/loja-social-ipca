@@ -22,6 +22,7 @@ query ListDonationItemsByDonation($donationId: UUID!, $limit: Int = 8, $offset: 
         name
       }
     }
+    expirationDate
     quantity
     observations
     createdAt
@@ -45,6 +46,7 @@ query ListDonationItemsByProduct($productId: UUID!, $limit: Int = 8, $offset: In
       name
       unitOfMeasure
     }
+    expirationDate
     quantity
     observations
     createdAt

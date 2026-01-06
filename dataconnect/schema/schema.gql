@@ -97,6 +97,7 @@ type Campaign @table {
 type DonationItem @table(key: ["donation", "product"]) {
   donation: Donation!
   product: Product!
+  expirationDate: Date
   quantity: Int!
   observations: String
   createdAt: Timestamp! @default(expr: "request.time")

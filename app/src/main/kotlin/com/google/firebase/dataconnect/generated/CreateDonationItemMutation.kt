@@ -27,6 +27,7 @@ public interface CreateDonationItemMutation :
   
     val donationId: DonationKey,
     val productId: ProductKey,
+    val expirationDate: com.google.firebase.dataconnect.OptionalVariable<com.google.firebase.dataconnect.LocalDate?>,
     val quantity: Int,
     val observations: com.google.firebase.dataconnect.OptionalVariable<String?>
   ) {
@@ -39,6 +40,7 @@ public interface CreateDonationItemMutation :
       public interface Builder {
         public var donationId: DonationKey
         public var productId: ProductKey
+        public var expirationDate: com.google.firebase.dataconnect.LocalDate?
         public var quantity: Int
         public var observations: String?
         
@@ -52,6 +54,8 @@ public interface CreateDonationItemMutation :
         ): Variables {
           var donationId= donationId
             var productId= productId
+            var expirationDate: com.google.firebase.dataconnect.OptionalVariable<com.google.firebase.dataconnect.LocalDate?> =
+                com.google.firebase.dataconnect.OptionalVariable.Undefined
             var quantity= quantity
             var observations: com.google.firebase.dataconnect.OptionalVariable<String?> =
                 com.google.firebase.dataconnect.OptionalVariable.Undefined
@@ -66,6 +70,10 @@ public interface CreateDonationItemMutation :
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { productId = value_ }
               
+            override var expirationDate: com.google.firebase.dataconnect.LocalDate?
+              get() = throw UnsupportedOperationException("getting builder values is not supported")
+              set(value_) { expirationDate = com.google.firebase.dataconnect.OptionalVariable.Value(value_) }
+              
             override var quantity: Int
               get() = throw UnsupportedOperationException("getting builder values is not supported")
               set(value_) { quantity = value_ }
@@ -78,7 +86,7 @@ public interface CreateDonationItemMutation :
           }.apply(block_)
           .let {
             Variables(
-              donationId=donationId,productId=productId,quantity=quantity,observations=observations,
+              donationId=donationId,productId=productId,expirationDate=expirationDate,quantity=quantity,observations=observations,
             )
           }
         }

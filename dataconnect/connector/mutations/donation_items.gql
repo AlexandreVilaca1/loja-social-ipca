@@ -6,6 +6,7 @@
 mutation CreateDonationItem(
   $donationId: Donation_Key!,
   $productId: Product_Key!,
+  $expirationDate: Date,
   $quantity: Int!,
   $observations: String
 ) @auth(level: USER) {
@@ -13,6 +14,7 @@ mutation CreateDonationItem(
     data: {
       donation: $donationId,
       product: $productId,
+      expirationDate: $expirationDate,
       quantity: $quantity,
       observations: $observations
     }
@@ -23,6 +25,7 @@ mutation CreateDonationItem(
 mutation UpdateDonationItem(
   $donationId: UUID!,
   $productId: UUID!,
+  $expirationDate: Date,
   $quantity: Int,
   $observations: String
 ) @auth(level: USER) {
@@ -32,6 +35,7 @@ mutation UpdateDonationItem(
       productId: $productId
     },
     data: {
+      expirationDate: $expirationDate,
       quantity: $quantity,
       observations: $observations
     }

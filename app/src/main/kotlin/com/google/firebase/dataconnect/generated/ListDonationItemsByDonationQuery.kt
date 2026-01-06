@@ -97,6 +97,7 @@ public interface ListDonationItemsByDonationQuery :
   
     val donation: Donation,
     val product: Product,
+    val expirationDate: com.google.firebase.dataconnect.LocalDate?,
     val quantity: Int,
     val observations: String?,
     val createdAt: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.TimestampSerializer::class) com.google.firebase.Timestamp
