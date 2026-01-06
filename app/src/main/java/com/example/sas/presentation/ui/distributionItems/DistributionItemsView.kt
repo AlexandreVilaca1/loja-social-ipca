@@ -1,5 +1,6 @@
 package com.example.sas.presentation.ui.distributionItems
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.sas.presentation.ui.theme.BackgroundGreen
 import com.example.sas.presentation.ui.theme.GreenPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,11 +61,13 @@ fun DistributionItemsView(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(BackgroundGreen)
     ) {
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = GreenPrimary)
@@ -82,7 +86,9 @@ fun DistributionItemsView(
                 }
             } else if (state.items.isEmpty()) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Card(
@@ -105,7 +111,7 @@ fun DistributionItemsView(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(32.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     item {
@@ -138,7 +144,8 @@ fun DistributionItemsView(
                 FloatingActionButton(
                     onClick = { showAddItemSheet = true },
                     modifier = Modifier
-                        .align(Alignment.BottomEnd),
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp),
                     containerColor = GreenPrimary,
                     contentColor = Color.White
                 ) {

@@ -93,7 +93,7 @@ fun TotalAppointmentsView(
                                 AppointmentCard(distribution) {
                                     distribution.beneficiaryId?.let { beneficiaryId ->
                                         navController.navigate(
-                                            "beneficiary/$beneficiaryId/distributions?name=${distribution.beneficiaryName ?: "Beneficiário"}"
+                                            "distribution/${distribution.id}/items"
                                         )
                                     }
                                 }

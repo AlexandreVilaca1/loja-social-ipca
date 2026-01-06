@@ -1,8 +1,10 @@
 package com.example.sas.presentation.ui.distributions
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sas.presentation.ui.distributions.create.CreateDistributionViewModel
 import com.example.sas.presentation.ui.distributions.edit.EditDistributionViewModel
+import com.example.sas.presentation.ui.theme.BackgroundGreen
 import com.example.sas.presentation.ui.theme.GreenPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,10 +75,11 @@ fun BeneficiaryDistributionsView(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(BackgroundGreen)
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
@@ -288,9 +292,8 @@ private fun CreateDistributionBottomSheet(
     ) {
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp),
+                .fillMaxWidth(),
+            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
