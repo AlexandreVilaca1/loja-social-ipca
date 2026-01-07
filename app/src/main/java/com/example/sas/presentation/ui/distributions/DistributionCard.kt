@@ -83,7 +83,15 @@ fun DistributionCard(
 
                 // Status
                 if (distribution.statusDescription != null) {
-                    StatusChip(text = distribution.statusDescription)
+                    val statusColor = when (distribution.statusCode) {
+                        "POR_ENTREGAR" -> Color(0xFFFFC107)
+                        "NAO_COMPARECEU" -> Color(0xFFF44336)
+                        else -> GreenPrimary
+                    }
+                    StatusChip(
+                        text = distribution.statusDescription,
+                        color = statusColor
+                    )
                     Spacer(modifier = Modifier.size(8.dp))
                 }
 
@@ -164,18 +172,18 @@ fun DistributionCard(
 }
 
 @Composable
-private fun StatusChip(text: String) {
+private fun StatusChip(text: String, color: Color = GreenPrimary) {
     Box(
         modifier = Modifier
             .background(
-                color = GreenPrimary.copy(alpha = 0.15f),
+                color = color.copy(alpha = 0.15f),
                 shape = RoundedCornerShape(50)
             )
             .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
         Text(
             text = text,
-            color = GreenPrimary,
+            color = color,
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Medium
         )

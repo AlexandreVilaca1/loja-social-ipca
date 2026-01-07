@@ -6,7 +6,6 @@
 query ListLots($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
   lots(limit: $limit, offset: $offset, orderBy: [{ expirationDate: ASC }]) {
     id
-    initialQuantity
     currentQuantity
     entryDate
     lotCode
@@ -26,7 +25,6 @@ query ListLots($limit: Int = 8, $offset: Int = 0) @auth(level: USER) {
 query GetLotById($id: UUID!) @auth(level: USER) {
   lot(id: $id) {
     id
-    initialQuantity
     currentQuantity
     entryDate
     lotCode
@@ -52,7 +50,6 @@ query SearchLots($lotCode: String, $limit: Int = 8, $offset: Int = 0) @auth(leve
     orderBy: [{ expirationDate: ASC }]
   ) {
     id
-    initialQuantity
     currentQuantity
     entryDate
     lotCode
@@ -76,7 +73,6 @@ query ListLotsByProduct($productId: UUID!, $limit: Int = 8, $offset: Int = 0) @a
     orderBy: [{ expirationDate: ASC }]
   ) {
     id
-    initialQuantity
     currentQuantity
     entryDate
     lotCode
@@ -96,7 +92,6 @@ query SearchLotsByProduct($productName: String, $limit: Int = 8, $offset: Int = 
     orderBy: [{ expirationDate: ASC }]
   ) {
     id
-    initialQuantity
     currentQuantity
     entryDate
     lotCode
@@ -121,7 +116,6 @@ query SearchLotsByExpirationDate($expirationDate: Date, $limit: Int = 8, $offset
     orderBy: [{ expirationDate: ASC }]
   ) {
     id
-    initialQuantity
     currentQuantity
     entryDate
     lotCode
@@ -149,7 +143,6 @@ query ListLotsByProductAndExpirationDate($productId: UUID!, $expirationDate: Dat
     orderBy: [{ expirationDate: ASC }]
   ) {
     id
-    initialQuantity
     currentQuantity
     entryDate
     lotCode

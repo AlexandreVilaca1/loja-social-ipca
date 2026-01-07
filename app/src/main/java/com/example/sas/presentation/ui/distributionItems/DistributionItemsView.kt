@@ -187,7 +187,7 @@ private fun AddItemBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = {
-            viewModel.clearLotSearch() // Limpar pesquisa ao fechar
+            viewModel.clearLotSearch()
             onDismiss()
         },
         sheetState = sheetState,
@@ -232,10 +232,9 @@ private fun AddItemBottomSheet(
                         viewModel.clearLotSearch()
                     }
                 ) {
-                    // Campo de pesquisa dentro do dropdown
                     OutlinedTextField(
                         value = state.lotSearchQuery,
-                        onValueChange = { viewModel.setLotSearchQuery(it) }, // Usar ViewModel
+                        onValueChange = { viewModel.setLotSearchQuery(it) },
                         placeholder = { Text("Pesquisar lote...", style = MaterialTheme.typography.bodySmall) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -299,7 +298,7 @@ private fun AddItemBottomSheet(
                                         selectedLotId = lot.id
                                         selectedLotName = lot.lotCode
                                         showLotDropdown = false
-                                        viewModel.clearLotSearch() // Limpar pesquisa após seleção
+                                        viewModel.clearLotSearch()
                                     }
                                 )
                             }
