@@ -198,34 +198,6 @@ private fun LogCard(log: Log) {
         }
     }
 }
-
-private fun shareCsvFile(context: Context, csvContent: String) {
-    try {
-        // 1. Criar o ficheiro na pasta de cache da App
-        val file = File(context.cacheDir, "Relatorio_Logs.csv")
-        file.writeText(csvContent)
-
-        // 2. Obter o URI do ficheiro usando o FileProvider
-        val uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider", // Deve coincidir com o Manifest
-            file
-        )
-
-        // 3. Criar a Intent de Partilha
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/csv"
-            putExtra(Intent.EXTRA_SUBJECT, "Relatório de Atividade")
-            putExtra(Intent.EXTRA_STREAM, uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        context.startActivity(Intent.createChooser(intent, "Enviar Relatório"))
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-}
-
 private fun downloadCsv(context: Context, csvContent: String) {
     val filename = "Relatorio_SAS_${System.currentTimeMillis()}.csv"
 

@@ -89,11 +89,20 @@ class ReportsViewModel @Inject constructor(
     }
 
     fun exportToCsv(): String {
-        val sb = StringBuilder()
-        sb.append("Data;Utilizador;Tipo;Descricao\n")
+        val sb = StringBuilder("\uFEFF")
+
+        sb.append("Data;Utilizador;Tipo;Descrição\n")
+
         _uiState.value.logs.forEach { log ->
-            sb.append("${log.createdAt};${log.userName};${log.logTypeName};${log.description}\n")
+
+            val date = log.createdAt ?: ""
+            val user = log.userName
+            val type = log.logTypeName
+            val description = log.description?.replace(";", ",")?.replace("\n", " ") ?: ""
+
+            sb.append("$date;$user;$type;$description\n")
         }
+
         return sb.toString()
     }
 }
