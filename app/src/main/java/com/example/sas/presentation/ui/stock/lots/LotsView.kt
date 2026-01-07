@@ -3,7 +3,6 @@ package com.example.sas.presentation.ui.stock.lots
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -61,7 +59,7 @@ import com.example.sas.presentation.ui.theme.GreenPrimary
 fun LotsView(
     innerPadding: PaddingValues = PaddingValues(0.dp),
     navController: NavController,
-    productId: String? = null, // Optional filter by product
+    productId: String? = null,
     viewModel: LotsViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -73,14 +71,6 @@ fun LotsView(
     val sheetState: SheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-
-    LaunchedEffect(productId) {
-        if (productId != null) {
-            viewModel.loadLotsByProduct(productId)
-        } else {
-            viewModel.refreshLots()
-        }
-    }
 
     LaunchedEffect(state.isEditMode) {
         if (state.isEditMode) {
@@ -108,6 +98,13 @@ fun LotsView(
                         tint = GreenPrimary
                     )
                 },
+                supportingText = {
+                    Text(
+                        text = "Formato: Lote 'Nome Produto' 'Data de Validade YYYY/MM/DD'",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                },
                 shape = RoundedCornerShape(8.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
@@ -119,227 +116,6 @@ fun LotsView(
                 singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Product filter dropdown
-            var expandedProductDropdown by remember { mutableStateOf(false) }
-            var productSearchQuery by remember { mutableStateOf("") }
-
-            ExposedDropdownMenuBox(
-                expanded = expandedProductDropdown,
-                onExpandedChange = { expandedProductDropdown = it },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = state.selectedProductForSearch?.name ?: "",
-                    onValueChange = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                    readOnly = true,
-                    placeholder = { Text("Selecionar produto", color = Color.Gray) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedProductDropdown) },
-                    shape = RoundedCornerShape(8.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        disabledContainerColor = Color.White,
-                        focusedIndicatorColor = Color(0xFFE0E0E0),
-                        unfocusedIndicatorColor = Color(0xFFE0E0E0)
-                    ),
-                    singleLine = true
-                )
-
-                ExposedDropdownMenu(
-                    expanded = expandedProductDropdown,
-                    onDismissRequest = { expandedProductDropdown = false },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    // Search field inside dropdown
-                    OutlinedTextField(
-                        value = productSearchQuery,
-                        onValueChange = {
-                            productSearchQuery = it
-                            viewModel.setProductSearchQuery(it)
-                        },
-                        placeholder = { Text("Pesquisar produto...", style = MaterialTheme.typography.bodySmall) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        singleLine = true
-                    )
-
-                    // Clear filter option
-                    DropdownMenuItem(
-                        text = { Text("Todos os produtos", style = MaterialTheme.typography.bodyMedium) },
-                        onClick = {
-                            viewModel.selectProductForSearch(null)
-                            productSearchQuery = ""
-                            expandedProductDropdown = false
-                        }
-                    )
-
-                    // Filtered products
-                    viewModel.filteredProducts.forEach { product ->
-                        DropdownMenuItem(
-                            text = {
-                                Column {
-                                    Text(product.name, style = MaterialTheme.typography.bodyMedium)
-                                    Text(
-                                        "Categoria: ${product.categoryName ?: "N/A"}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-                                }
-                            },
-                            onClick = {
-                                viewModel.selectProductForSearch(product)
-                                productSearchQuery = ""
-                                expandedProductDropdown = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Expiration date search with DatePicker (only visible when product is selected)
-            if (state.selectedProductForSearch != null) {
-                var showDatePicker by remember { mutableStateOf(false) }
-
-                OutlinedTextField(
-                    value = state.expirationDateSearch,
-                    onValueChange = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showDatePicker = true },
-                    enabled = false,
-                    placeholder = { Text("Selecionar data de validade", color = Color.Gray) },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "Calendário",
-                            tint = GreenPrimary,
-                            modifier = Modifier.clickable { showDatePicker = true }
-                        )
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                    colors = TextFieldDefaults.colors(
-                        disabledTextColor = Color.Black,
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        disabledContainerColor = Color.White,
-                        focusedIndicatorColor = Color(0xFFE0E0E0),
-                        unfocusedIndicatorColor = Color(0xFFE0E0E0),
-                        disabledIndicatorColor = Color(0xFFE0E0E0)
-                    ),
-                    singleLine = true
-                )
-
-                // DatePickerDialog with improved UI
-                if (showDatePicker) {
-                    val currentCalendar = java.util.Calendar.getInstance()
-
-                    val datePickerState = androidx.compose.material3.rememberDatePickerState(
-                        initialSelectedDateMillis = currentCalendar.timeInMillis,
-                        yearRange = 2026..2036 // Only from 2026 onwards
-                    )
-
-                    androidx.compose.material3.DatePickerDialog(
-                        onDismissRequest = { showDatePicker = false },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    datePickerState.selectedDateMillis?.let { millis ->
-                                        val calendar = java.util.Calendar.getInstance()
-                                        calendar.timeInMillis = millis
-                                        val year = calendar.get(java.util.Calendar.YEAR)
-                                        val month = calendar.get(java.util.Calendar.MONTH) + 1
-                                        val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
-                                        val formattedDate = "%04d-%02d-%02d".format(year, month, day)
-                                        viewModel.setExpirationDateSearch(formattedDate)
-                                    }
-                                    showDatePicker = false
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = GreenPrimary,
-                                    contentColor = Color.White
-                                )
-                            ) {
-                                Text("Confirmar")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showDatePicker = false }) {
-                                Text("Cancelar", color = Color.Gray)
-                            }
-                        }
-                    ) {
-                        androidx.compose.material3.DatePicker(
-                            state = datePickerState,
-                            title = {
-                                Text(
-                                    "Selecionar Data de Validade",
-                                    modifier = Modifier.padding(16.dp),
-                                    style = MaterialTheme.typography.titleLarge
-                                )
-                            },
-                            headline = {
-                                datePickerState.selectedDateMillis?.let { millis ->
-                                    val calendar = java.util.Calendar.getInstance()
-                                    calendar.timeInMillis = millis
-                                    val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
-                                    val month = calendar.getDisplayName(
-                                        java.util.Calendar.MONTH,
-                                        java.util.Calendar.LONG,
-                                        java.util.Locale.getDefault()
-                                    )
-                                    val year = calendar.get(java.util.Calendar.YEAR)
-
-                                    Text(
-                                        "$day de $month, $year",
-                                        modifier = Modifier.padding(horizontal = 16.dp),
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        color = GreenPrimary
-                                    )
-                                }
-                            },
-                            colors = androidx.compose.material3.DatePickerDefaults.colors(
-                                containerColor = Color.White,
-                                titleContentColor = GreenPrimary,
-                                headlineContentColor = GreenPrimary,
-                                weekdayContentColor = GreenPrimary,
-                                subheadContentColor = GreenPrimary,
-                                yearContentColor = Color(0xFF1C1C1C),
-                                currentYearContentColor = GreenPrimary,
-                                selectedYearContentColor = Color.White,
-                                selectedYearContainerColor = GreenPrimary,
-                                dayContentColor = Color(0xFF1C1C1C),
-                                selectedDayContentColor = Color.White,
-                                selectedDayContainerColor = GreenPrimary,
-                                todayContentColor = GreenPrimary,
-                                todayDateBorderColor = GreenPrimary,
-                                dayInSelectionRangeContentColor = GreenPrimary,
-                                dayInSelectionRangeContainerColor = GreenPrimary.copy(alpha = 0.3f)
-                            )
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Clear filters button
-                TextButton(
-                    onClick = { viewModel.clearSearchFilters() },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = GreenPrimary
-                    )
-                ) {
-                    Text("Limpar Filtros")
-                }
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

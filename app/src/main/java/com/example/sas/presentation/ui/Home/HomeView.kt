@@ -40,9 +40,7 @@ import com.example.sas.presentation.ui.distributions.BeneficiaryDistributionsVie
 import com.example.sas.presentation.ui.reports.ReportsView
 import com.example.sas.presentation.ui.stock.categories.CategoriesView
 import com.example.sas.presentation.ui.stock.home.StockHomeView
-import com.example.sas.presentation.ui.stock.home.StockHomeViewModel
 import com.example.sas.presentation.ui.stock.lots.LotsView
-import com.example.sas.presentation.ui.stock.lots.LotsViewModel
 import com.example.sas.presentation.ui.stock.products.ProductsView
 import com.example.sas.presentation.ui.theme.GreenPrimary
 import kotlinx.coroutines.launch
@@ -66,8 +64,8 @@ fun HomeView(onSignOut : () -> Unit) {
     val shouldShowBackButton = currentRoute == "agendamentos/todos" ||
                                 currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") ||
                                 currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items") ||
-                                currentRoute == "donations/campaigns" || // Voltar para o Dashboard
-                                currentRoute == "donations/list" ||      // Voltar para o Dashboard
+                                currentRoute == "donations/campaigns" ||
+                                currentRoute == "donations/list" ||
                                 currentRoute?.startsWith("donation/items/") == true // Voltar para a Lista de Doações
 
     val currentTitle = when {
