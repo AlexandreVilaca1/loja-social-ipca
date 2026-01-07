@@ -146,7 +146,6 @@ class LotsDataSource @Inject constructor() {
 
     /**
      * Creates a new lot in Firebase Data Connect.
-     * @param initialQuantity Initial quantity of the lot
      * @param currentQuantity Current quantity of the lot
      * @param entryDate Date the lot entered the inventory
      * @param lotCode Unique code for the lot
@@ -156,7 +155,6 @@ class LotsDataSource @Inject constructor() {
      * @return The UUID of the created lot
      */
     suspend fun createLot(
-        initialQuantity: Int,
         currentQuantity: Int,
         entryDate: LocalDate,
         lotCode: String,
@@ -165,7 +163,6 @@ class LotsDataSource @Inject constructor() {
         productId: String?
     ): String {
         val result = connector.createLot.execute(
-            initialQuantity = initialQuantity,
             currentQuantity = currentQuantity,
             entryDate = entryDate,
             lotCode = lotCode
@@ -181,7 +178,6 @@ class LotsDataSource @Inject constructor() {
      * Updates an existing lot in Firebase Data Connect.
      * All parameters except id are optional.
      * @param id UUID of the lot to update
-     * @param initialQuantity New initial quantity (optional)
      * @param currentQuantity New current quantity (optional)
      * @param entryDate New entry date (optional)
      * @param lotCode New lot code (optional)
@@ -191,7 +187,6 @@ class LotsDataSource @Inject constructor() {
      */
     suspend fun updateLot(
         id: String,
-        initialQuantity: Int? = null,
         currentQuantity: Int? = null,
         entryDate: LocalDate? = null,
         lotCode: String? = null,
@@ -202,7 +197,6 @@ class LotsDataSource @Inject constructor() {
         connector.updateLot.execute(
             id = UUID.fromString(id)
         ) {
-            this.initialQuantity = initialQuantity
             this.currentQuantity = currentQuantity
             this.entryDate = entryDate
             this.lotCode = lotCode

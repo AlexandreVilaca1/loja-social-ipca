@@ -89,7 +89,6 @@ public interface ListLotsQuery :
   public data class LotsItem(
   
     val id: @kotlinx.serialization.Serializable(with = com.google.firebase.dataconnect.serializers.UUIDSerializer::class) java.util.UUID,
-    val initialQuantity: Int,
     val currentQuantity: Int,
     val entryDate: com.google.firebase.dataconnect.LocalDate,
     val lotCode: String,

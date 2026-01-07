@@ -12,10 +12,6 @@ class UpdateLotUseCase @Inject constructor(
     fun execute(request: com.example.sas.domain.models.UpdateLotRequest): Flow<ResultWrapper<Unit>> {
         require(request.id.isNotBlank()) { "ID do lote é obrigatório" }
 
-        // Validate quantities if provided
-        request.initialQuantity?.let {
-            require(it > 0) { "Quantidade inicial deve ser maior que 0" }
-        }
         request.currentQuantity?.let {
             require(it >= 0) { "Quantidade atual não pode ser negativa" }
         }

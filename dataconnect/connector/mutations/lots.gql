@@ -4,7 +4,6 @@
 
 # Create a new lot
 mutation CreateLot(
-  $initialQuantity: Int!,
   $currentQuantity: Int!,
   $entryDate: Date!,
   $lotCode: String!,
@@ -14,7 +13,6 @@ mutation CreateLot(
 ) @auth(level: USER) {
   lot_insert(
     data: {
-      initialQuantity: $initialQuantity,
       currentQuantity: $currentQuantity,
       entryDate: $entryDate,
       lotCode: $lotCode,
@@ -28,7 +26,6 @@ mutation CreateLot(
 # Update lot
 mutation UpdateLot(
   $id: UUID!,
-  $initialQuantity: Int,
   $currentQuantity: Int,
   $entryDate: Date,
   $lotCode: String,
@@ -39,7 +36,6 @@ mutation UpdateLot(
   lot_update(
     id: $id,
     data: {
-      initialQuantity: $initialQuantity,
       currentQuantity: $currentQuantity,
       entryDate: $entryDate,
       lotCode: $lotCode,

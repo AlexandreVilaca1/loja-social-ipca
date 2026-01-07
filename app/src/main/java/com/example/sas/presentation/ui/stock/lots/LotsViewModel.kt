@@ -7,12 +7,11 @@ import com.example.sas.domain.models.CreateLotRequest
 import com.example.sas.domain.models.Lot
 import com.example.sas.domain.models.UpdateLotRequest
 import com.example.sas.domain.models.Product
-import com.example.sas.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.lots.*
 import com.example.sas.domain.usecase.products.ListProductsUseCase
-import com.example.sas.domain.usecase.users.GetUserByUidUseCase
+import com.example.sas.domain.usecase.products.SearchProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,14 +30,9 @@ data class LotsUiState(
     val searchQuery: String = "",
     val userRole: String? = null,
 
-    // Search filters
-    val selectedProductForSearch: Product? = null,
-    val expirationDateSearch: String = "",
-    val productSearchQuery: String = "",
 
     // Form fields
     val lotCode: String = "",
-    val initialQuantity: String = "",
     val currentQuantity: String = "",
     val entryDate: String = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
     val expirationDate: String = "",
@@ -57,9 +51,7 @@ data class LotsUiState(
 @HiltViewModel
 class LotsViewModel @Inject constructor(
     private val listLotsUseCase: ListLotsUseCase,
-    private val listLotsByProductUseCase: ListLotsByProductUseCase,
     private val searchLotsUseCase: SearchLotsUseCase,
-    private val listLotsByProductAndExpirationDateUseCase: ListLotsByProductAndExpirationDateUseCase,
     private val createLotUseCase: CreateLotUseCase,
     private val updateLotUseCase: UpdateLotUseCase,
     private val updateLotQuantityUseCase: UpdateLotQuantityUseCase,
@@ -115,37 +107,6 @@ class LotsViewModel @Inject constructor(
         }
     }
 
-    fun loadLotsByProduct(productId: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                error = null,
-                filterProductId = productId
-            )
-
-            listLotsByProductUseCase.execute(productId = productId, limit = 100, offset = 0)
-                .collect { result ->
-                    when (result) {
-                        is ResultWrapper.Success -> {
-                            _uiState.value = _uiState.value.copy(
-                                lots = result.data!!,
-                                isLoading = false
-                            )
-                        }
-                        is ResultWrapper.Error -> {
-                            _uiState.value = _uiState.value.copy(
-                                error = result.message,
-                                isLoading = false
-                            )
-                        }
-                        is ResultWrapper.Loading -> {
-                            _uiState.value = _uiState.value.copy(isLoading = true)
-                        }
-                    }
-                }
-        }
-    }
-
     private fun loadProducts() {
         viewModelScope.launch {
             listProductsUseCase.execute(limit = 100, offset = 0)
@@ -166,11 +127,7 @@ class LotsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(searchQuery = query)
 
         if (query.isBlank()) {
-            if (_uiState.value.filterProductId != null) {
-                loadLotsByProduct(_uiState.value.filterProductId!!)
-            } else {
-                loadLots()
-            }
+            loadLots()
         } else {
             searchLots(query)
         }
@@ -203,48 +160,9 @@ class LotsViewModel @Inject constructor(
         }
     }
 
-    private fun searchLotsByExpirationDate(date: String, productId: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-
-            // Usar a nova query que filtra por produto E data simultaneamente no backend
-            listLotsByProductAndExpirationDateUseCase.execute(
-                productId = productId,
-                expirationDate = date,
-                limit = 100,
-                offset = 0
-            ).collect { result ->
-                when (result) {
-                    is ResultWrapper.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                lots = result.data ?: emptyList(),
-                                isLoading = false
-                            )
-                        }
-                    }
-                    is ResultWrapper.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                error = result.message,
-                                isLoading = false
-                            )
-                        }
-                    }
-                    is ResultWrapper.Loading -> {
-                        _uiState.update { it.copy(isLoading = true) }
-                    }
-                }
-            }
-        }
-    }
 
     fun setLotCode(value: String) {
         _uiState.value = _uiState.value.copy(lotCode = value)
-    }
-
-    fun setInitialQuantity(value: String) {
-        _uiState.value = _uiState.value.copy(initialQuantity = value)
     }
 
     fun setCurrentQuantity(value: String) {
@@ -292,65 +210,6 @@ class LotsViewModel @Inject constructor(
         }
     }
 
-    // Search filter methods
-    fun setProductSearchQuery(query: String) {
-        _uiState.update { it.copy(productSearchQuery = query) }
-    }
-
-    fun selectProductForSearch(product: Product?) {
-        _uiState.update {
-            it.copy(
-                selectedProductForSearch = product,
-                expirationDateSearch = "", // Reset date search when product changes
-                productSearchQuery = ""
-            )
-        }
-
-        // Load lots for selected product or all lots if null
-        if (product != null) {
-            loadLotsByProduct(product.id)
-        } else {
-            loadLots()
-        }
-    }
-
-    fun setExpirationDateSearch(date: String) {
-        _uiState.update { it.copy(expirationDateSearch = date) }
-
-        val selectedProduct = _uiState.value.selectedProductForSearch
-        if (date.isNotBlank() && selectedProduct != null) {
-            // Pesquisar por data E filtrar pelo produto selecionado
-            searchLotsByExpirationDate(date, selectedProduct.id)
-        } else if (selectedProduct != null) {
-            loadLotsByProduct(selectedProduct.id)
-        } else {
-            loadLots()
-        }
-    }
-
-    fun clearSearchFilters() {
-        _uiState.update {
-            it.copy(
-                selectedProductForSearch = null,
-                expirationDateSearch = "",
-                productSearchQuery = ""
-            )
-        }
-        loadLots()
-    }
-
-    val filteredProducts: List<Product>
-        get() {
-            val query = _uiState.value.productSearchQuery.lowercase()
-            val products = _uiState.value.products
-            return if (query.isBlank()) {
-                products
-            } else {
-                products.filter {
-                    it.name.lowercase().contains(query)
-                }
-            }
-        }
 
     fun createLot() {
         val state = _uiState.value
@@ -358,12 +217,6 @@ class LotsViewModel @Inject constructor(
         // Validations
         if (state.productId == null) {
             _uiState.value = state.copy(error = "Selecione um produto")
-            return
-        }
-
-        val initialQty = state.initialQuantity.toIntOrNull()
-        if (initialQty == null || initialQty <= 0) {
-            _uiState.value = state.copy(error = "Quantidade inicial deve ser maior que 0")
             return
         }
 
@@ -378,7 +231,6 @@ class LotsViewModel @Inject constructor(
             return
         }
 
-        // expirationDate is now optional - no validation needed
 
         // Ensure lotCode is generated
         if (state.lotCode.isBlank()) {
@@ -391,7 +243,6 @@ class LotsViewModel @Inject constructor(
 
             val request = CreateLotRequest(
                 lotCode = state.lotCode,
-                initialQuantity = initialQty,
                 currentQuantity = currentQty,
                 entryDate = state.entryDate,
                 expirationDate = state.expirationDate.ifBlank { null },
@@ -408,11 +259,7 @@ class LotsViewModel @Inject constructor(
                             createdLotId = result.data
                         )
                         clearForm()
-                        if (state.filterProductId != null) {
-                            loadLotsByProduct(state.filterProductId)
-                        } else {
-                            loadLots()
-                        }
+                        loadLots()
                     }
                     is ResultWrapper.Error -> {
                         _uiState.value = _uiState.value.copy(
@@ -438,7 +285,6 @@ class LotsViewModel @Inject constructor(
             val request = UpdateLotRequest(
                 id = lotId,
                 lotCode = state.lotCode.ifBlank { null },
-                initialQuantity = state.initialQuantity.toIntOrNull(),
                 currentQuantity = state.currentQuantity.toIntOrNull(),
                 entryDate = state.entryDate.ifBlank { null },
                 expirationDate = state.expirationDate.ifBlank { null },
@@ -452,11 +298,7 @@ class LotsViewModel @Inject constructor(
                         logActivityUseCase.execute("Editou lote: ${state.lotCode}", "STOCK_LOT")
                         _uiState.value = _uiState.value.copy(isLoading = false)
                         clearForm()
-                        if (state.filterProductId != null) {
-                            loadLotsByProduct(state.filterProductId)
-                        } else {
-                            loadLots()
-                        }
+                        loadLots()
                     }
                     is ResultWrapper.Error -> {
                         _uiState.value = _uiState.value.copy(
@@ -478,11 +320,7 @@ class LotsViewModel @Inject constructor(
                 .collect { result ->
                     when (result) {
                         is ResultWrapper.Success -> {
-                            if (_uiState.value.filterProductId != null) {
-                                loadLotsByProduct(_uiState.value.filterProductId!!)
-                            } else {
-                                loadLots()
-                            }
+                            loadLots()
                         }
                         is ResultWrapper.Error -> {
                             _uiState.value = _uiState.value.copy(error = result.message)
@@ -498,7 +336,6 @@ class LotsViewModel @Inject constructor(
             isEditMode = true,
             editingLotId = lot.id,
             lotCode = lot.lotCode,
-            initialQuantity = lot.initialQuantity.toString(),
             currentQuantity = lot.currentQuantity.toString(),
             entryDate = lot.entryDate,
             expirationDate = lot.expirationDate ?: "",
@@ -513,11 +350,7 @@ class LotsViewModel @Inject constructor(
                 when (result) {
                     is ResultWrapper.Success -> {
                         logActivityUseCase.execute("Removeu lote: ${lotCode}", "STOCK_LOT")
-                        if (_uiState.value.filterProductId != null) {
-                            loadLotsByProduct(_uiState.value.filterProductId!!)
-                        } else {
-                            loadLots()
-                        }
+                        loadLots()
                     }
                     is ResultWrapper.Error -> {
                         _uiState.value = _uiState.value.copy(error = result.message)
@@ -536,7 +369,6 @@ class LotsViewModel @Inject constructor(
         val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         _uiState.value = _uiState.value.copy(
             lotCode = "",
-            initialQuantity = "",
             currentQuantity = "",
             entryDate = today,
             expirationDate = "",
@@ -549,10 +381,6 @@ class LotsViewModel @Inject constructor(
     }
 
     fun refreshLots() {
-        if (_uiState.value.filterProductId != null) {
-            loadLotsByProduct(_uiState.value.filterProductId!!)
-        } else {
-            loadLots()
-        }
+        loadLots()
     }
 }
