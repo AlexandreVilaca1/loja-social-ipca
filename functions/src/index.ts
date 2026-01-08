@@ -1,10 +1,81 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import {Connector} from "@google-cloud/cloud-sql-connector";
 
 // Initialize Firebase Admin
 admin.initializeApp();
+
+// ============================================================================
+// EMAIL CONFIGURATION - CENTRALIZED AND SECURE
+// ============================================================================
+
+/**
+ * Configuração de email centralizada e segura
+ *
+ * IMPORTANTE: Estes emails devem corresponder aos configurados no SMTP
+ * O servidor SMTP vai REJEITAR qualquer email que não seja autorizado
+ *
+ * CONFIGURAÇÃO ATUAL: MODO DE TESTE
+ * TODO: Alterar para email institucional em produção
+ */
+const EMAIL_CONFIG = {
+  // Email remetente oficial do sistema
+  // TODO: Trocar para email institucional IPCA quando em produção
+  FROM_EMAIL: process.env.SYSTEM_FROM_EMAIL || "alexandrepv1357@gmail.com",
+  FROM_NAME: "Sistema de Apoio Social - IPCA",
+
+  // Email para respostas
+  REPLY_TO_EMAIL: process.env.SYSTEM_REPLY_TO_EMAIL || "alexandrepv1357@gmail.com",
+
+  // Email de suporte/contacto
+  SUPPORT_EMAIL: "sas@ipca.pt",
+  SUPPORT_PHONE: "253 802 190",
+
+  // Informações institucionais
+  INSTITUTION: {
+    name: "Instituto Politécnico do Cávado e do Ave",
+    shortName: "IPCA",
+    campus: "CAMPUS DO IPCA | BARCELOS",
+    address: "Vila Frescaínha S. Martinho",
+    postalCode: "4750-810 Barcelos",
+    phone: "253 802 190",
+  },
+} as const;
+
+/**
+ * Valida se um email é permitido para envio
+ * Previne uso de emails não autorizados
+ */
+function isAuthorizedSenderEmail(email: string): boolean {
+  const authorizedDomains = [
+    "@gmail.com",
+    "@ipca.pt",
+  ];
+
+  // Verifica se o email pertence a um domínio autorizado
+  return authorizedDomains.some((domain) => email.toLowerCase().endsWith(domain));
+}
+
+/**
+ * Retorna o email remetente configurado de forma segura
+ * Não permite substituição arbitrária
+ */
+function getSystemFromEmail(): { email: string; name: string } {
+  const email = EMAIL_CONFIG.FROM_EMAIL;
+
+  // Validação adicional de segurança
+  if (!isAuthorizedSenderEmail(email)) {
+    logger.error(`Unauthorized sender email detected: ${email}`);
+    throw new Error("Unauthorized sender email configuration");
+  }
+
+  return {
+    email: email,
+    name: EMAIL_CONFIG.FROM_NAME,
+  };
+}
 
 // Cloud SQL Connector instance
 let connector: Connector | null = null;
@@ -343,3 +414,359 @@ export const manageDistributionItem = onCall<ManageDistributionItemRequest>(
   }
 );
 
+// ============================================================================
+// SCHEDULED FUNCTION - Email de lembrete de distribuição
+// ============================================================================
+
+/**
+ * Scheduled function que roda diariamente às 18h para enviar lembretes
+ * de distribuições agendadas para o dia seguinte
+ *
+ * Envia email para beneficiários que têm distribuições marcadas para amanhã
+ * Agenda: Todos os dias às 18h (Europe/Lisbon timezone)
+ */
+export const sendDistributionReminders = onSchedule(
+  {
+    schedule: "0 18 * * *", // Cron: todos os dias às 18h
+    timeZone: "Europe/Lisbon",
+    region: "europe-west1",
+    secrets: ["POSTGRES_PASSWORD"],
+  },
+  async (event) => {
+    logger.info("Starting scheduled check for tomorrow's distributions");
+
+    let pool = null;
+    let client = null;
+
+    try {
+      pool = await getConnection();
+      client = await pool.connect();
+
+      // Calcular data de amanhã
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().split("T")[0]; // YYYY-MM-DD
+
+      logger.info(`Checking distributions for date: ${tomorrowStr}`);
+
+      // Buscar distribuições agendadas para amanhã com status "POR_ENTREGAR"
+      const distributionsQuery = `
+        SELECT
+          d.id as distribution_id,
+          d.distribution_date,
+          d.observations,
+          b.full_name as beneficiary_name,
+          b.contact_number as beneficiary_phone,
+          u.email as beneficiary_email,
+          u.name as user_name,
+          s.description as status_description
+        FROM distribution d
+        JOIN beneficiary b ON d.beneficiary_id = b.id
+        LEFT JOIN "user" u ON b.uid = u.uid
+        JOIN status_type s ON d.status_id = s.id
+        WHERE d.distribution_date = $1
+          AND s.code = 'POR_ENTREGAR'
+          AND u.email IS NOT NULL
+        ORDER BY b.full_name ASC
+      `;
+
+      const distributionsResult = await client.query(distributionsQuery, [tomorrowStr]);
+      const distributions = distributionsResult.rows;
+
+      if (distributions.length === 0) {
+        logger.info("No distributions scheduled for tomorrow");
+        return; // ✅ Retorna void
+      }
+
+      logger.info(`Found ${distributions.length} distributions for tomorrow`);
+
+      // Enviar email para cada beneficiário
+      const emailPromises = distributions.map((dist: any) => // ✅ Tipo explícito
+        sendDistributionReminderEmail(
+          dist.beneficiary_email,
+          dist.beneficiary_name,
+          dist.distribution_date,
+          dist.observations
+        )
+      );
+
+      await Promise.all(emailPromises);
+
+      logger.info(`Successfully sent ${distributions.length} reminder emails`);
+    } catch (error: any) {
+      logger.error("Error in sendDistributionReminders:", error);
+      throw error;
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
+);
+
+/**
+ * Normaliza uma data vinda da BD (pode vir como Date do node-postgres, YYYY-MM-DD ou ISO timestamp)
+ * para um Date válido.
+ */
+function parseDistributionDate(input: string | Date): Date {
+  // node-postgres pode devolver Date quando o tipo é DATE/TIMESTAMP
+  if (input instanceof Date) {
+    if (!Number.isNaN(input.getTime())) {
+      return input;
+    }
+    throw new Error(`Invalid distributionDate Date object: ${String(input)}`);
+  }
+
+  const trimmed = (input || "").trim();
+
+  // Caso 1: já é ISO (ex: 2026-01-09T00:00:00Z)
+  const isoParsed = new Date(trimmed);
+  if (!Number.isNaN(isoParsed.getTime())) {
+    return isoParsed;
+  }
+
+  // Caso 2: apenas data (YYYY-MM-DD)
+  // Força UTC para evitar diferenças de timezone
+  const ymdParsed = new Date(`${trimmed}T00:00:00.000Z`);
+  if (!Number.isNaN(ymdParsed.getTime())) {
+    return ymdParsed;
+  }
+
+  throw new Error(`Invalid distributionDate value: ${input}`);
+}
+
+/**
+ * Constrói o conteúdo HTML do email de lembrete
+ */
+function buildDistributionReminderEmail(
+  beneficiaryName: string,
+  distributionDate: string | Date,
+  observations: string | null
+): string {
+  // Formatar data para formato português
+  const date = parseDistributionDate(distributionDate);
+  const dateFormatted = date.toLocaleDateString("pt-PT", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "Europe/Lisbon",
+  });
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #ffffff;
+        }
+        .header {
+          background-color: #2E7D32;
+          color: white;
+          padding: 30px 20px;
+          text-align: center;
+          border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+          margin: 0;
+          font-size: 24px;
+        }
+        .content {
+          background-color: #f9f9f9;
+          padding: 30px 20px;
+          border-radius: 0 0 8px 8px;
+        }
+        .info-box {
+          background-color: #E8F5E9;
+          border-left: 4px solid #2E7D32;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .info-box strong {
+          color: #2E7D32;
+          font-size: 18px;
+        }
+        .alert-box {
+          background-color: #FFF3CD;
+          border-left: 4px solid #FFC107;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .location-box {
+          background-color: #E3F2FD;
+          border-left: 4px solid #1976D2;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #ddd;
+          font-size: 12px;
+          color: #666;
+        }
+        .button {
+          display: inline-block;
+          background-color: #2E7D32;
+          color: white;
+          padding: 12px 30px;
+          text-decoration: none;
+          border-radius: 5px;
+          margin: 20px 0;
+          font-weight: bold;
+        }
+        ul {
+          padding-left: 20px;
+        }
+        li {
+          margin: 8px 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Lembrete de Recolha</h1>
+          <p style="margin: 10px 0 0 0; font-size: 16px;">Sistema de Apoio Social - IPCA</p>
+        </div>
+        <div class="content">
+          <p>Olá <strong>${beneficiaryName}</strong>,</p>
+
+          <p>Este é um lembrete automático sobre a sua <strong>distribuição agendada</strong>.</p>
+
+          <div class="info-box">
+            <strong>📅 Data da Recolha:</strong><br>
+            ${dateFormatted}
+          </div>
+
+          <div class="alert-box">
+            <strong>⚠️ Importante:</strong> A sua distribuição está agendada para <strong>amanhã</strong>.
+            Por favor, não se esqueça de comparecer para recolher os produtos.
+          </div>
+
+          ${observations ? `
+          <div style="background-color: #f5f5f5; padding: 15px; margin: 20px 0; border-radius: 5px;">
+            <strong>📝 Observações:</strong><br>
+            ${observations}
+          </div>
+          ` : ""}
+
+          <div class="location-box">
+            <strong>📍 Local de Recolha:</strong><br>
+            <strong>${EMAIL_CONFIG.INSTITUTION.campus}</strong><br>
+            ${EMAIL_CONFIG.INSTITUTION.address}<br>
+            ${EMAIL_CONFIG.INSTITUTION.postalCode}<br><br>
+            <strong>📞 Telefone:</strong> ${EMAIL_CONFIG.INSTITUTION.phone}
+          </div>
+
+          <p><strong>O que levar:</strong></p>
+          <ul>
+            <li>Documento de identificação (Cartão de Estudante ou BI/CC)</li>
+            <li>Sacos ou mochila para transportar os produtos</li>
+          </ul>
+
+          <p><strong>Horário de Funcionamento:</strong></p>
+          <ul>
+            <li>Segunda a Sexta: 9h00 - 17h00</li>
+          </ul>
+
+          <p>Caso não possa comparecer, por favor entre em contacto connosco.</p>
+
+          <p style="margin-top: 30px;">
+            Se tiver alguma dúvida, não hesite em contactar-nos através do telefone <strong>${EMAIL_CONFIG.SUPPORT_PHONE}</strong>.
+          </p>
+
+          <p>Agradecemos a sua colaboração!</p>
+
+          <p style="margin-top: 20px;">
+            <strong>Equipa SAS - ${EMAIL_CONFIG.INSTITUTION.shortName}</strong>
+          </p>
+        </div>
+        <div class="footer">
+          <p>Este é um email automático. Por favor não responda.</p>
+          <p>Sistema de Apoio Social - ${EMAIL_CONFIG.INSTITUTION.name}</p>
+          <p>© ${new Date().getFullYear()} ${EMAIL_CONFIG.INSTITUTION.shortName} - Todos os direitos reservados</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Envia email de lembrete usando Firebase Admin SDK
+ * Usa configuração centralizada e validada
+ */
+async function sendDistributionReminderEmail(
+  toEmail: string,
+  beneficiaryName: string,
+  distributionDate: string | Date,
+  observations: string | null
+): Promise<void> {
+  try {
+    // Validar email destinatário
+    if (!toEmail || !toEmail.includes("@")) {
+      throw new Error(`Invalid recipient email: ${toEmail}`);
+    }
+
+    // Obter configuração segura do remetente
+    const sender = getSystemFromEmail();
+
+    const htmlContent = buildDistributionReminderEmail(
+      beneficiaryName,
+      distributionDate,
+      observations
+    );
+
+    // Formatar data para o assunto
+    const date = parseDistributionDate(distributionDate);
+    const dateFormatted = date.toLocaleDateString("pt-PT", {timeZone: "Europe/Lisbon"});
+
+    // Guardar meta apenas como YYYY-MM-DD (sem hora)
+    // Usar Europe/Lisbon para alinhar com o timezone do scheduler e UI.
+    const distributionDateYmd = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Lisbon",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+
+    // Configuração segura do email
+    const emailData = {
+      to: toEmail,
+      from: `${sender.name} <${sender.email}>`,
+      replyTo: EMAIL_CONFIG.REPLY_TO_EMAIL,
+      message: {
+        subject: `Recolha de produtos agendada para amanhã (${dateFormatted})`,
+        html: htmlContent,
+      },
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      metadata: {
+        type: "distribution_reminder",
+        distributionDate: distributionDateYmd,
+        sentAt: new Date().toISOString(),
+        system: "SAS-IPCA",
+      },
+    };
+
+    await admin.firestore().collection("mail").add(emailData);
+
+    logger.info(`Distribution reminder email queued for ${toEmail} from ${sender.email}`);
+  } catch (error) {
+    logger.error(`Error sending distribution reminder to ${toEmail}:`, error);
+    throw error;
+  }
+}

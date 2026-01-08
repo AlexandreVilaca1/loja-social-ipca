@@ -67,6 +67,15 @@ class BeneficiariesViewModel @Inject constructor(
             }
         }
 
+    /**
+     * Atualiza o filtro de status ativo/inativo
+     * Apenas atualiza o estado - o filtro é aplicado na View
+     */
+    fun setActiveFilter(filter: ActiveFilter) {
+        _uiState.update { it.copy(activeFilter = filter) }
+        Log.d(TAG, "Filter changed to: $filter")
+    }
+
     fun loadAvailableUsers() {
         viewModelScope.launch {
             // Carrega todos os users que são "Beneficiário" e não têm UID associado

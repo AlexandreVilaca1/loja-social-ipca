@@ -100,7 +100,7 @@ fun LotsView(
                 },
                 supportingText = {
                     Text(
-                        text = "Formato: Lote 'Nome Produto' 'Data de Validade YYYY/MM/DD'",
+                        text = "Formato: Lote 'Nome Produto' Data Validade 'YYYY/MM/DD'",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )

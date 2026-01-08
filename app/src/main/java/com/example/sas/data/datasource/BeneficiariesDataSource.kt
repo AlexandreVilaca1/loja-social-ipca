@@ -74,6 +74,7 @@ class BeneficiariesDataSource @Inject constructor() {
         contactNumber: String,
         address: String?,
         observations: String?,
+        uid: String?
     ): String {
         val result = connector.createBeneficiary.execute(
             fullName = fullName,

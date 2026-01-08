@@ -27,7 +27,7 @@ data class CampaignsUiState(
     val userRole: String? = null,
     val searchQuery: String = "",
     val selectedType: String? = null,
-    val availableTypes: List<String> = listOf("Alimentar", "Vestuário", "Higiene", "Escolar", "Outros"),
+    val availableTypes: List<String> = listOf("Interna", "Externa", "Bens Essenciais", "Educativa"),
 
     // Form fields
     val name: String = "",
@@ -37,7 +37,6 @@ data class CampaignsUiState(
     val campaignType: String = "Alimentar",
     val observations: String = "",
     val statusId: String? = null,
-
     val isEditMode: Boolean = false,
     val editingCampaignId: String? = null
 )

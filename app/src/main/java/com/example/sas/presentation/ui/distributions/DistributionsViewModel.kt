@@ -28,11 +28,9 @@ class DistributionsViewModel @Inject constructor(
     private val listDistributionsByStatusUseCase: ListDistributionsByBeneficiaryAndStatusUseCase,
     private val createDistributionUseCase: CreateDistributionUseCase,
     private val updateDistributionUseCase: UpdateDistributionUseCase,
-    private val completeDistributionUseCase: CompleteDistributionUseCase,
-    private val distributionItemsRepository: DistributionItemsRepository,
     private val listUsersUseCase: ListUsersUseCase,
     private val getStatusByCodeUseCase: GetStatusTypeByCodeUseCase,
-    private val getStatusTypeByCodeUseCase: GetStatusTypeByCodeUseCase, // Para manter compatibilidade com Edit
+    private val getStatusTypeByCodeUseCase: GetStatusTypeByCodeUseCase,
     private val logActivityUseCase: LogActivityUseCase,
     private val getBeneficiaryByIdUseCase: GetBeneficiaryByIdUseCase,
     savedStateHandle: SavedStateHandle
@@ -224,8 +222,6 @@ class DistributionsViewModel @Inject constructor(
         }
 
         val formattedDate = state.distributionDate.replace("/", "-")
-        val newStatusCode = state.availableStatuses.find { it.id == state.selectedStatusId }?.code
-        val isCompleting = newStatusCode == "ENTREGUE"
 
         viewModelScope.launch {
             if (isCompleting && !checkDistributionHasItems(state.distributionId)) {
@@ -268,15 +264,6 @@ class DistributionsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkDistributionHasItems(distributionId: String): Boolean {
-        var hasItems = false
-        distributionItemsRepository.listItemsByDistribution(distributionId, 1, 0).collect { result ->
-            if (result is ResultWrapper.Success) {
-                hasItems = (result.data?.size ?: 0) > 0
-            }
-        }
-        return hasItems
-    }
 
     /**
      * Valida se a data é válida para distribuição (não pode ser anterior à data atual)

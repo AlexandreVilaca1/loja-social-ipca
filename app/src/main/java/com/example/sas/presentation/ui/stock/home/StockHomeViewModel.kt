@@ -19,6 +19,7 @@ data class StockHomeUiState(
     val totalLots: Int = 0,
     val lotsExpiringSoon: Int = 0,
     val lotsExpired: Int = 0,
+    val lotsWithNoStock: Int = 0,
     val totalCategories: Int = 0,
     val isLoading: Boolean = false,
     val error: String? = null
@@ -76,7 +77,8 @@ class StockHomeViewModel @Inject constructor(
                         _uiState.value = _uiState.value.copy(
                             totalLots = lots.size,
                             lotsExpiringSoon = expiringSoon,
-                            lotsExpired = expired
+                            lotsExpired = expired,
+                            lotsWithNoStock = lots.count { it.currentQuantity <= 0 }
                         )
                     }
                     is ResultWrapper.Error -> {

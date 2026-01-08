@@ -20,5 +20,11 @@
       ],
       "source": "functions"
     }
-  ]
+  ],
+  "extensions": {
+    "firestore-send-email": "firebase/firestore-send-email@0.2.4",
+    "firestore-send-email-bb6g": "firebase/firestore-send-email@0.2.4",
+    "firestore-send-email-42u2": "firebase/firestore-send-email@0.2.4",
+    "firestore-send-email-o0e9": "firebase/firestore-send-email@0.2.4"
+  }
 }

@@ -173,6 +173,7 @@ private fun StatusFilterChips(
         "NAO_COMPARECEU" to "Não Compareceu"
     )
 
+
     LazyRow(
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -183,10 +184,8 @@ private fun StatusFilterChips(
                 onClick = { onStatusSelected(code) },
                 label = { Text(label) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = GreenPrimary,
-                    selectedLabelColor = Color.White,
-                    containerColor = Color.White,
-                    labelColor = Color.Gray
+                    selectedContainerColor = GreenPrimary.copy(alpha = 0.2f),
+                    selectedLabelColor = GreenPrimary
                 )
             )
         }
@@ -229,7 +228,7 @@ private fun CreateDistributionBottomSheet(
                 OutlinedTextField(
                     value = state.distributionDate,
                     onValueChange = { viewModel.onDistributionDateChanged(it) },
-                    label = { Text("Data (YYYY-MM-DD)") },
+                    label = { Text("Data (YYYY-MM-DD) *") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White)
                 )
@@ -241,10 +240,10 @@ private fun CreateDistributionBottomSheet(
                     onExpandedChange = { showUserDropdown = !showUserDropdown }
                 ) {
                     OutlinedTextField(
-                        value = state.availableUsers.find { it.id == state.selectedResponsibleStaffId }?.name ?: "Selecionar SAS",
+                        value = state.availableUsers.find { it.id == state.selectedResponsibleStaffId }?.name ?: "Selecionar SAS *",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Responsável") },
+                        label = { Text("Responsável *") },
                         trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },
                         modifier = Modifier.fillMaxWidth().menuAnchor(),
                         colors = OutlinedTextFieldDefaults.colors(unfocusedContainerColor = Color.White, focusedContainerColor = Color.White)
