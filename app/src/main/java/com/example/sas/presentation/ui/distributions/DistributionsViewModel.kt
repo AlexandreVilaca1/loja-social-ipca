@@ -8,6 +8,7 @@ import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.Distribution
 import com.example.sas.domain.models.StatusType
 import com.example.sas.domain.repositories.DistributionItemsRepository
+import com.example.sas.domain.usecase.beneficiaries.GetBeneficiaryByIdUseCase
 import com.example.sas.domain.usecase.distributions.*
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.status.GetStatusTypeByCodeUseCase
@@ -33,6 +34,7 @@ class DistributionsViewModel @Inject constructor(
     private val getStatusByCodeUseCase: GetStatusTypeByCodeUseCase,
     private val getStatusTypeByCodeUseCase: GetStatusTypeByCodeUseCase, // Para manter compatibilidade com Edit
     private val logActivityUseCase: LogActivityUseCase,
+    private val getBeneficiaryByIdUseCase: GetBeneficiaryByIdUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -158,6 +160,8 @@ class DistributionsViewModel @Inject constructor(
 
     fun createDistribution(onSuccess: (String) -> Unit) {
         val state = _uiState.value
+        var benName = ""
+
         if (state.beneficiaryId.isBlank() || state.distributionDate.isBlank() ||
             state.selectedResponsibleStaffId.isBlank() || state.selectedStatusId.isBlank()) {
             _uiState.update { it.copy(error = "Preencha os campos obrigatórios") }
@@ -171,6 +175,10 @@ class DistributionsViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            getBeneficiaryByIdUseCase.execute(state.beneficiaryId).collect { result ->
+                if(result is ResultWrapper.Success) benName = result.data?.fullName ?: "Nome Desconhecido"
+            }
+
             createDistributionUseCase.execute(
                 beneficiaryId = state.beneficiaryId,
                 distributionDate = state.distributionDate,
@@ -181,7 +189,7 @@ class DistributionsViewModel @Inject constructor(
                 when (result) {
                     is ResultWrapper.Loading -> _uiState.update { it.copy(isCreating = true, error = null) }
                     is ResultWrapper.Success -> {
-                        logActivityUseCase.execute("Criou distribuição: ${result.data}", "DISTRIBUTION")
+                        logActivityUseCase.execute("Criou distribuição: ${benName} ${state.distributionDate}", "DISTRIBUTION")
                         _uiState.update { it.copy(isCreating = false) }
                         result.data?.let { onSuccess(it) }
                     }
@@ -208,6 +216,7 @@ class DistributionsViewModel @Inject constructor(
 
     fun updateDistribution(onSuccess: () -> Unit) {
         val state = _uiState.value
+        var benName = ""
 
         if (state.distributionDate.isBlank() || state.selectedResponsibleStaffId.isBlank() || state.selectedStatusId.isBlank()) {
             _uiState.update { it.copy(error = "Campos obrigatórios em falta") }
@@ -224,6 +233,10 @@ class DistributionsViewModel @Inject constructor(
                 return@launch
             }
 
+            getBeneficiaryByIdUseCase.execute(state.beneficiaryId).collect { result ->
+                if(result is ResultWrapper.Success) benName = result.data?.fullName ?: "Nome Desconhecido"
+            }
+
             updateDistributionUseCase.execute(
                 distributionId = state.distributionId,
                 distributionDate = formattedDate,
@@ -238,12 +251,12 @@ class DistributionsViewModel @Inject constructor(
                             launch {
                                 completeDistributionUseCase.execute(state.distributionId, state.selectedStatusId).collect { completeResult ->
                                     if (completeResult is ResultWrapper.Success) {
-                                        logActivityUseCase.execute("Completou distribuição:${state.distributionId} (Status: ENTREGUE, quantidades reduzidas)", "DISTRIBUTION")
+                                        logActivityUseCase.execute("Completou distribuição:${benName} ${formattedDate}", "DISTRIBUTION")
                                     }
                                 }
                             }
                         } else {
-                            logActivityUseCase.execute("Editou distribuição:${state.distributionId}", "DISTRIBUTION")
+                            logActivityUseCase.execute("Editou distribuição:${benName} ${formattedDate}", "DISTRIBUTION")
                         }
                         _uiState.update { it.copy(isUpdating = false) }
                         kotlinx.coroutines.delay(500)

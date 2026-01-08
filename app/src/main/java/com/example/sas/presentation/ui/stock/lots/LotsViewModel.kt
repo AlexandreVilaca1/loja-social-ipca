@@ -58,7 +58,8 @@ class LotsViewModel @Inject constructor(
     private val deleteLotUseCase: DeleteLotUseCase,
     private val listProductsUseCase: ListProductsUseCase,
     private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase,
-    private val logActivityUseCase: LogActivityUseCase
+    private val logActivityUseCase: LogActivityUseCase,
+    private val getLotByIdUseCase: GetLotByIdUseCase
 
 ) : ViewModel() {
 
@@ -253,7 +254,7 @@ class LotsViewModel @Inject constructor(
             createLotUseCase.execute(request).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
-                        logActivityUseCase.execute("Criou lote: ${state.lotCode}", "STOCK_LOT")
+                        logActivityUseCase.execute("Criou lote: ${state.lotCode}", "STOCK_LOTS")
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             createdLotId = result.data
@@ -295,7 +296,7 @@ class LotsViewModel @Inject constructor(
             updateLotUseCase.execute(request).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
-                        logActivityUseCase.execute("Editou lote: ${state.lotCode}", "STOCK_LOT")
+                        logActivityUseCase.execute("Editou lote: ${state.lotCode}", "STOCK_LOTS")
                         _uiState.value = _uiState.value.copy(isLoading = false)
                         clearForm()
                         loadLots()
@@ -315,11 +316,17 @@ class LotsViewModel @Inject constructor(
     }
 
     fun updateQuantity(lotId: String, newQuantity: Int) {
+        var lotCode = ""
+
         viewModelScope.launch {
+            getLotByIdUseCase.execute(lotId).collect { result ->
+                if(result is ResultWrapper.Success) lotCode = result.data?.lotCode ?: "Lote Desconhecido"
+            }
             updateLotQuantityUseCase.execute(id = lotId, currentQuantity = newQuantity)
                 .collect { result ->
                     when (result) {
                         is ResultWrapper.Success -> {
+                            logActivityUseCase.execute("Editou quantidade lote: ${lotCode}", "STOCK_LOTS")
                             loadLots()
                         }
                         is ResultWrapper.Error -> {
@@ -349,7 +356,7 @@ class LotsViewModel @Inject constructor(
             deleteLotUseCase.execute(lotId).collect { result ->
                 when (result) {
                     is ResultWrapper.Success -> {
-                        logActivityUseCase.execute("Removeu lote: ${lotCode}", "STOCK_LOT")
+                        logActivityUseCase.execute("Removeu lote: ${lotCode}", "STOCK_LOTS")
                         loadLots()
                     }
                     is ResultWrapper.Error -> {
