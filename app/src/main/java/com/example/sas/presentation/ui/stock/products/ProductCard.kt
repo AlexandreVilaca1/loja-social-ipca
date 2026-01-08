@@ -15,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.Scale
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -75,7 +77,6 @@ fun ProductCard(
                         )
                     }
                 }
-
                 if(canEdit){
                     Row {
                         IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
@@ -97,6 +98,44 @@ fun ProductCard(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Total em Stock
+                Column(modifier = Modifier.weight(1f)) {
+                    InfoRow(
+                        icon = Icons.Outlined.Inventory2,
+                        text = "${product.totalQuantity} ${product.unitOfMeasure}",
+                        textColor = if (product.totalQuantity > 0) GreenPrimary else Color.Red
+                    )
+                    Text(
+                        text = "Total em stock",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(start = 22.dp)
+                    )
+                }
+
+                // Quantidade de Lotes
+                Column(modifier = Modifier.weight(1f)) {
+                    InfoRow(
+                        icon = Icons.Outlined.Layers,
+                        text = "${product.lotCount} lotes"
+                    )
+                    Text(
+                        text = "Lotes ativos",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(start = 22.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             Spacer(modifier = Modifier.height(12.dp))
 

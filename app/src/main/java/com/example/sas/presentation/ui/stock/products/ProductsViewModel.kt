@@ -8,16 +8,19 @@ import com.example.sas.domain.models.CreateProductRequest
 import com.example.sas.domain.models.Product
 import com.example.sas.domain.models.UpdateProductRequest
 import com.example.sas.domain.models.Category
+import com.example.sas.domain.models.Lot
 import com.example.sas.domain.usecase.auth.GetCurrentUserUseCase
 import com.example.sas.domain.usecase.auth.GetLoggedUserRoleUseCase
 import com.example.sas.domain.usecase.products.*
 import com.example.sas.domain.usecase.categories.ListActiveCategoriesUseCase
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
+import com.example.sas.domain.usecase.lots.ListLotsUseCase
 import com.example.sas.domain.usecase.users.GetUserByUidUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,7 +55,8 @@ class ProductsViewModel @Inject constructor(
     private val deleteProductUseCase: DeleteProductUseCase,
     private val listActiveCategoriesUseCase: ListActiveCategoriesUseCase,
     private val getLoggedUserRoleUseCase: GetLoggedUserRoleUseCase,
-    private val logActivityUseCase: LogActivityUseCase
+    private val logActivityUseCase: LogActivityUseCase,
+    private val listLotsUseCase: ListLotsUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProductsUiState())
@@ -74,31 +78,35 @@ class ProductsViewModel @Inject constructor(
         }
     }
 
+    private fun enrichProductsWithLots(products: List<Product>, lots: List<Lot>): List<Product> {
+        return products.map { product ->
+            val productLots = lots.filter { it.productId == product.id }
+            product.copy(
+                totalQuantity = productLots.sumOf { it.currentQuantity },
+                lotCount = productLots.size
+            )
+        }
+    }
 
     fun loadProducts() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
-            listProductsUseCase.execute(limit = 100, offset = 0)
-                .collect { result ->
-                    when (result) {
-                        is ResultWrapper.Success -> {
-                            _uiState.value = _uiState.value.copy(
-                                products = result.data!!,
-                                isLoading = false
-                            )
-                        }
-                        is ResultWrapper.Error -> {
-                            _uiState.value = _uiState.value.copy(
-                                error = result.message,
-                                isLoading = false
-                            )
-                        }
-                        is ResultWrapper.Loading -> {
-                            _uiState.value = _uiState.value.copy(isLoading = true)
-                        }
-                    }
+            val productsFlow = listProductsUseCase.execute(limit = 100, offset = 0)
+            val lotsFlow = listLotsUseCase.execute(limit = 1000, offset = 0)
+
+            productsFlow.combine(lotsFlow) { prodRes, lotsRes ->
+                Pair(prodRes, lotsRes)
+            }.collect { (prodRes, lotsRes) ->
+                if (prodRes is ResultWrapper.Success && lotsRes is ResultWrapper.Success) {
+                    _uiState.update { it.copy(
+                        products = enrichProductsWithLots(prodRes.data ?: emptyList(), lotsRes.data ?: emptyList()),
+                        isLoading = false
+                    ) }
+                } else if (prodRes is ResultWrapper.Error) {
+                    _uiState.update { it.copy(error = prodRes.message, isLoading = false) }
                 }
+            }
         }
     }
 
@@ -128,28 +136,37 @@ class ProductsViewModel @Inject constructor(
 
     private fun searchProducts(query: String) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
-            searchProductsUseCase.execute(searchTerm = query, limit = 100, offset = 0)
-                .collect { result ->
-                    when (result) {
-                        is ResultWrapper.Success -> {
-                            _uiState.value = _uiState.value.copy(
-                                products = result.data!!,
-                                isLoading = false
-                            )
-                        }
-                        is ResultWrapper.Error -> {
-                            _uiState.value = _uiState.value.copy(
-                                error = result.message,
-                                isLoading = false
-                            )
-                        }
-                        is ResultWrapper.Loading -> {
-                            _uiState.value = _uiState.value.copy(isLoading = true)
-                        }
+            val searchFlow = searchProductsUseCase.execute(searchTerm = query, limit = 100, offset = 0)
+            val lotsFlow = listLotsUseCase.execute(limit = 1000, offset = 0)
+
+            searchFlow.combine(lotsFlow) { searchRes, lotsRes ->
+                Pair(searchRes, lotsRes)
+            }.collect { (searchRes, lotsRes) ->
+                when {
+                    searchRes is ResultWrapper.Success && lotsRes is ResultWrapper.Success -> {
+                        val searchResultProducts = searchRes.data ?: emptyList()
+                        val allLots = lotsRes.data ?: emptyList()
+
+                        val enrichedProducts = enrichProductsWithLots(searchResultProducts, allLots)
+
+                        _uiState.update { it.copy(
+                            products = enrichedProducts,
+                            isLoading = false
+                        ) }
+                    }
+                    searchRes is ResultWrapper.Error -> {
+                        _uiState.update { it.copy(error = searchRes.message, isLoading = false) }
+                    }
+                    lotsRes is ResultWrapper.Error -> {
+                        _uiState.update { it.copy(error = "Erro ao carregar stock: ${lotsRes.message}", isLoading = false) }
+                    }
+                    searchRes is ResultWrapper.Loading || lotsRes is ResultWrapper.Loading -> {
+                        _uiState.update { it.copy(isLoading = true) }
                     }
                 }
+            }
         }
     }
 

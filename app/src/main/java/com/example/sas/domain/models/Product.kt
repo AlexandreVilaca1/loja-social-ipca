@@ -10,5 +10,7 @@ data class Product(
     val categoryName: String?,
     val categoryDescription: String?,
     val createdAt: String?,
-    val updatedAt: String?
+    val updatedAt: String?,
+    val totalQuantity: Int = 0,
+    val lotCount: Int = 0
 )
