@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.sas.domain.common.ResultWrapper
 import com.example.sas.domain.models.Distribution
 import com.example.sas.domain.models.StatusType
-import com.example.sas.domain.repositories.DistributionItemsRepository
 import com.example.sas.domain.usecase.distributions.*
 import com.example.sas.domain.usecase.logs.LogActivityUseCase
 import com.example.sas.domain.usecase.status.GetStatusTypeByCodeUseCase
@@ -27,11 +26,9 @@ class DistributionsViewModel @Inject constructor(
     private val listDistributionsByStatusUseCase: ListDistributionsByBeneficiaryAndStatusUseCase,
     private val createDistributionUseCase: CreateDistributionUseCase,
     private val updateDistributionUseCase: UpdateDistributionUseCase,
-    private val completeDistributionUseCase: CompleteDistributionUseCase,
-    private val distributionItemsRepository: DistributionItemsRepository,
     private val listUsersUseCase: ListUsersUseCase,
     private val getStatusByCodeUseCase: GetStatusTypeByCodeUseCase,
-    private val getStatusTypeByCodeUseCase: GetStatusTypeByCodeUseCase, // Para manter compatibilidade com Edit
+    private val getStatusTypeByCodeUseCase: GetStatusTypeByCodeUseCase,
     private val logActivityUseCase: LogActivityUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -215,15 +212,8 @@ class DistributionsViewModel @Inject constructor(
         }
 
         val formattedDate = state.distributionDate.replace("/", "-")
-        val newStatusCode = state.availableStatuses.find { it.id == state.selectedStatusId }?.code
-        val isCompleting = newStatusCode == "ENTREGUE"
 
         viewModelScope.launch {
-            if (isCompleting && !checkDistributionHasItems(state.distributionId)) {
-                _uiState.update { it.copy(error = "Adicione produtos antes de marcar como entregue.") }
-                return@launch
-            }
-
             updateDistributionUseCase.execute(
                 distributionId = state.distributionId,
                 distributionDate = formattedDate,
@@ -234,17 +224,7 @@ class DistributionsViewModel @Inject constructor(
                 when (result) {
                     is ResultWrapper.Loading -> _uiState.update { it.copy(isUpdating = true, error = null) }
                     is ResultWrapper.Success -> {
-                        if (isCompleting) {
-                            launch {
-                                completeDistributionUseCase.execute(state.distributionId, state.selectedStatusId).collect { completeResult ->
-                                    if (completeResult is ResultWrapper.Success) {
-                                        logActivityUseCase.execute("Completou distribuição:${state.distributionId} (Status: ENTREGUE, quantidades reduzidas)", "DISTRIBUTION")
-                                    }
-                                }
-                            }
-                        } else {
-                            logActivityUseCase.execute("Editou distribuição:${state.distributionId}", "DISTRIBUTION")
-                        }
+                        logActivityUseCase.execute("Editou distribuição:${state.distributionId}", "DISTRIBUTION")
                         _uiState.update { it.copy(isUpdating = false) }
                         kotlinx.coroutines.delay(500)
                         onSuccess()
@@ -255,15 +235,6 @@ class DistributionsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkDistributionHasItems(distributionId: String): Boolean {
-        var hasItems = false
-        distributionItemsRepository.listItemsByDistribution(distributionId, 1, 0).collect { result ->
-            if (result is ResultWrapper.Success) {
-                hasItems = (result.data?.size ?: 0) > 0
-            }
-        }
-        return hasItems
-    }
 
     /**
      * Valida se a data é válida para distribuição (não pode ser anterior à data atual)

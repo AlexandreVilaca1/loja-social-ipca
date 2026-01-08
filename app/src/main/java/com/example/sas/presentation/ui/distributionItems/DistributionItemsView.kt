@@ -191,7 +191,6 @@ private fun AddItemBottomSheet(
             onDismiss()
         },
         sheetState = sheetState,
-        containerColor = Color.White
     ) {
         Column(
             modifier = Modifier
@@ -202,7 +201,7 @@ private fun AddItemBottomSheet(
             Text(
                 text = "Adicionar Produto",
                 style = MaterialTheme.typography.titleLarge,
-                color = Color(0xFF1C1C1C)
+                color = GreenPrimary
             )
 
             // Dropdown para selecionar lote com pesquisa

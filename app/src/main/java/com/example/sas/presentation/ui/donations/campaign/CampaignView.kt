@@ -59,7 +59,10 @@ fun CampaignsView(
             Spacer(modifier = Modifier.height(12.dp))
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                item { FilterChip(selected = state.selectedType == null, onClick = { viewModel.setTypeFilter(null) }, label = { Text("Todos") }) }
+                item { FilterChip(selected = state.selectedType == null, onClick = { viewModel.setTypeFilter(null) }, label = { Text("Todos") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = GreenPrimary.copy(alpha = 0.2f),
+                        selectedLabelColor = GreenPrimary)) }
                 items(state.availableTypes) { type ->
                     FilterChip(selected = state.selectedType == type, onClick = { viewModel.setTypeFilter(type) }, label = { Text(type) })
                 }

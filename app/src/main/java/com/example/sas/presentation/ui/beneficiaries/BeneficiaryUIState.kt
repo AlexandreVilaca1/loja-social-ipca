@@ -10,6 +10,7 @@ import com.example.sas.domain.models.User
 data class BeneficiariesUiState(
     // Search
     val searchQuery: String = "",
+    val activeFilter: ActiveFilter = ActiveFilter.ACTIVE, // Filtro de ativos/inativos
 
     // Form inputs
     val fullName: String = "",
@@ -38,5 +39,10 @@ data class BeneficiariesUiState(
     val beneficiaries: List<Beneficiary> = emptyList()
 )
 
-
-
+/**
+ * Filtro para status de beneficiários
+ */
+enum class ActiveFilter {
+    ACTIVE,   // Apenas ativos
+    INACTIVE  // Apenas inativos
+}

@@ -1,6 +1,5 @@
 package com.example.sas.presentation.ui.beneficiaries
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,12 +27,13 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -42,7 +42,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -121,6 +120,31 @@ fun BeneficiariesView(
                 singleLine = true
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // FilterChips para Ativos/Inativos
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = state.activeFilter == ActiveFilter.ACTIVE,
+                    onClick = { viewModel.setActiveFilter(ActiveFilter.ACTIVE) },
+                    label = { Text("Ativos") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = GreenPrimary.copy(alpha = 0.2f),
+                        selectedLabelColor = GreenPrimary)
+                    )
+                FilterChip(
+                    selected = state.activeFilter == ActiveFilter.INACTIVE,
+                    onClick = { viewModel.setActiveFilter(ActiveFilter.INACTIVE) },
+                    label = { Text("Inativos") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = GreenPrimary.copy(alpha = 0.2f),
+                        selectedLabelColor = GreenPrimary)
+                )
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             if (state.error != null) {
@@ -136,11 +160,17 @@ fun BeneficiariesView(
                     CircularProgressIndicator(color = GreenPrimary)
                 }
             } else {
+                // Aplicar filtro baseado no activeFilter
+                val filteredList = when (state.activeFilter) {
+                    ActiveFilter.ACTIVE -> state.beneficiaries.filter { it.isActive }
+                    ActiveFilter.INACTIVE -> state.beneficiaries.filter { !it.isActive }
+                }
+
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(state.beneficiaries) { b ->
+                    items(filteredList) { b ->
                         BeneficiaryCard(
                             beneficiary = b,
                             onEdit = {
@@ -158,7 +188,7 @@ fun BeneficiariesView(
                     // Total count footer
                     item {
                         Text(
-                            text = "Total: ${state.beneficiaries.size} beneficiários",
+                            text = "Total: ${filteredList.size} de ${state.beneficiaries.size} beneficiários",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color(0xFF1C1C1C),
                             modifier = Modifier.fillMaxWidth(),

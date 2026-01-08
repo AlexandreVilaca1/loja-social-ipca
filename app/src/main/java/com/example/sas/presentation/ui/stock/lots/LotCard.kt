@@ -53,6 +53,7 @@ fun LotCard(
 ) {
     val isExpiringSoon = lot.expirationDate?.let { isExpiringSoon(it) } ?: false
     val isExpired = lot.expirationDate?.let { isExpired(it) } ?: false
+    val isWithNoStock = lot.currentQuantity <= 0
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -62,6 +63,7 @@ fun LotCard(
             containerColor = when {
                 isExpired -> Color(0xFFFFF0F0)
                 isExpiringSoon -> Color(0xFFFFF9E6)
+                isWithNoStock -> Color(0xFFFFF0F0)
                 else -> Color.White
             }
         )
@@ -101,7 +103,11 @@ fun LotCard(
                     ) {
                         if (isExpired) {
                             StatusBadge("VENCIDO", Color(0xFFDC3545))
-                        } else if (isExpiringSoon) {
+                        }
+                        else if (isWithNoStock)  {
+                            StatusBadge("SEM STOCK", Color(0xFF6C757D))
+                        }
+                        else if (isExpiringSoon) {
                             StatusBadge("A VENCER", Color(0xFFFFC107))
                         }
                     }
@@ -134,19 +140,10 @@ fun LotCard(
             // Quantities
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
                     Text(
-                        text = "Inicial",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.Gray
-                    )
-                }
-
-                Column {
-                    Text(
-                        text = "Atual",
+                        text = "Quantidade",
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.Gray
                     )
@@ -256,6 +253,7 @@ private fun formatDateForDisplay(dateStr: String): String {
         dateStr
     }
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 private fun isExpiringSoon(expirationDate: String): Boolean {
     return try {
@@ -267,6 +265,7 @@ private fun isExpiringSoon(expirationDate: String): Boolean {
         false
     }
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 private fun isExpired(expirationDate: String): Boolean {
     return try {

@@ -94,7 +94,8 @@ fun StockHomeView(
                     stats = listOf(
                         StatItem("Total", state.totalLots.toString(), GreenPrimary),
                         StatItem("A vencer", state.lotsExpiringSoon.toString(), Color(0xFFFFC107)),
-                        StatItem("Vencidos", state.lotsExpired.toString(), Color(0xFFDC3545))
+                        StatItem("Vencidos", state.lotsExpired.toString(), Color(0xFFDC3545)) ,
+                        StatItem("Sem stock", state.lotsWithNoStock.toString(), Color(0xFFDC3545))
                     ),
                     highlight = state.lotsExpired > 0 || state.lotsExpiringSoon > 0,
                     onClick = { navController.navigate("stock/lots") }

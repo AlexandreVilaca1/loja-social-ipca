@@ -156,8 +156,8 @@ class BeneficiariesRepositoryImpl @Inject constructor(
                 course = course,
                 isActive = isActive,
                 contactNumber = contactNumber,
-                address = address,
-                observations = observations
+                address = address, observations = observations,
+                uid = uid
             )
             emit(ResultWrapper.Success(id))
         } catch (e: Exception) {
