@@ -106,7 +106,7 @@ fun HomeView(onSignOut : () -> Unit) {
                     }
                 },
                 onSignOut = {onSignOut()},
-                authViewModel = authViewModel
+                authViewModel = authViewModel,
             )
         }
     ) {

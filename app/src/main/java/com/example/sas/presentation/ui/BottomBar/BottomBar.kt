@@ -1,5 +1,6 @@
 package com.example.sas.presentation.ui.BottomBar
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
@@ -69,6 +70,7 @@ fun BottomBar(
 
     NavigationBar(
         containerColor = Color.White,
+        windowInsets = WindowInsets(0, 0, 0, 0),
         tonalElevation = 0.dp
     ) {
         // 3. Iteramos apenas sobre a lista filtrada
