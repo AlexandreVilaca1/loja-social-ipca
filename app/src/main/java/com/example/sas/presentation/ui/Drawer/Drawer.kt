@@ -44,6 +44,7 @@ fun DrawerContent(
         buildList {
             add(DrawerNavItem("Agendamentos", DrawerRoute.Agendamentos.route, Icons.Outlined.Event))
             add(DrawerNavItem("Stock", DrawerRoute.Produtos.route, Icons.Outlined.Inventory2))
+            add(DrawerNavItem("Pedidos", DrawerRoute.Pedidos.route, Icons.Outlined.Assignment))
             if (authState.currentUser?.role == "SAS") {
                 add(DrawerNavItem("Beneficiários", DrawerRoute.Beneficiarios.route, Icons.Outlined.People))
                 add(DrawerNavItem("Candidaturas", DrawerRoute.Candidaturas.route, Icons.Outlined.AssignmentInd))

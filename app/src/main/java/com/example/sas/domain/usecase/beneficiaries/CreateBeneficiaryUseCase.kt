@@ -29,7 +29,7 @@ class CreateBeneficiaryUseCase @Inject constructor(
         observations: String? = null,
         uid: String? = null
     ): Flow<ResultWrapper<String>> {
-        // Business validation
+
         require(fullName.isNotBlank()) { "Nome completo é obrigatório" }
         require(studentNumber > 0) { "Número de aluno deve ser válido" }
         require(nif.isNotBlank()) { "NIF é obrigatório" }

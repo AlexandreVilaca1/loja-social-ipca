@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
 import com.example.sas.presentation.ui.candidacies.CandidaciesView
 import com.example.sas.presentation.ui.donations.items.DonationItemsView
 import com.example.sas.presentation.ui.donations.list.DonationsView
+import com.example.sas.presentation.ui.requests.RequestsView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +70,7 @@ fun HomeView(onSignOut : () -> Unit) {
                                 currentRoute?.startsWith("donation/items/") == true // Voltar para a Lista de Doações
 
     val currentTitle = when {
+        currentRoute == DrawerRoute.Pedidos.route -> "Pedidos"
         currentRoute == "agendamentos/home" -> "Agendamentos"
         currentRoute == "agendamentos/todos" -> "Lista de Distribuições"
         currentRoute?.startsWith("agendamentos") == true -> "Agendamentos"
@@ -194,6 +196,11 @@ fun HomeView(onSignOut : () -> Unit) {
                             CategoriesView(navController = navController)
                         }
                     }
+
+                    composable(DrawerRoute.Pedidos.route) {
+                        RequestsView(navController = navController)
+                    }
+
 
                     composable(DrawerRoute.Beneficiarios.route) {
                         BeneficiariesView(
