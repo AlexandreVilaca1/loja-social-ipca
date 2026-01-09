@@ -98,8 +98,11 @@ fun ReportsView(
                 FilterChip(
                     selected = state.selectedLogType == null,
                     onClick = { viewModel.onLogTypeSelected(null) },
-                    label = { Text("Todos") }
-                )
+                    label = { Text("Todos") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = GreenPrimary.copy(alpha = 0.2f),
+                        selectedLabelColor = GreenPrimary
+                ))
             }
             items(state.logTypes) { type ->
                 FilterChip(

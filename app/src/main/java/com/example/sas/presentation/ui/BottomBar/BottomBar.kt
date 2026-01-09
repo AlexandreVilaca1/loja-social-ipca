@@ -86,18 +86,35 @@ fun BottomBar(
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    val targetRoute = when (item.route) {
-                        DrawerRoute.Agendamentos.route -> "agendamentos/home"
-                        DrawerRoute.Produtos.route -> "stock/home"
-                        else -> item.route
-                    }
-
-                    navController.navigate(targetRoute) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+                    when (item.route) {
+                        DrawerRoute.Agendamentos.route -> {
+                            // Sempre vai para agendamentos/home e limpa a pilha
+                            navController.navigate("agendamentos/home") {
+                                popUpTo("agendamentos") {
+                                    inclusive = false
+                                }
+                                launchSingleTop = true
+                            }
                         }
-                        launchSingleTop = true
-                        restoreState = true
+                        DrawerRoute.Produtos.route -> {
+                            // Sempre vai para stock/home e limpa a pilha
+                            navController.navigate("stock/home") {
+                                popUpTo("stock") {
+                                    inclusive = false
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                        else -> {
+                            // Outras rotas navegam normalmente
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     }
                 },
                 icon = {

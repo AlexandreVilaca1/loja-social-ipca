@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,6 +44,18 @@ fun BeneficiaryDistributionsView(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+
+            // Título
+            item {
+                Text(
+                    text = "Distribuições - ${state.beneficiaryName}",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1C1C1C),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
             // Filtros de status
             item {
                 StatusFilterChips(
@@ -167,7 +180,7 @@ private fun StatusFilterChips(
     onStatusSelected: (String?) -> Unit
 ) {
     val statusOptions = listOf(
-        null to "Todos",
+        null to "Todas",
         "ENTREGUE" to "Entregue",
         "POR_ENTREGAR" to "Por Entregar",
         "NAO_COMPARECEU" to "Não Compareceu"

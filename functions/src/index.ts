@@ -24,7 +24,7 @@ const EMAIL_CONFIG = {
   // Email remetente oficial do sistema
   // TODO: Trocar para email institucional IPCA quando em produção
   FROM_EMAIL: process.env.SYSTEM_FROM_EMAIL || "alexandrepv1357@gmail.com",
-  FROM_NAME: "Sistema de Apoio Social - IPCA",
+  FROM_NAME: "Sistema de Ação Social - IPCA",
 
   // Email para respostas
   REPLY_TO_EMAIL: process.env.SYSTEM_REPLY_TO_EMAIL || "alexandrepv1357@gmail.com",
@@ -640,7 +640,7 @@ function buildDistributionReminderEmail(
       <div class="container">
         <div class="header">
           <h1>Lembrete de Recolha</h1>
-          <p style="margin: 10px 0 0 0; font-size: 16px;">Sistema de Apoio Social - IPCA</p>
+          <p style="margin: 10px 0 0 0; font-size: 16px;">Sistema de Ação Social - IPCA</p>
         </div>
         <div class="content">
           <p>Olá <strong>${beneficiaryName}</strong>,</p>
@@ -697,7 +697,7 @@ function buildDistributionReminderEmail(
         </div>
         <div class="footer">
           <p>Este é um email automático. Por favor não responda.</p>
-          <p>Sistema de Apoio Social - ${EMAIL_CONFIG.INSTITUTION.name}</p>
+          <p>Sistema de Ação Social - ${EMAIL_CONFIG.INSTITUTION.name}</p>
           <p>© ${new Date().getFullYear()} ${EMAIL_CONFIG.INSTITUTION.shortName} - Todos os direitos reservados</p>
         </div>
       </div>
@@ -770,3 +770,342 @@ async function sendDistributionReminderEmail(
     throw error;
   }
 }
+
+// ============================================================================
+// SCHEDULED FUNCTION - Email de alerta de expiração de lotes
+// ============================================================================
+
+/**
+ * Scheduled function que roda diariamente às 18h para enviar alertas
+ * de lotes que vão expirar em 31 dias
+ *
+ * Envia email para todos os utilizadores com role SAS
+ * Agenda: Todos os dias às 18h (Europe/Lisbon timezone)
+ */
+export const sendLotExpirationAlerts = onSchedule(
+  {
+    schedule: "0 18 * * *", // Cron: todos os dias às 18h
+    timeZone: "Europe/Lisbon",
+    region: "europe-west1",
+    secrets: ["POSTGRES_PASSWORD"],
+  },
+  async (event) => {
+    logger.info("Starting scheduled check for lots expiring in 31 days");
+
+    let pool = null;
+    let client = null;
+
+    try {
+      pool = await getConnection();
+      client = await pool.connect();
+
+      // Calcular data daqui a 31 dias
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + 31);
+      const targetDateStr = targetDate.toISOString().split("T")[0]; // YYYY-MM-DD
+
+      logger.info(`Checking lots expiring on: ${targetDateStr}`);
+
+      // Buscar lotes que expiram daqui a 31 dias (expiration_date não nulo)
+      const lotsQuery = `
+        SELECT
+          l.id,
+          l.lot_code,
+          l.expiration_date,
+          l.current_quantity,
+          p.name as product_name,
+          p.description as product_description,
+          p.unit_of_measure,
+          c.name as category_name
+        FROM lot l
+        JOIN product p ON l.product_id = p.id
+        LEFT JOIN category c ON p.category_id = c.id
+        WHERE l.expiration_date = $1
+          AND l.current_quantity > 0
+          AND l.expiration_date IS NOT NULL
+        ORDER BY p.name ASC, l.lot_code ASC
+      `;
+
+      const lotsResult = await client.query(lotsQuery, [targetDateStr]);
+      const expiringLots = lotsResult.rows;
+
+      if (expiringLots.length === 0) {
+        logger.info("No lots expiring in 31 days");
+        return;
+      }
+
+      logger.info(`Found ${expiringLots.length} lots expiring in 31 days`);
+
+      // Buscar todos os utilizadores com role SAS
+      const usersQuery = `
+        SELECT DISTINCT email, name
+        FROM "user"
+        WHERE role = 'SAS'
+          AND email IS NOT NULL
+        ORDER BY name ASC
+      `;
+
+      const usersResult = await client.query(usersQuery);
+      const sasUsers = usersResult.rows;
+
+      if (sasUsers.length === 0) {
+        logger.warn("No active SAS users with email found");
+        return;
+      }
+
+      logger.info(`Found ${sasUsers.length} SAS users to notify`);
+
+      // Enviar email para cada utilizador SAS
+      const emailPromises = sasUsers.map((user: any) =>
+        sendLotExpirationAlertEmail(
+          user.email,
+          user.name,
+          expiringLots
+        )
+      );
+
+      await Promise.all(emailPromises);
+
+      logger.info(`Successfully sent ${sasUsers.length} lot expiration alert emails`);
+    } catch (error: any) {
+      logger.error("Error in sendLotExpirationAlerts:", error);
+      throw error;
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
+);
+
+/**
+ * Constrói o conteúdo HTML do email de alerta de expiração de lotes
+ */
+function buildLotExpirationAlertEmail(
+  userName: string,
+  expiringLots: any[]
+): string {
+  // Construir lista de lotes
+  const lotsListHtml = expiringLots.map((lot) => {
+    const expirationDate = parseDistributionDate(lot.expiration_date);
+    const dateFormatted = expirationDate.toLocaleDateString("pt-PT", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "Europe/Lisbon",
+    });
+
+    return `
+      <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 12px 8px;">${lot.product_name}</td>
+        <td style="padding: 12px 8px; text-align: center;"><strong>${lot.lot_code}</strong></td>
+        <td style="padding: 12px 8px; text-align: center;">${lot.current_quantity}</td>
+        <td style="padding: 12px 8px; text-align: center; color: #D32F2F; font-weight: bold;">${dateFormatted}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 700px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #ffffff;
+        }
+        .header {
+          background-color: #D32F2F;
+          color: white;
+          padding: 30px 20px;
+          text-align: center;
+          border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+          margin: 0;
+          font-size: 24px;
+        }
+        .content {
+          background-color: #f9f9f9;
+          padding: 30px 20px;
+          border-radius: 0 0 8px 8px;
+        }
+        .alert-box {
+          background-color: #FFEBEE;
+          border-left: 4px solid #D32F2F;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .alert-box strong {
+          color: #D32F2F;
+        }
+        .info-box {
+          background-color: #E3F2FD;
+          border-left: 4px solid #1976D2;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 20px 0;
+          background-color: white;
+        }
+        th {
+          background-color: #D32F2F;
+          color: white;
+          padding: 12px 8px;
+          text-align: left;
+          font-weight: bold;
+        }
+        td {
+          padding: 12px 8px;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #ddd;
+          font-size: 12px;
+          color: #666;
+        }
+        .stats-box {
+          background-color: #FFF3CD;
+          padding: 15px;
+          margin: 20px 0;
+          border-radius: 5px;
+          text-align: center;
+        }
+        .stats-box .number {
+          font-size: 32px;
+          font-weight: bold;
+          color: #D32F2F;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Alerta de Expiração de Lotes</h1>
+          <p style="margin: 10px 0 0 0; font-size: 16px;">Sistema de Ação Social - IPCA</p>
+        </div>
+        <div class="content">
+          <p>Olá <strong>${userName}</strong>,</p>
+
+          <p>Este é um alerta automático do sistema de gestão de stock.</p>
+
+          <div class="alert-box">
+            <strong>⚠️ Atenção:</strong> Existem lotes que vão <strong>expirar em 31 dias</strong>.
+            É necessário tomar ações para evitar desperdício de produtos.
+          </div>
+
+          <div class="stats-box">
+            <div class="number">${expiringLots.length}</div>
+            <div>Lote(s) a expirar em 31 dias</div>
+          </div>
+
+          <h3 style="color: #D32F2F; margin-top: 30px;">📦 Lotes Identificados:</h3>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th style="text-align: center;">Código do Lote</th>
+                <th style="text-align: center;">Quantidade</th>
+                <th style="text-align: center;">Data de Expiração</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lotsListHtml}
+            </tbody>
+          </table>
+
+          <div class="info-box">
+            <strong>📋 Ações Recomendadas:</strong>
+            <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+              <li>Priorizar estes lotes nas próximas distribuições</li>
+              <li>Verificar se há beneficiários que necessitem destes produtos</li>
+              <li>Considerar redistribuição para outras instituições se necessário</li>
+              <li>Atualizar o sistema após tomar as devidas ações</li>
+            </ul>
+          </div>
+
+          <p style="margin-top: 30px;">
+            Para mais informações ou esclarecimentos, contacte o administrador do sistema.
+          </p>
+
+          <p style="margin-top: 20px;">
+            <strong>Equipa SAS - ${EMAIL_CONFIG.INSTITUTION.shortName}</strong>
+          </p>
+        </div>
+        <div class="footer">
+          <p>Este é um email automático. Por favor não responda.</p>
+          <p>Sistema de Ação Social - ${EMAIL_CONFIG.INSTITUTION.name}</p>
+          <p>© ${new Date().getFullYear()} ${EMAIL_CONFIG.INSTITUTION.shortName} - Todos os direitos reservados</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Envia email de alerta de expiração de lotes
+ */
+async function sendLotExpirationAlertEmail(
+  toEmail: string,
+  userName: string,
+  expiringLots: any[]
+): Promise<void> {
+  try {
+    // Validar email destinatário
+    if (!toEmail || !toEmail.includes("@")) {
+      throw new Error(`Invalid recipient email: ${toEmail}`);
+    }
+
+    // Obter configuração segura do remetente
+    const sender = getSystemFromEmail();
+
+    const htmlContent = buildLotExpirationAlertEmail(userName, expiringLots);
+
+    const lotsCount = expiringLots.length;
+    const lotsCodes = expiringLots.map((l) => l.lot_code).join(", ");
+
+    // Configuração segura do email
+    const emailData = {
+      to: toEmail,
+      from: `${sender.name} <${sender.email}>`,
+      replyTo: EMAIL_CONFIG.REPLY_TO_EMAIL,
+      message: {
+        subject: `Alerta: ${lotsCount} lote(s) a expirar em 31 dias`,
+        html: htmlContent,
+      },
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      metadata: {
+        type: "lot_expiration_alert",
+        lotsCount: lotsCount,
+        lotsCodes: lotsCodes,
+        sentAt: new Date().toISOString(),
+        system: "SAS-IPCA",
+      },
+    };
+
+    await admin.firestore().collection("mail").add(emailData);
+
+    logger.info(`Lot expiration alert email queued for ${toEmail} from ${sender.email}`);
+  } catch (error) {
+    logger.error(`Error sending lot expiration alert to ${toEmail}:`, error);
+    throw error;
+  }
+}
+
