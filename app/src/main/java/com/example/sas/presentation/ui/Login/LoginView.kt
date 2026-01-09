@@ -1,6 +1,7 @@
 package com.example.sas.presentation.ui.Login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -26,14 +27,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.sas.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import com.example.sas.presentation.ui.theme.BackgroundGreen
+import com.example.sas.presentation.ui.theme.GreenPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,78 +41,104 @@ fun LoginView(
     navController: NavController
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-
-    val green = Color(0xFF2FBF71)
-    val lightBg = Color(0xFFF6FFFA)
-
-    val viewModel : LoginViewModel = hiltViewModel()
+    val viewModel: LoginViewModel = hiltViewModel()
     val uiState = viewModel.uiState.value
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = lightBg
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BackgroundGreen)
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Card(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            // Logo e Título
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_logo_sas),
+                    contentDescription = "Logo Loja Social IPCA",
+                    modifier = Modifier
+                        .height(200.dp)
+                        .padding(bottom = 32.dp),
+                    contentScale = ContentScale.Fit
+                )
 
+                Text(
+                    text = "Loja Social IPCA",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1C1C1C)
+                )
+
+                Text(
+                    text = "Gestão e Solidariedade",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = GreenPrimary,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Text(
+                    text = "Bem-vindo de volta",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 32.dp)
+                )
+            }
+
+            // Card de Login
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_logo_sas),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .height(180.dp)
-                            .padding(top = 8.dp),
-                        contentScale = ContentScale.Fit
-                    )
-
-                    Text(
-                        text = "Bem-vindo",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Text(
-                        text = "Entra para continuar",
-                        modifier = Modifier.padding(bottom = 24.dp)
-                    )
-
-                    Spacer(modifier = Modifier.weight(0.1f))
-
+                    // Email Field
                     OutlinedTextField(
-                        value = uiState.email?:"",
-                        onValueChange = {viewModel.setEmail(it)},
+                        value = uiState.email ?: "",
+                        onValueChange = { viewModel.setEmail(it) },
                         label = { Text("Email") },
                         leadingIcon = {
-                            Icon(Icons.Default.Email, contentDescription = null)
+                            Icon(
+                                Icons.Default.Email,
+                                contentDescription = null,
+                                tint = GreenPrimary
+                            )
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = GreenPrimary,
+                            focusedLabelColor = GreenPrimary
+                        ),
+                        singleLine = true
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
+                    // Password Field
                     OutlinedTextField(
                         value = uiState.password ?: "",
                         onValueChange = { viewModel.setPassword(it) },
                         label = { Text("Password") },
                         leadingIcon = {
-                            Icon(Icons.Default.Lock, contentDescription = null)
+                            Icon(
+                                Icons.Default.Lock,
+                                contentDescription = null,
+                                tint = GreenPrimary
+                            )
                         },
                         trailingIcon = {
                             IconButton(
@@ -123,7 +149,8 @@ fun LoginView(
                                         Icons.Default.VisibilityOff
                                     else
                                         Icons.Default.Visibility,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    tint = Color.Gray
                                 )
                             }
                         },
@@ -131,25 +158,35 @@ fun LoginView(
                             VisualTransformation.None
                         else
                             PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = GreenPrimary,
+                            focusedLabelColor = GreenPrimary
+                        ),
+                        singleLine = true
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
+                    // Error Message
                     if (uiState.error != null) {
-                        Text(
-                            text = uiState.error!!,
-                            color = Color.Red,
-                            fontSize = 14.sp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            textAlign = TextAlign.Center
-                        )
+                        Surface(
+                            color = Color(0xFFFFEBEE),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = uiState.error,
+                                color = Color(0xFFDC3545),
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(12.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
 
-                    Spacer(modifier = Modifier.height(60.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
+                    // Login Button
                     Button(
                         onClick = {
                             viewModel.login { role ->
@@ -167,94 +204,128 @@ fun LoginView(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = green)
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary),
+                        enabled = !uiState.isLoading
                     ) {
                         if (uiState.isLoading) {
-                            CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
                         } else {
-                            Text("Entrar", color = Color.White)
+                            Text(
+                                "Entrar",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "Candidatar-se a beneficiário",
-                        color = green,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        modifier = Modifier.clickable {
-                            viewModel.toggleCandidacyForm(true)
-                        }
-                    )
-                    if (uiState.showCandidacyForm) {
-                        AlertDialog(
-                            onDismissRequest = { viewModel.toggleCandidacyForm(false) },
-                            confirmButton = {
-                                Button(
-                                    onClick = { viewModel.submitCandidacy() },
-                                    enabled = !uiState.isSubmittingCandidacy, // Desativar se estiver a carregar
-                                    colors = ButtonDefaults.buttonColors(containerColor = green)
-                                ) {
-                                    Text("Concluir")
-                                }
-                            },
-                            dismissButton = {
-                                TextButton(onClick = { viewModel.toggleCandidacyForm(false) }) {
-                                    Text("Cancelar", color = Color.Gray)
-                                }
-                            },
-                            title = {
-                                Text(
-                                    "Formulário de Candidatura",
-                                    fontWeight = FontWeight.Bold
-                                )
-                            },
-                            text = {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .verticalScroll(rememberScrollState()),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    CandidacyTextField(
-                                        "Nome Completo",
-                                        uiState.candFullName
-                                    ) { viewModel.updateCandidacyField(name = it) }
-                                    CandidacyTextField(
-                                        "Nº Aluno",
-                                        uiState.candStudentNumber
-                                    ) { viewModel.updateCandidacyField(studentNum = it) }
-                                    CandidacyTextField(
-                                        "NIF",
-                                        uiState.candNif
-                                    ) { viewModel.updateCandidacyField(nif = it) }
-                                    CandidacyTextField(
-                                        "Curso",
-                                        uiState.candCourse
-                                    ) { viewModel.updateCandidacyField(course = it) }
-                                    CandidacyTextField(
-                                        "Contacto",
-                                        uiState.candContact
-                                    ) { viewModel.updateCandidacyField(contact = it) }
-
-                                    OutlinedTextField(
-                                        value = uiState.candReason,
-                                        onValueChange = { viewModel.updateCandidacyField(reason = it) },
-                                        label = { Text("Por que quer ser beneficiário?") },
-                                        modifier = Modifier.fillMaxWidth().height(120.dp),
-                                        maxLines = 5
-                                    )
-                                }
-                            }
-                        )
-                    }
-
-                    // pequeno respiro inferior
-                    Spacer(modifier = Modifier.weight(0.3f))
                 }
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Candidatura Link
+            Text(
+                text = "Candidatar-se a beneficiário",
+                color = GreenPrimary,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                modifier = Modifier.clickable {
+                    viewModel.toggleCandidacyForm(true)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        // Candidacy Dialog
+        if (uiState.showCandidacyForm) {
+            AlertDialog(
+                onDismissRequest = { viewModel.toggleCandidacyForm(false) },
+                confirmButton = {
+                    Button(
+                        onClick = { viewModel.submitCandidacy() },
+                        enabled = !uiState.isSubmittingCandidacy,
+                        colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        if (uiState.isSubmittingCandidacy) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Concluir", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { viewModel.toggleCandidacyForm(false) }) {
+                        Text("Cancelar", color = Color.Gray)
+                    }
+                },
+                title = {
+                    Text(
+                        "Formulário de Candidatura",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                text = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        CandidacyTextField(
+                            "Nome Completo",
+                            uiState.candFullName
+                        ) { viewModel.updateCandidacyField(name = it) }
+
+                        CandidacyTextField(
+                            "Nº Aluno",
+                            uiState.candStudentNumber
+                        ) { viewModel.updateCandidacyField(studentNum = it) }
+
+                        CandidacyTextField(
+                            "NIF",
+                            uiState.candNif
+                        ) { viewModel.updateCandidacyField(nif = it) }
+
+                        CandidacyTextField(
+                            "Curso",
+                            uiState.candCourse
+                        ) { viewModel.updateCandidacyField(course = it) }
+
+                        CandidacyTextField(
+                            "Contacto",
+                            uiState.candContact
+                        ) { viewModel.updateCandidacyField(contact = it) }
+
+                        OutlinedTextField(
+                            value = uiState.candReason,
+                            onValueChange = { viewModel.updateCandidacyField(reason = it) },
+                            label = { Text("Por que quer ser beneficiário?") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp),
+                            maxLines = 5,
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = GreenPrimary,
+                                focusedLabelColor = GreenPrimary
+                            )
+                        )
+                    }
+                },
+                shape = RoundedCornerShape(16.dp)
+            )
         }
     }
 }
@@ -266,6 +337,11 @@ fun CandidacyTextField(label: String, value: String, onValueChange: (String) -> 
         onValueChange = onValueChange,
         label = { Text(label) },
         modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        singleLine = true,
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = GreenPrimary,
+            focusedLabelColor = GreenPrimary
+        )
     )
 }

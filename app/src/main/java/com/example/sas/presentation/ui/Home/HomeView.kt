@@ -1,15 +1,18 @@
 package com.example.sas.presentation.ui.Home
 
 import DrawerContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -255,20 +258,84 @@ fun CreateUserDialog(authViewModel: AuthViewModel) {
     if (state.showCreateUserDialog) {
         AlertDialog(
             onDismissRequest = { authViewModel.toggleCreateUserDialog(false) },
-            title = { Text("Registar Utilizador", fontWeight = FontWeight.Bold) },
+            title = {
+                Text(
+                    text = "Registar Utilizador",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1C1C1C)
+                )
+            },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Mensagem de erro
                     if (state.createUserError != null) {
-                        Text(state.createUserError!!, color = Color.Red, style = MaterialTheme.typography.labelSmall)
+                        Surface(
+                            color = Color(0xFFFFEBEE),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = state.createUserError!!,
+                                color = Color(0xFFDC3545),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(12.dp)
+                            )
+                        }
                     }
 
-                    OutlinedTextField(value = form.name, onValueChange = { authViewModel.onNewUserFormChange(name = it) }, label = { Text("Nome") }, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(value = form.email, onValueChange = { authViewModel.onNewUserFormChange(email = it) }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
-                    OutlinedTextField(value = form.password, onValueChange = { authViewModel.onNewUserFormChange(password = it) }, label = { Text("Password") }, modifier = Modifier.fillMaxWidth())
+                    // Nome
+                    OutlinedTextField(
+                        value = form.name,
+                        onValueChange = { authViewModel.onNewUserFormChange(name = it) },
+                        label = { Text("Nome") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = GreenPrimary,
+                            focusedLabelColor = GreenPrimary
+                        ),
+                        singleLine = true
+                    )
 
-                    Text("Tipo de Utilizador:", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
+                    // Email
+                    OutlinedTextField(
+                        value = form.email,
+                        onValueChange = { authViewModel.onNewUserFormChange(email = it) },
+                        label = { Text("Email") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = GreenPrimary,
+                            focusedLabelColor = GreenPrimary
+                        ),
+                        singleLine = true
+                    )
 
-                    // Seleção de Role entre SAS e Beneficiário
+                    // Password
+                    OutlinedTextField(
+                        value = form.password,
+                        onValueChange = { authViewModel.onNewUserFormChange(password = it) },
+                        label = { Text("Password") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = GreenPrimary,
+                            focusedLabelColor = GreenPrimary
+                        ),
+                        singleLine = true
+                    )
+
+                    // Tipo de Utilizador
+                    Text(
+                        text = "Tipo de Utilizador:",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.Gray
+                    )
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -293,22 +360,40 @@ fun CreateUserDialog(authViewModel: AuthViewModel) {
                 Button(
                     onClick = { authViewModel.createNewUser(context) },
                     enabled = !state.isCreatingUser,
-                    colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary)
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = GreenPrimary,
+                        disabledContainerColor = GreenPrimary.copy(alpha = 0.5f)
+                    )
                 ) {
                     if (state.isCreatingUser) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(20.dp),
                             color = Color.White,
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Text("Criar Conta")
+                        Text(
+                            "Criar Conta",
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             },
             dismissButton = {
-                TextButton(onClick = { authViewModel.toggleCreateUserDialog(false) }) { Text("Cancelar") }
-            }
+                TextButton(
+                    onClick = { authViewModel.toggleCreateUserDialog(false) },
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        "Cancelar",
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            shape = RoundedCornerShape(16.dp),
+            containerColor = Color.White
         )
     }
 }

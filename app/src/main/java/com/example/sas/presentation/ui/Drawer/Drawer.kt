@@ -1,17 +1,16 @@
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -23,7 +22,6 @@ import com.example.sas.presentation.ui.Drawer.DrawerRoute
 import com.example.sas.presentation.ui.auth.AuthViewModel
 import com.example.sas.presentation.ui.theme.GreenPrimary
 
-// Classe auxiliar para organizar a UI do Drawer
 private data class DrawerNavItem(
     val label: String,
     val route: String,
@@ -39,7 +37,6 @@ fun DrawerContent(
 ) {
     val authState by authViewModel.uiState.collectAsState()
 
-    // Mapeamento das suas DrawerRoutes para Labels e Ícones
     val menuItems = remember(authState.currentUser?.role) {
         buildList {
             add(DrawerNavItem("Agendamentos", DrawerRoute.Agendamentos.route, Icons.Outlined.Event))
@@ -62,35 +59,41 @@ fun DrawerContent(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // ============== HEADER: PERFIL COM GRADIENTE ==============
+            // ================= HEADER =================
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(GreenPrimary, GreenPrimary.copy(alpha = 0.8f))
+                        Brush.verticalGradient(
+                            listOf(
+                                GreenPrimary,
+                                GreenPrimary.copy(alpha = 0.8f)
+                            )
                         )
                     )
                     .padding(horizontal = 20.dp, vertical = 32.dp)
             ) {
                 if (authState.isLoading) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
                 } else {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // Avatar circular estilizado
                         Surface(
                             modifier = Modifier.size(60.dp),
                             shape = CircleShape,
                             color = Color.White.copy(alpha = 0.2f),
-                            border = androidx.compose.foundation.BorderStroke(2.dp, Color.White)
+                            border = BorderStroke(2.dp, Color.White)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                val initial = authState.currentUser?.name?.firstOrNull()?.uppercase() ?: "?"
                                 Text(
-                                    text = initial,
+                                    text = authState.currentUser?.name
+                                        ?.firstOrNull()
+                                        ?.uppercase() ?: "?",
                                     style = MaterialTheme.typography.headlineSmall,
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold
@@ -107,7 +110,7 @@ fun DrawerContent(
                                 fontSize = 18.sp
                             )
                             Text(
-                                text = authState.currentUser?.email ?: "",
+                                text = authState.currentUser?.email.orEmpty(),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
@@ -118,22 +121,28 @@ fun DrawerContent(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // ============== LISTA DE NAVEGAÇÃO ==============
-            Column(
+            // ================= SCROLLABLE MENU =================
+            LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = 12.dp),
+                contentPadding = PaddingValues(bottom = 12.dp)
             ) {
-                Text(
-                    text = "MENU",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
-                    letterSpacing = 1.5.sp
-                )
+                item {
+                    Text(
+                        text = "MENU",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(
+                            start = 16.dp,
+                            top = 16.dp,
+                            bottom = 8.dp
+                        ),
+                        letterSpacing = 1.5.sp
+                    )
+                }
 
-                menuItems.forEach { item ->
-                    // Verifica se a rota atual começa com a rota do item (ex: stock/home ativa o item "stock")
+                items(menuItems) { item ->
                     val isSelected = currentRoute?.startsWith(item.route) == true
 
                     NavigationDrawerItem(
@@ -141,7 +150,8 @@ fun DrawerContent(
                             Text(
                                 text = item.label,
                                 fontSize = 15.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                                fontWeight = if (isSelected)
+                                    FontWeight.Bold else FontWeight.Medium
                             )
                         },
                         selected = isSelected,
@@ -167,7 +177,7 @@ fun DrawerContent(
                 }
             }
 
-            // ============== RODAPÉ: SAIR ==============
+            // ================= FOOTER =================
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 color = Color(0xFFF0F0F0)
@@ -176,7 +186,7 @@ fun DrawerContent(
             NavigationDrawerItem(
                 label = {
                     Text(
-                        "Terminar Sessão",
+                        text = "Terminar Sessão",
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFDC3545)
                     )
@@ -195,6 +205,7 @@ fun DrawerContent(
                     unselectedContainerColor = Color.Transparent
                 )
             )
+
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
