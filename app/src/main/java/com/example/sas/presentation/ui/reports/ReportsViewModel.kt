@@ -18,7 +18,6 @@ data class ReportsUiState(
     val logTypes: List<LogType> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    // Filtros
     val selectedLogType: String? = null,
     val searchQuery: String = ""
 )

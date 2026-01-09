@@ -71,7 +71,6 @@ fun TotalAppointmentsCard(
                     color = GreenPrimary
                 )
             }
-
             Box(
                 modifier = Modifier
                     .size(52.dp)

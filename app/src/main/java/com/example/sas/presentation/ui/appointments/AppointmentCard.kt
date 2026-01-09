@@ -105,7 +105,6 @@ fun AppointmentCard(distribution: Distribution, onClick: () -> Unit) {
                     )
                 }
             }
-
             // Observações
             distribution.observations?.let { obs ->
                 Spacer(modifier = Modifier.height(8.dp))
@@ -115,6 +114,13 @@ fun AppointmentCard(distribution: Distribution, onClick: () -> Unit) {
                     color = GrayInactive
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Clique para ir até beneficiário e gerenciar",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
         }
     }
 }

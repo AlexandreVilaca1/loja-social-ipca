@@ -64,9 +64,12 @@ fun CampaignsView(
                         selectedContainerColor = GreenPrimary.copy(alpha = 0.2f),
                         selectedLabelColor = GreenPrimary)) }
                 items(state.availableTypes) { type ->
-                    FilterChip(selected = state.selectedType == type, onClick = { viewModel.setTypeFilter(type) }, label = { Text(type) })
+                    FilterChip(selected = state.selectedType == type, onClick = { viewModel.setTypeFilter(type) }, label = { Text(type) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = GreenPrimary.copy(alpha = 0.2f),
+                            selectedLabelColor = GreenPrimary))
+                     }
                 }
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

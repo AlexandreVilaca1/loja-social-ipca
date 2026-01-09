@@ -105,7 +105,7 @@ fun LotsView(
                         color = Color.Gray
                     )
                 },
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,

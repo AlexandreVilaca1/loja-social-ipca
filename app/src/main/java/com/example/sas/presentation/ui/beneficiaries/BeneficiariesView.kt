@@ -109,7 +109,7 @@ fun BeneficiariesView(
                         tint = GreenPrimary
                     )
                 },
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
@@ -176,7 +176,6 @@ fun BeneficiariesView(
                             onEdit = {
                                 viewModel.startEditBeneficiary(b)
                             },
-                            onDelete = { /* TODO */ },
                             onClick = {
                                 navController.navigate(
                                     "beneficiary/${b.id}/distributions?name=${b.fullName}"
