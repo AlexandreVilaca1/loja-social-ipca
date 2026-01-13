@@ -181,7 +181,7 @@ private fun AddItemBottomSheet(
 ) {
     var selectedLotId by remember { mutableStateOf("") }
     var selectedLotName by remember { mutableStateOf("") }
-    var quantity by remember { mutableIntStateOf(1) }
+    var quantity by remember { mutableStateOf("1") }
     var observations by remember { mutableStateOf("") }
     var showLotDropdown by remember { mutableStateOf(false) }
 
@@ -308,10 +308,11 @@ private fun AddItemBottomSheet(
 
             // Campo de Quantidade
             OutlinedTextField(
-                value = quantity.toString(),
-                onValueChange = {
-                    it.toIntOrNull()?.let { newQuantity ->
-                        if (newQuantity > 0) quantity = newQuantity
+                value = quantity,
+                onValueChange = { newValue ->
+                    // Permite campo vazio ou apenas números
+                    if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                        quantity = newValue
                     }
                 },
                 label = { Text("Quantidade") },
@@ -319,7 +320,11 @@ private fun AddItemBottomSheet(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = GreenPrimary,
                     focusedLabelColor = GreenPrimary
-                )
+                ),
+                isError = quantity.isNotEmpty() && (quantity.toIntOrNull() ?: 0) <= 0,
+                supportingText = if (quantity.isNotEmpty() && (quantity.toIntOrNull() ?: 0) <= 0) {
+                    { Text("A quantidade deve ser maior que 0") }
+                } else null
             )
 
             // Campo de Observações
@@ -349,10 +354,11 @@ private fun AddItemBottomSheet(
             // Botão Adicionar
             Button(
                 onClick = {
-                    if (selectedLotId.isNotBlank()) {
+                    val quantityInt = quantity.toIntOrNull() ?: 0
+                    if (selectedLotId.isNotBlank() && quantityInt > 0) {
                         viewModel.createDistributionItem(
                             lotId = selectedLotId,
-                            quantity = quantity,
+                            quantity = quantityInt,
                             observations = observations.ifBlank { null },
                             onSuccess = onSuccess
                         )
@@ -361,7 +367,7 @@ private fun AddItemBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                enabled = !state.isCreating && selectedLotId.isNotBlank(),
+                enabled = !state.isCreating && selectedLotId.isNotBlank() && (quantity.toIntOrNull() ?: 0) > 0,
                 colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary),
                 shape = RoundedCornerShape(8.dp)
             ) {

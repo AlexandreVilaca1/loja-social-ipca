@@ -15,5 +15,6 @@ val GreenLight = Color(0xFFB8E994)   // Verde claro para destaques
 val BackgroundLight = Color(0xFFF5F5F5)
 val TextDark = Color(0xFF1C1C1C)
 val GrayInactive = Color(0xFF9E9E9E)
+val White = Color(0xFFFFFFFF)
 val BackgroundGreen = Color(0xFFEFFCF4)
 val CardBorder = Color(0xFFD6F5E3)

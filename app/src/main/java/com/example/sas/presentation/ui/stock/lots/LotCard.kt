@@ -260,7 +260,7 @@ private fun isExpiringSoon(expirationDate: String): Boolean {
         val date = LocalDate.parse(expirationDate, DateTimeFormatter.ofPattern("yyyy/MM/dd"))
         val today = LocalDate.now()
         val daysUntilExpiration = ChronoUnit.DAYS.between(today, date)
-        daysUntilExpiration in 1..30 // Expiring in 30 days
+        daysUntilExpiration in 1..31 // Expiring in 31 days
     } catch (e: Exception) {
         false
     }
