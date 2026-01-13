@@ -60,7 +60,7 @@ type Donation @table {
 type Distribution @table {
   distributionDate: Date!
   observations: String
-  responsibleStaff: User
+  responsibleStaff:
   beneficiary: Beneficiary
   status: StatusType
   createdAt: Timestamp! @default(expr: "request.time")

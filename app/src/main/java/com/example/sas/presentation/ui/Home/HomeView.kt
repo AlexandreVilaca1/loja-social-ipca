@@ -70,15 +70,17 @@ fun HomeView(onSignOut : () -> Unit) {
                                 currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items") ||
                                 currentRoute == "donations/campaigns" ||
                                 currentRoute == "donations/list" ||
-                                currentRoute?.startsWith("donation/items/") == true // Voltar para a Lista de Doações
+                                currentRoute?.startsWith("donation/items/") == true
 
     val currentTitle = when {
         currentRoute == DrawerRoute.Pedidos.route -> "Pedidos"
         currentRoute == "agendamentos/home" -> "Agendamentos"
-        currentRoute == "agendamentos/todos" -> "Lista de Distribuições"
+        currentRoute == "agendamentos/todos" -> "Lista de Agendamentos"
         currentRoute?.startsWith("agendamentos") == true -> "Agendamentos"
         currentRoute == DrawerRoute.Beneficiarios.route -> "Beneficiários"
         currentRoute == DrawerRoute.Candidaturas.route -> "Candidaturas"
+        currentRoute == "donations/campaigns" -> "Campanhas"
+        currentRoute == "donations/list" -> "Histórico Doações"
         currentRoute?.startsWith("beneficiary/") == true && currentRoute.contains("/distributions") -> "Distribuições"
         currentRoute?.startsWith("distribution/") == true && currentRoute.contains("/items") -> "Produtos da Distribuição"
         currentRoute == DrawerRoute.Doacoes.route -> "Doações"
@@ -121,7 +123,7 @@ fun HomeView(onSignOut : () -> Unit) {
                 BottomBar(navController)
             },
             topBar = {
-                CenterAlignedTopAppBar(
+                TopAppBar(
                     modifier = Modifier.height(56.dp),
                     title = {
                         Text(
