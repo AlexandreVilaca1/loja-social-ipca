@@ -13,3 +13,17 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Secrets and local Firebase config (never commit; see the *.env.example files)
+.env
+*.env
+!*.env.example
+*.secret.local
+app/google-services.json
+
+# IDE, build and tool files
+.idea/
+.kotlin/
+functions/lib/
+functions/node_modules/
+cloud-sql-proxy
